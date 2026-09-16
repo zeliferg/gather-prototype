@@ -12,6 +12,12 @@ import { OrgWalkIn } from './screens/org/OrgWalkIn';
 import { OrgConfirmed } from './screens/org/OrgConfirmed';
 import { OrgParty } from './screens/org/OrgParty';
 import { OrgSmsAfter } from './screens/org/OrgSmsAfter';
+import { PSmsInvite } from './screens/p/PSmsInvite';
+import { PVerify } from './screens/p/PVerify';
+import { PLobby } from './screens/p/PLobby';
+import { PJoin } from './screens/p/PJoin';
+import { PWaiting } from './screens/p/PWaiting';
+import { PDropped } from './screens/p/PDropped';
 import { FLOW } from './flow';
 
 export { FLOW } from './flow';
@@ -50,14 +56,14 @@ export const orgRoutes: RouteObject[] = [
 ];
 
 export const pRoutes: RouteObject[] = [
-  { path: '/p', element: <Stub /> },
-  { path: '/p/verify', element: <Stub /> },
-  { path: '/p/lobby', element: <Stub /> },
-  { path: '/p/join', element: <Stub /> },
-  { path: '/p/waiting', element: <Stub /> },
+  { path: '/p', element: <PSmsInvite /> },
+  { path: '/p/verify', element: <PVerify /> },
+  { path: '/p/lobby', element: <PLobby /> },
+  { path: '/p/join', element: <PJoin /> },
+  { path: '/p/waiting', element: <PWaiting /> },
   { path: '/p/sms-confirmed', element: <Stub /> },
   { path: '/p/party', element: <Stub /> },
-  { path: '/p/dropped', element: <Stub /> },
+  { path: '/p/dropped', element: <PDropped /> },
   { path: '/p/sms-after', element: <Stub /> },
 ];
 
