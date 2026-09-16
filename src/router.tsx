@@ -5,6 +5,13 @@ import { OrgCreateParty } from './screens/org/OrgCreateParty';
 import { OrgSmsLink } from './screens/org/OrgSmsLink';
 import { OrgVerify } from './screens/org/OrgVerify';
 import { OrgHub } from './screens/org/OrgHub';
+import { OrgListReady } from './screens/org/OrgListReady';
+import { OrgOptions } from './screens/org/OrgOptions';
+import { OrgReservation } from './screens/org/OrgReservation';
+import { OrgWalkIn } from './screens/org/OrgWalkIn';
+import { OrgConfirmed } from './screens/org/OrgConfirmed';
+import { OrgParty } from './screens/org/OrgParty';
+import { OrgSmsAfter } from './screens/org/OrgSmsAfter';
 import { FLOW } from './flow';
 
 export { FLOW } from './flow';
@@ -33,13 +40,13 @@ export const orgRoutes: RouteObject[] = [
   { path: '/org/sms-link', element: <OrgSmsLink /> },
   { path: '/org/verify', element: <OrgVerify /> },
   { path: '/org/hub', element: <OrgHub /> },
-  { path: '/org/list-ready', element: <Stub /> },
-  { path: '/org/options', element: <Stub /> },
-  { path: '/org/reserve', element: <Stub /> },
-  { path: '/org/walk-in', element: <Stub /> },
-  { path: '/org/confirmed', element: <Stub /> },
-  { path: '/org/party', element: <Stub /> },
-  { path: '/org/sms-after', element: <Stub /> },
+  { path: '/org/list-ready', element: <OrgListReady /> },
+  { path: '/org/options', element: <OrgOptions /> },
+  { path: '/org/reserve', element: <OrgReservation /> },
+  { path: '/org/walk-in', element: <OrgWalkIn /> },
+  { path: '/org/confirmed', element: <OrgConfirmed /> },
+  { path: '/org/party', element: <OrgParty /> },
+  { path: '/org/sms-after', element: <OrgSmsAfter /> },
 ];
 
 export const pRoutes: RouteObject[] = [
