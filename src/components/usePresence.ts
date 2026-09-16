@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const EXIT_MS = 260;
+const EXIT_MS = 400; // covers --dur-slow (360ms) + a frame; keep in step with tokens.css
 
 export function usePresence(open: boolean) {
   const [mounted, setMounted] = useState(open);

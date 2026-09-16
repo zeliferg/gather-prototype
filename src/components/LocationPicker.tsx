@@ -33,6 +33,7 @@ export function LocationPicker({ context }: Props) {
         onChange={(v) => { update({ locationMode: v }); if (v === 'pin' && context === 'host') setAddress('RiNo, Denver'); if (v === 'around' && state.permission === 'granted') setAddress('Current location'); }}
       />
       <MapView mode={mapMode} radiusMi={state.radiusMi} />
+      {state.permission === 'denied' && mode === 'around' && <p className="t-caption c-secondary">Location access is off. Use Drop a pin, or search an address.</p>}
       <div className="card">
         <p className="t-body-med">{mode === 'pin' ? 'How far from the pin?' : 'How far would you go?'}</p>
         <div className="chip-row">
