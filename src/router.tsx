@@ -1,5 +1,10 @@
 import { createBrowserRouter, Navigate, Outlet, useLocation, useNavigationType, type RouteObject } from 'react-router-dom';
 import { NotFound } from './screens/NotFound';
+import { OrgLanding } from './screens/org/OrgLanding';
+import { OrgCreateParty } from './screens/org/OrgCreateParty';
+import { OrgSmsLink } from './screens/org/OrgSmsLink';
+import { OrgVerify } from './screens/org/OrgVerify';
+import { OrgHub } from './screens/org/OrgHub';
 import { FLOW } from './flow';
 
 export { FLOW } from './flow';
@@ -23,11 +28,11 @@ export function RouteShell() {
 
 // Screens are registered here as tasks land. Replace `Stub` with the real component.
 export const orgRoutes: RouteObject[] = [
-  { path: '/org', element: <Stub /> },
-  { path: '/org/create', element: <Stub /> },
-  { path: '/org/sms-link', element: <Stub /> },
-  { path: '/org/verify', element: <Stub /> },
-  { path: '/org/hub', element: <Stub /> },
+  { path: '/org', element: <OrgLanding /> },
+  { path: '/org/create', element: <OrgCreateParty /> },
+  { path: '/org/sms-link', element: <OrgSmsLink /> },
+  { path: '/org/verify', element: <OrgVerify /> },
+  { path: '/org/hub', element: <OrgHub /> },
   { path: '/org/list-ready', element: <Stub /> },
   { path: '/org/options', element: <Stub /> },
   { path: '/org/reserve', element: <Stub /> },
