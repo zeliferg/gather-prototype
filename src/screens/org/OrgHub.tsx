@@ -16,6 +16,7 @@ export function OrgHub() {
   const [state, update] = usePrototypeState();
   const [everyone, setEveryone] = useState(false);
   const [sending, setSending] = useState(false);
+  const [ready, setReady] = useState(false);
   const responded = state.everyoneIn ? guests.length : guests.filter((g) => g.status !== 'waiting').length;
   const waiting = guests.filter((g) => g.status === 'waiting');
 
@@ -24,6 +25,11 @@ export function OrgHub() {
     const t = setTimeout(() => { update({ everyoneIn: true }); navigate('/org/list-ready'); }, 1400);
     return () => clearTimeout(t);
   }, [sending, navigate, update]);
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setReady(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
 
   const remindOne = (id: string) => update({ remindedIds: [...state.remindedIds, id] });
 
@@ -54,7 +60,7 @@ export function OrgHub() {
           <button className="hstack link t-label" onClick={() => setEveryone(true)}>See everyone <Chevron size={18} /></button>
         </div>
         <p className="t-secondary">{sending || state.everyoneIn ? guests.length : responded} of {guests.length} have responded</p>
-        <div className="progress"><span className="progress__bar" style={{ width: `${((sending || state.everyoneIn ? guests.length : responded) / guests.length) * 100}%` }} /></div>
+        <div className="progress"><span className="progress__bar" style={{ width: `${ready ? (((sending || state.everyoneIn ? guests.length : responded) / guests.length) * 100) : 0}%` }} /></div>
       </div>
       <Sheet open={everyone} onClose={() => { setEveryone(false); update({ remindedIds: [] }); }} title="Guests" subtitle={`${responded} of ${guests.length} have responded`}>
         <div className="list">

@@ -153,7 +153,7 @@ button.chip:active { transform: scale(0.95); }
 .circle__seat { position: absolute; transform: translate(-50%, -50%); animation: seat-in var(--dur-slow) var(--ease-spring) both; }
 @keyframes seat-in { from { transform: translate(-50%, -50%) scale(0); } to { transform: translate(-50%, -50%) scale(1); } }
 .circle__check { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); color: var(--accent); }
-.circle--done .circle__ring { animation: ring-pulse 900ms var(--ease-out) 300ms 1; }
+.circle--done .circle__ring { animation: ring-pulse var(--dur-ring) var(--ease-out) var(--dur-slow) 1; }
 .circle--done .check-path { stroke-dasharray: 24; stroke-dashoffset: 24; animation: draw var(--dur-slow) var(--ease-out) 200ms forwards; }
 @keyframes ring-pulse { 0% { box-shadow: 0 0 0 0 rgba(63,74,63,0.3); } 100% { box-shadow: 0 0 0 24px rgba(63,74,63,0); } }
 @keyframes draw { to { stroke-dashoffset: 0; } }
@@ -163,8 +163,7 @@ button.chip:active { transform: scale(0.95); }
 .location-row { text-align: left; width: 100%; transition: transform var(--dur-fast) var(--ease-out), background var(--dur-fast); }
 .location-row:active { transform: scale(0.99); background: var(--bg-subtle); }
 .progress { height: 6px; border-radius: 3px; background: var(--bg-subtle); overflow: hidden; }
-.progress__bar { display: block; height: 100%; background: var(--accent); border-radius: 3px; transition: width var(--dur-slow) var(--ease-out); animation: grow var(--dur-slow) var(--ease-out) both; }
-@keyframes grow { from { width: 0; } }
+.progress__bar { display: block; height: 100%; background: var(--accent); border-radius: 3px; transition: width var(--dur-slow) var(--ease-out); }
 .list { display: flex; flex-direction: column; }
 .guest-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border-hairline); }
 .guest-row:last-child { border-bottom: 0; }
