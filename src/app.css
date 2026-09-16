@@ -50,7 +50,7 @@ img { display: block; max-width: 100%; }
 .btn:disabled { opacity: 0.4; pointer-events: none; }
 .btn--inline { width: auto; }
 .btn--primary { background: var(--accent); color: var(--text-on-accent); }
-.btn--primary:active { background: #33403A; }
+.btn--primary:active { background: var(--accent-pressed); }
 .btn--secondary { background: var(--bg-subtle); color: var(--text-primary); }
 .btn--ghost { background: transparent; color: var(--text-accent); }
 .btn--ghost:active { background: var(--bg-subtle); }
