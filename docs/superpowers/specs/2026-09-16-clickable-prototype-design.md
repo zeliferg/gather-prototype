@@ -108,6 +108,29 @@ Every screen file starts with a one-line comment naming its Figma frame
 (e.g. `// Figma: ORG 4 — Invite & Party Details`). The Figma section is
 authoritative for copy and layout; when the two disagree, fix the code.
 
+## Motion
+
+This is a web interaction, not a static click-through. Every interactive
+moment gets deliberate motion, all driven by a small token set in
+`tokens.css` (`--dur-fast/base/slow`, `--ease-out/in-out/spring`) so the
+branding pass retunes it in one place:
+
+- Buttons and chips: press scale (0.97) and colour transition on tap.
+- Sheets and action sheets: slide up with the scrim fading in; dismiss
+  reverses. The permission dialog scales in.
+- Screen transitions: forward navigation slides in from the right,
+  back slides out; SMS screens fade.
+- Success states: the Confirmed check draws in and the ring pulses once;
+  "Everyone's in" avatars settle into the circle; the "Reminder sent"
+  chip swaps with a crossfade and returns to Remind + Waiting on reopen.
+- Map: the radius ring eases when the radius chip changes; a dropped pin
+  drops in.
+- Progress bar on the hub animates to its value on mount.
+
+Motion respects `prefers-reduced-motion` (durations collapse to 0, no
+translations). Implemented with CSS transitions/keyframes and the View
+Transitions API where supported; no animation library.
+
 ## Testing
 
 - `tests/host.spec.ts` and `tests/participant.spec.ts` drive the full
