@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { usePresence } from './usePresence';
 
 type Props = { open: boolean; onClose: () => void; title?: string; subtitle?: string; children: ReactNode };
@@ -6,7 +7,7 @@ type Props = { open: boolean; onClose: () => void; title?: string; subtitle?: st
 export function Sheet({ open, onClose, title, subtitle, children }: Props) {
   const { mounted, visible } = usePresence(open);
   if (!mounted) return null;
-  return (
+  return createPortal(
     <div className={`overlay ${visible ? 'overlay--in' : ''}`} role="dialog" aria-modal="true" aria-label={title}>
       <button className="overlay__scrim" aria-label="Close" onClick={onClose} />
       <div className="sheet">
@@ -19,6 +20,7 @@ export function Sheet({ open, onClose, title, subtitle, children }: Props) {
         )}
         {children}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

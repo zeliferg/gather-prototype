@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import { usePresence } from './usePresence';
 
 type Option = { label: string; onSelect?: () => void };
@@ -6,7 +7,7 @@ type Props = { open: boolean; title: string; options: Option[]; onClose: () => v
 export function ActionSheet({ open, title, options, onClose }: Props) {
   const { mounted, visible } = usePresence(open);
   if (!mounted) return null;
-  return (
+  return createPortal(
     <div className={`overlay ${visible ? 'overlay--in' : ''}`} role="dialog" aria-modal="true" aria-label={title}>
       <button className="overlay__scrim" aria-label="Close" onClick={onClose} />
       <div className="action-sheet">
@@ -20,6 +21,7 @@ export function ActionSheet({ open, title, options, onClose }: Props) {
           <button className="action-sheet__option t-body-med" onClick={onClose}>Cancel</button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

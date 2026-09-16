@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom';
 import { usePresence } from './usePresence';
 
 type Props = { open: boolean; body: string; onAllow: () => void; onDeny: () => void };
@@ -5,7 +6,7 @@ type Props = { open: boolean; body: string; onAllow: () => void; onDeny: () => v
 export function PermissionDialog({ open, body, onAllow, onDeny }: Props) {
   const { mounted, visible } = usePresence(open);
   if (!mounted) return null;
-  return (
+  return createPortal(
     <div className={`overlay overlay--center ${visible ? 'overlay--in' : ''}`} role="alertdialog" aria-modal="true" aria-label="Location permission">
       <div className="overlay__scrim" />
       <div className="permission">
@@ -18,6 +19,7 @@ export function PermissionDialog({ open, body, onAllow, onDeny }: Props) {
           <button className="permission__btn t-body-med c-accent" onClick={onAllow}>Allow</button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
