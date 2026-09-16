@@ -1,10 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { RouterProvider } from 'react-router-dom';
 import './app.css';
-import App from './App';
+import { router } from './router';
+import { PrototypeStateProvider } from './state';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App />
+    <PrototypeStateProvider>
+      <RouterProvider router={router} />
+    </PrototypeStateProvider>
   </React.StrictMode>,
 );

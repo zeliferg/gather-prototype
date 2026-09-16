@@ -138,3 +138,10 @@ button.chip:active { transform: scale(0.95); }
 .map__option:active { transform: translate(-30%, -50%) scale(0.95); }
 .map__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-primary); }
 .devhint { align-self: center; color: var(--text-secondary); border-bottom: 1px dashed var(--border-hairline); text-decoration: none; }
+
+/* Route transitions */
+.route { min-height: 100dvh; }
+.route--forward { animation: slide-in var(--dur-base) var(--ease-out) both; }
+.route--back { animation: slide-back var(--dur-base) var(--ease-out) both; }
+@keyframes slide-in { from { transform: translateX(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes slide-back { from { transform: translateX(-24px); opacity: 0; } to { transform: none; opacity: 1; } }
