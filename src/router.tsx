@@ -18,14 +18,12 @@ import { PLobby } from './screens/p/PLobby';
 import { PJoin } from './screens/p/PJoin';
 import { PWaiting } from './screens/p/PWaiting';
 import { PDropped } from './screens/p/PDropped';
+import { PSmsConfirmed } from './screens/p/PSmsConfirmed';
+import { PParty } from './screens/p/PParty';
+import { PSmsAfter } from './screens/p/PSmsAfter';
 import { FLOW } from './flow';
 
 export { FLOW } from './flow';
-
-function Stub() {
-  const { pathname } = useLocation();
-  return <div className="screen"><div className="screen__body"><p className="t-body">{pathname}</p></div></div>;
-}
 
 export function RouteShell() {
   const location = useLocation();
@@ -39,7 +37,6 @@ export function RouteShell() {
   );
 }
 
-// Screens are registered here as tasks land. Replace `Stub` with the real component.
 export const orgRoutes: RouteObject[] = [
   { path: '/org', element: <OrgLanding /> },
   { path: '/org/create', element: <OrgCreateParty /> },
@@ -61,10 +58,10 @@ export const pRoutes: RouteObject[] = [
   { path: '/p/lobby', element: <PLobby /> },
   { path: '/p/join', element: <PJoin /> },
   { path: '/p/waiting', element: <PWaiting /> },
-  { path: '/p/sms-confirmed', element: <Stub /> },
-  { path: '/p/party', element: <Stub /> },
+  { path: '/p/sms-confirmed', element: <PSmsConfirmed /> },
+  { path: '/p/party', element: <PParty /> },
   { path: '/p/dropped', element: <PDropped /> },
-  { path: '/p/sms-after', element: <Stub /> },
+  { path: '/p/sms-after', element: <PSmsAfter /> },
 ];
 
 const entry = FLOW === 'participant' ? '/p' : '/org';
