@@ -19,6 +19,12 @@ export function OrgOptions() {
   const open = restaurants.find((r) => r.id === openId);
   const time = state.selectedTime;
 
+  const openRestaurant = (id: RestaurantId) => {
+    const r = restaurants.find((x) => x.id === id);
+    if (r && !r.times.includes(state.selectedTime)) update({ selectedTime: r.times[0] });
+    setOpenId(id);
+  };
+
   const book = () => {
     if (!open) return;
     update({ selectedRestaurant: open.id });
@@ -30,8 +36,8 @@ export function OrgOptions() {
     <Screen back title="3 places that work" subtitle="Fair for where everyone's coming from.">
       <Segmented options={[{ value: 'list', label: 'List' }, { value: 'map', label: 'Map' }]} value={view} onChange={setView} />
       {view === 'list'
-        ? restaurants.map((r) => <RestaurantCard key={r.id} restaurant={r} onOpen={() => setOpenId(r.id)} />)
-        : <MapView mode="options" height={620} onSelectPin={setOpenId} />}
+        ? restaurants.map((r) => <RestaurantCard key={r.id} restaurant={r} onOpen={() => openRestaurant(r.id)} />)
+        : <MapView mode="options" height={620} onSelectPin={openRestaurant} />}
       <Sheet open={!!open} onClose={() => setOpenId(null)} title={open?.name}>
         {open && (
           <>

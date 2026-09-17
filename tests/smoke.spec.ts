@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test';
+import { flow } from './flow';
 
 test('root redirects to the organizer entry', async ({ page }) => {
+  test.skip(flow === 'participant', 'org routes not built in this flow');
   await page.goto('/');
   await expect(page).toHaveURL(/\/org$/);
 });
@@ -11,6 +13,7 @@ test('unknown routes show the not-found screen', async ({ page }) => {
 });
 
 test('flows work with reduced motion', async ({ browser }) => {
+  test.skip(flow === 'participant', 'org routes not built in this flow');
   const context = await browser.newContext({ reducedMotion: 'reduce' });
   const page = await context.newPage();
   await page.goto('/org');

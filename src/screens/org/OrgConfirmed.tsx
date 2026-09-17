@@ -1,7 +1,9 @@
 // Figma: ORG 9 — Confirmed
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Screen } from '../../components/Screen';
 import { Button } from '../../components/Button';
+import { ActionSheet } from '../../components/ActionSheet';
 import { Check } from '../../components/icons';
 import { party, restaurants } from '../../fixtures';
 import { usePrototypeState } from '../../state';
@@ -10,9 +12,10 @@ export function OrgConfirmed() {
   const navigate = useNavigate();
   const [state] = usePrototypeState();
   const r = restaurants.find((x) => x.id === state.selectedRestaurant)!;
+  const [calendar, setCalendar] = useState(false);
   return (
     <Screen className="landing" footer={<>
-      <Button>Add to calendar</Button>
+      <Button onClick={() => setCalendar(true)}>Add to calendar</Button>
       <Button variant="secondary" onClick={() => navigate('/org/party')}>Back to the party</Button>
     </>}>
       <span className="success-badge"><Check /></span>
@@ -23,6 +26,8 @@ export function OrgConfirmed() {
         <p className="t-body">{party.dateLong} at {state.selectedTime}</p>
         <p className="t-secondary c-secondary">Table for {party.size}. {r.address}.</p>
       </div>
+      <ActionSheet open={calendar} onClose={() => setCalendar(false)} title={`Add ${party.name} to`}
+        options={[{ label: 'Apple Calendar' }, { label: 'Google Calendar' }, { label: 'Outlook' }, { label: 'Download .ics file' }]} />
     </Screen>
   );
 }

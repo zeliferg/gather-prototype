@@ -18,6 +18,13 @@
   --scrim: rgba(0, 0, 0, 0.35);
   --sms-bubble: #E9E9EB;
   --sms-link: #0A66C2;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.18);
+  --ring-fill: rgba(231,237,230,0.85);
+  --ring-pulse: rgba(63,74,63,0.35);
+  --ring-pulse-end: rgba(63,74,63,0);
+  --map-wash: rgba(247,245,242,0.22);
 
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-serif: 'Fraunces', Georgia, serif;

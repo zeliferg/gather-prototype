@@ -15,10 +15,15 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await page.getByRole('button', { name: 'See everyone', exact: true }).click();
   await page.getByRole('button', { name: 'Remind', exact: true }).first().click();
   await expect(page.getByText('Reminder sent')).toBeVisible();
-  await page.getByRole('button', { name: 'Close' }).click({ position: { x: 10, y: 10 } });
+  await page.getByRole('button', { name: 'Close' }).click({ position: { x: 10, y: 10 } }); // scrim centre is under the sheet panel
   await page.getByRole('button', { name: "Remind the 2 who haven't" }).click();
   await expect(page.getByRole('heading', { name: "Everyone's in" })).toBeVisible({ timeout: 5000 });
   await page.getByRole('button', { name: 'Browse places' }).click();
+  await page.getByRole('tab', { name: 'Map' }).click();
+  await page.getByRole('button', { name: 'Corner Table' }).click();
+  await expect(page.getByRole('dialog', { name: 'Corner Table' })).toBeVisible();
+  await page.getByRole('button', { name: 'Close' }).click({ position: { x: 10, y: 10 } }); // scrim centre is under the sheet panel
+  await page.getByRole('tab', { name: 'List' }).click();
   await page.getByRole('button', { name: 'Tavola Verde' }).click();
   await page.getByRole('button', { name: 'Book 7:00 PM with [Partner]' }).click();
   await page.getByRole('button', { name: 'Book 7:00 PM', exact: true }).click();

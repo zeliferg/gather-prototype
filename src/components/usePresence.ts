@@ -4,7 +4,7 @@ const EXIT_MS = 400; // covers --dur-slow (360ms) + a frame; keep in step with t
 
 export function usePresence(open: boolean) {
   const [mounted, setMounted] = useState(open);
-  const [visible, setVisible] = useState(open);
+  const [visible, setVisible] = useState(false);
   useEffect(() => {
     if (open) {
       setMounted(true);

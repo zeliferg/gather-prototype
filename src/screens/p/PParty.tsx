@@ -23,7 +23,7 @@ export function PParty() {
   const [calendar, setCalendar] = useState(false);
   const [leaving, setLeaving] = useState(false);
   const [note, setNote] = useState('Sorry, a work thing came up');
-  useEffect(() => { if (!state.booked) update({ booked: true }); }, [state.booked, update]);
+  useEffect(() => { if (!state.guestBooked) update({ guestBooked: true }); }, [state.guestBooked, update]);
 
   return (
     <Screen footer={<Button variant="ghost" onClick={() => setLeaving(true)}>Can't make it? Let {party.hostFirst} know</Button>}>

@@ -13,6 +13,7 @@ export type PrototypeState = {
   selectedRestaurant: RestaurantId;
   selectedTime: string;
   booked: boolean;
+  guestBooked: boolean;
 };
 
 export const defaultState: PrototypeState = {
@@ -27,6 +28,7 @@ export const defaultState: PrototypeState = {
   selectedRestaurant: 'tavola',
   selectedTime: '7:00 PM',
   booked: false,
+  guestBooked: false,
 };
 
 export const STORAGE_KEY = 'gather-prototype';

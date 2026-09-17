@@ -8,7 +8,7 @@ export function GatheringCircle({ initials, centerCheck }: { initials: string[];
       <span className="circle__ring" />
       {initials.map((i, k) => {
         const a = (k / n) * Math.PI * 2 - Math.PI / 2;
-        return <span key={k} className="circle__seat" style={{ left: `${50 + 50 * Math.cos(a)}%`, top: `${50 + 50 * Math.sin(a)}%`, animationDelay: `${k * 60}ms` }}><Avatar initial={i} /></span>;
+        return <span key={k} className="circle__seat" style={{ left: `${50 + 50 * Math.cos(a)}%`, top: `${50 + 50 * Math.sin(a)}%`, animationDelay: `calc(${k} * var(--stagger))` }}><Avatar initial={i} /></span>;
       })}
       {centerCheck && <span className="circle__check"><Check /></span>}
     </div>

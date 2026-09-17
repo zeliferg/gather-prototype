@@ -22,7 +22,7 @@ keeping every colour, type and spacing decision in one token file.
 
 ## Stack
 
-- Vite + React 18 + TypeScript.
+- Vite + React 19 + TypeScript.
 - React Router (data-router API) for screens.
 - Plain CSS with custom properties. No UI framework.
 - Playwright for one end-to-end smoke test per flow.

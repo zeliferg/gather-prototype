@@ -14,7 +14,7 @@ export function MapView({ mode, radiusMi = 2, height = 220, onSelectPin }: Props
   const ring = RING_PX[radiusMi];
   const center = mode === 'pin' ? { left: '66%', top: '50%' } : { left: '50%', top: '50%' };
   return (
-    <div className="map" style={{ height }} aria-label="Map of Denver" role="img">
+    <div className="map" style={{ height }} aria-label="Map of Denver" role={mode === 'options' ? 'group' : 'img'}>
       {(mode === 'around' || mode === 'pin') && (
         <span className={`map__ring ${mode === 'pin' ? 'map__ring--pin' : ''}`} style={{ width: ring, height: ring, ...center }} />
       )}

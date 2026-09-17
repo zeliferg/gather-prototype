@@ -1,4 +1,5 @@
 // Figma: ORG 8b — Walk-in notice
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Screen } from '../../components/Screen';
 import { Button } from '../../components/Button';
@@ -10,6 +11,9 @@ export function OrgWalkIn() {
   const navigate = useNavigate();
   const [state, update] = usePrototypeState();
   const r = restaurants.find((x) => x.id === state.selectedRestaurant)!;
+  useEffect(() => {
+    if (!r.times.includes(state.selectedTime)) update({ selectedTime: r.times[0] });
+  }, []);
   return (
     <Screen back title={r.name} subtitle="Walk-in only"
       footer={<Button onClick={() => { update({ booked: true }); navigate('/org/confirmed'); }}>Set {state.selectedTime} and notify everyone</Button>}>
