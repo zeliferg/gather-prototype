@@ -7,7 +7,7 @@ export function PermissionDialog({ open, body, onAllow, onDeny }: Props) {
   const { mounted, visible } = usePresence(open);
   if (!mounted) return null;
   return createPortal(
-    <div className={`overlay overlay--center ${visible ? 'overlay--in' : ''}`} role="alertdialog" aria-modal="true" aria-label="Location permission">
+    <div className={`overlay overlay--center ${visible ? 'overlay--in' : ''}`} role="alertdialog" aria-modal="true" aria-label="Location permission" aria-hidden={!visible}>
       <div className="overlay__scrim" />
       <div className="permission">
         <div className="permission__text">

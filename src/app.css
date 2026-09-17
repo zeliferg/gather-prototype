@@ -189,3 +189,13 @@ button.chip:active { transform: scale(0.95); }
 .menu-row:last-child { border-bottom: 0; }
 .success-badge { width: 72px; height: 72px; margin: var(--space-6) auto 0; border-radius: 50%; background: var(--accent); color: var(--text-on-accent); display: grid; place-items: center; animation: seat-in var(--dur-slow) var(--ease-spring) both; }
 .success-badge .check-path { stroke-dasharray: 24; stroke-dashoffset: 24; animation: draw var(--dur-slow) var(--ease-out) var(--delay-check) forwards; }
+
+.overlay--in .sheet > * { animation: fade-in var(--dur-base) var(--ease-out) both; }
+.overlay--in .sheet > *:nth-child(2) { animation-delay: calc(var(--stagger) * 1); }
+.overlay--in .sheet > *:nth-child(3) { animation-delay: calc(var(--stagger) * 2); }
+.overlay--in .sheet > *:nth-child(4) { animation-delay: calc(var(--stagger) * 3); }
+.overlay--in .sheet > *:nth-child(n+5) { animation-delay: calc(var(--stagger) * 4); }
+.chip--selected { animation: chip-pop var(--dur-base) var(--ease-spring); }
+@keyframes chip-pop { 0% { transform: scale(0.9); } 100% { transform: scale(1); } }
+.screen__footer .btn { animation: fade-in var(--dur-base) var(--ease-out) both; animation-delay: calc(var(--stagger) * 1.5); }
+.overlay:not(.overlay--in) { pointer-events: none; }
