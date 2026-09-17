@@ -1,8 +1,9 @@
+import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
-type Props = { time: string; text: string; link: string; to: string };
+type Props = { time: string; text: string; link: string; to: string; children?: ReactNode };
 
-export function SmsScreen({ time, text, link, to }: Props) {
+export function SmsScreen({ time, text, link, to, children }: Props) {
   return (
     <div className="sms">
       <div className="sms__contact">
@@ -15,6 +16,7 @@ export function SmsScreen({ time, text, link, to }: Props) {
         <p>{text}</p>
         <Link className="sms__link" to={to}>{link}</Link>
       </div>
+      {children}
     </div>
   );
 }

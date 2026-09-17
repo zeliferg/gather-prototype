@@ -125,6 +125,7 @@ button.chip:active { transform: scale(0.95); }
 .sms__bubble { align-self: flex-start; max-width: 280px; padding: 12px 14px; border-radius: 18px; background: var(--sms-bubble); display: flex; flex-direction: column; gap: 6px; animation: bubble-in var(--dur-slow) var(--ease-spring) both; transform-origin: bottom left; }
 .sms__link { color: var(--sms-link); text-decoration: underline; }
 @keyframes bubble-in { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.sms > .devhint { margin-top: auto; }
 
 /* Map */
 .map { position: relative; width: 100%; border-radius: var(--radius-card); border: 1px solid var(--border-hairline); background: var(--bg-subtle) url('/denver.png') center / cover no-repeat; overflow: hidden; }
