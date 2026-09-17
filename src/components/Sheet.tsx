@@ -8,7 +8,7 @@ export function Sheet({ open, onClose, title, subtitle, children }: Props) {
   const { mounted, visible } = usePresence(open);
   if (!mounted) return null;
   return createPortal(
-    <div className={`overlay ${visible ? 'overlay--in' : ''}`} role="dialog" aria-modal="true" aria-label={title} aria-hidden={!visible}>
+    <div className={`overlay ${visible ? 'overlay--in' : ''}`} role="dialog" aria-modal="true" aria-label={title} inert={!visible} aria-hidden={!visible}>
       <button className="overlay__scrim" aria-label="Close" onClick={onClose} />
       <div className="sheet">
         <span className="sheet__handle" aria-hidden />
