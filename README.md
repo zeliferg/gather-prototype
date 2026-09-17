@@ -5,9 +5,11 @@ Scripted, browser-based click-through of the Gather flow (Figma "Design Process"
 ## Links
 | Flow | Branch | URL |
 |---|---|---|
-| Everything | `main` | https://gather-prototype.vercel.app |
-| Host | `host-flow` | https://gather-host-prototype.vercel.app |
-| Participant | `participant-flow` | https://gather-participant-prototype.vercel.app |
+| Everything | `main` | https://gather-prototype-rho.vercel.app/org |
+| Host | `host-flow` | https://gather-host-prototype.vercel.app/org |
+| Participant | `participant-flow` | https://gather-participant-prototype.vercel.app/p |
+
+Each Vercel project tracks its branch (Settings → Environments → Production). Shared changes land on `main`; then `git checkout host-flow && git rebase main && git push --force-with-lease` (same for `participant-flow`) to roll them out.
 
 ## Run
     npm install
