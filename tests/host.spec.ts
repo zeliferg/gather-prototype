@@ -31,6 +31,7 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
 
   // ORG 3: boxes start empty and fill when the field is tapped; Continue shows progress then lands on the hub.
   await expect(page.getByLabel('6-digit code')).toHaveValue('');
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeDisabled();
   await page.getByLabel('6-digit code').click();
   await expect(page.getByLabel('6-digit code')).toHaveValue(/^\d{6}$/);
   await page.getByRole('button', { name: 'Continue' }).click();
@@ -60,6 +61,7 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
 
   // ORG 4d: edit cover; a colour is staged and Save applies it.
   await page.getByRole('button', { name: 'Edit cover' }).click();
+  await expect(page.getByRole('button', { name: 'Save', exact: true })).toBeDisabled(); // nothing changed yet
   await page.getByRole('button', { name: 'Matcha' }).click();
   await expect(page.getByRole('dialog', { name: 'Edit cover' })).toBeVisible();
   await page.getByRole('button', { name: 'Save', exact: true }).click();
@@ -97,6 +99,7 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await expect(page.locator('.cover')).toBeVisible();
   await page.getByRole('button', { name: 'Change time or place' }).click();
   await expect(page.getByRole('heading', { name: 'Change the reservation' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Save and notify everyone' })).toBeDisabled(); // nothing changed yet
   await page.getByRole('button', { name: '7:30 PM' }).click();
   await page.getByRole('button', { name: 'Increase party size' }).click();
   await page.getByRole('button', { name: 'Save and notify everyone' }).click();

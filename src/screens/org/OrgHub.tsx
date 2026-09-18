@@ -120,7 +120,7 @@ export function OrgHub() {
       <Sheet open={editing} onClose={() => setEditing(false)} title="Edit details" subtitle="Everyone gets a text if the time changes.">
         <Input label="Party name" value={draft.name} onChange={(v) => setDraft({ ...draft, name: v })} placeholder="Party name" />
         <Input label="When" type="datetime-local" value={draft.when} onChange={(v) => setDraft({ ...draft, when: v })} />
-        <Button onClick={() => { update({ partyName: draft.name, when: draft.when }); setEditing(false); }}>Save</Button>
+        <Button onClick={() => { update({ partyName: draft.name, when: draft.when }); setEditing(false); }} disabled={draft.name.trim() === '' || draft.when === ''}>Save</Button>
       </Sheet>
 
       {/* ORG 4b */}
@@ -145,7 +145,7 @@ export function OrgHub() {
           ))}
         </div>
         <button className="t-body" style={{ color: coverDraft === 'none' ? 'var(--text-primary)' : 'var(--error)', textAlign: 'left' }} aria-pressed={coverDraft === 'none'} onClick={() => setCoverDraft('none')}>{coverDraft === 'none' ? 'Cover removed' : 'Remove cover'}</button>
-        <Button onClick={() => { update({ cover: coverDraft }); setCover(false); }}>Save</Button>
+        <Button onClick={() => { update({ cover: coverDraft }); setCover(false); }} disabled={coverDraft === state.cover}>Save</Button>
         <Button variant="ghost" onClick={() => setCover(false)}>Cancel</Button>
       </Sheet>
     </Screen>

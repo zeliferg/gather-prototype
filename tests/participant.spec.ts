@@ -3,6 +3,8 @@ import { test, expect } from '@playwright/test';
 test('participant spine: invite to the morning after, including dropping out and rejoining', async ({ page }) => {
   await page.goto('/p');
   await page.getByRole('link', { name: 'gather.app/p/7k3m9' }).click();
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeDisabled(); // until the code is in
+  await page.getByLabel('6-digit code').click();
   await page.getByRole('button', { name: 'Continue' }).click();
   await expect(page.getByRole('heading', { name: "Jordan's Dinner" })).toBeVisible();
   await page.getByRole('button', { name: 'Join the party' }).click();

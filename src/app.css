@@ -51,7 +51,11 @@ img { display: block; max-width: 100%; }
 /* Button */
 .btn { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 52px; padding: 0 var(--space-5); border-radius: var(--radius-pill); font: 600 16px/20px var(--font-sans); transition: transform var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out), opacity var(--dur-fast); }
 .btn:active { transform: scale(0.97); }
-.btn:disabled { opacity: 0.4; pointer-events: none; }
+.btn:disabled { pointer-events: none; }
+/* Disabled is a fill change, not opacity: the footer's fade-in animation ends at opacity 1 and would override it. */
+.btn--primary:disabled { background: var(--bg-subtle); color: var(--text-secondary); }
+.btn--secondary:disabled { background: var(--bg-canvas); color: var(--text-secondary); box-shadow: inset 0 0 0 1px var(--border-hairline); }
+.btn--ghost:disabled, .btn--danger:disabled { color: var(--text-secondary); }
 .btn--inline { width: auto; }
 .btn--primary { background: var(--accent); color: var(--text-on-accent); }
 .btn--primary:active { background: var(--accent-pressed); }
@@ -233,8 +237,8 @@ button.chip:active { transform: scale(0.95); }
 /* Progress button (Verify) */
 .btn--progress { gap: 10px; }
 .spinner { width: 18px; height: 18px; border-radius: 50%; border: 2.5px solid rgba(255,255,255,0.35); border-top-color: var(--text-on-accent); animation: spin var(--dur-ring) linear infinite; }
-.btn--busy:disabled, .btn--done:disabled { opacity: 1; }
-.btn--done { background: var(--accent-pressed); }
+.btn--busy:disabled { background: var(--accent); color: var(--text-on-accent); }
+.btn--done:disabled { background: var(--accent-pressed); color: var(--text-on-accent); }
 .btn__check { display: grid; place-items: center; animation: badge-in var(--dur-base) var(--ease-spring) both; }
 .btn__check .check-path { stroke-dasharray: 24; stroke-dashoffset: 24; animation: draw var(--dur-base) var(--ease-out) var(--dur-fast) forwards; }
 

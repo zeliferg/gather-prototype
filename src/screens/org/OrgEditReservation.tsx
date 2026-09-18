@@ -23,6 +23,7 @@ export function OrgEditReservation() {
     if (location.state?.focus === 'size') sizeRef.current?.scrollIntoView({ block: 'center' });
   }, [location.state]);
 
+  const changed = placeId !== state.selectedRestaurant || time !== state.selectedTime || size !== state.partySize;
   const save = () => {
     update({ selectedRestaurant: placeId, selectedTime: time, partySize: size });
     navigate('/org/party', { state: { banner: 'reservationChanged' } });
@@ -30,7 +31,7 @@ export function OrgEditReservation() {
 
   return (
     <Screen back title="Change the reservation"
-      footer={<Button onClick={save}>Save and notify everyone</Button>}>
+      footer={<Button onClick={save} disabled={!changed}>Save and notify everyone</Button>}>
       <p className="t-caption c-secondary">Place</p>
       <div className="card" style={{ gap: 0, padding: '0 16px' }} role="radiogroup" aria-label="Place">
         {restaurants.map((r) => (

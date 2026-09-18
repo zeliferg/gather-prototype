@@ -27,7 +27,7 @@ export function OrgVerify() {
   return (
     <Screen back title="Verify it's you" subtitle={`We texted a 6-digit code to ${party.hostPhone}.`}
       footer={
-        <Button className={`btn--progress btn--${phase}`} onClick={() => setPhase('busy')} disabled={phase !== 'idle'} aria-live="polite">
+        <Button className={`btn--progress btn--${phase}`} onClick={() => setPhase('busy')} disabled={phase !== 'idle' || code.length < 6} aria-live="polite">
           {phase === 'idle' && 'Continue'}
           {phase === 'busy' && <><span className="spinner" aria-hidden />Verifying…</>}
           {phase === 'done' && <><span className="btn__check" aria-hidden><Check size={20} /></span>Verified</>}
