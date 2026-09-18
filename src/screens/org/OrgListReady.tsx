@@ -4,10 +4,11 @@ import { Screen } from '../../components/Screen';
 import { Button } from '../../components/Button';
 import { GatheringCircle } from '../../components/GatheringCircle';
 import { Close } from '../../components/icons';
-import { guests } from '../../fixtures';
+import { useParty } from '../../party';
 
 export function OrgListReady() {
   const navigate = useNavigate();
+  const { guests } = useParty();
   return (
     <Screen className="landing" right={<button className="icon-btn icon-btn--right" aria-label="Close" onClick={() => navigate('/org/hub')}><Close /></button>}
       footer={<Button onClick={() => navigate('/org/options')}>Browse places</Button>}>

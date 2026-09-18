@@ -34,3 +34,11 @@ describe('usePrototypeState', () => {
     expect(sessionStorage.getItem(STORAGE_KEY)).toBeNull();
   });
 });
+
+describe('reservation and hub state', () => {
+  it('defaults to a table for 5 with the photo cover and no manually added guests', () => {
+    expect(defaultState.partySize).toBe(5);
+    expect(defaultState.cover).toBe('photo');
+    expect(defaultState.addedGuests).toEqual([]);
+  });
+});

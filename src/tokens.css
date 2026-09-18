@@ -48,6 +48,11 @@
   --dur-fast: 120ms;
   --dur-base: 220ms;
   --dur-slow: 360ms;
+  --dur-sheet: 480ms;
+  --dur-banner: 560ms;
+  --dur-fill: 90ms;
+  --dur-float: 3600ms;
+  --dur-spin: 90000ms;
   --dur-pulse: 2000ms;
   --dur-ring: 900ms;
   --delay-check: 250ms;
@@ -55,10 +60,11 @@
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-sheet: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :root { --dur-fast: 0ms; --dur-base: 0ms; --dur-slow: 0ms; --dur-pulse: 0ms; --dur-ring: 0ms; --delay-check: 0ms; --stagger: 0ms; }
+  :root { --dur-fast: 0ms; --dur-base: 0ms; --dur-slow: 0ms; --dur-sheet: 0ms; --dur-banner: 0ms; --dur-fill: 0ms; --dur-float: 0ms; --dur-spin: 0ms; --dur-pulse: 0ms; --dur-ring: 0ms; --delay-check: 0ms; --stagger: 0ms; }
 }
 
 /* v3/* text styles */

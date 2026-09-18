@@ -6,13 +6,15 @@ type Props = {
   back?: boolean | (() => void);
   title?: string;
   subtitle?: string;
+  /** Small centred label in the header row (e.g. the "Gather" wordmark on Landing). */
+  brand?: string;
   right?: ReactNode;
   footer?: ReactNode;
   className?: string;
   children: ReactNode;
 };
 
-export function Screen({ back, title, subtitle, right, footer, className, children }: Props) {
+export function Screen({ back, title, subtitle, brand, right, footer, className, children }: Props) {
   const navigate = useNavigate();
   const onBack = typeof back === 'function' ? back : () => navigate(-1);
   return (
@@ -21,7 +23,8 @@ export function Screen({ back, title, subtitle, right, footer, className, childr
         {back ? (
           <button className="icon-btn" aria-label="Back" onClick={onBack}><Back /></button>
         ) : <span />}
-        {right ?? null}
+        {brand && <span className="screen__brand t-label">{brand}</span>}
+        {right ?? <span />}
       </div>
       <div className="screen__body">
         {(title || subtitle) && (

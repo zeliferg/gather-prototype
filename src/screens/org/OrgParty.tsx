@@ -1,24 +1,38 @@
 // Figma: ORG 10 — Party page (confirmed)
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Screen } from '../../components/Screen';
 import { Button } from '../../components/Button';
 import { Chip } from '../../components/Chip';
 import { Avatar } from '../../components/Avatar';
+import { Cover } from '../../components/Cover';
 import { ActionSheet } from '../../components/ActionSheet';
+import { Notification } from '../../components/Notification';
 import { DevHint } from '../../components/DevHint';
 import { Chevron } from '../../components/icons';
-import { guests, party, restaurants } from '../../fixtures';
+import { restaurants, sms } from '../../fixtures';
 import { usePrototypeState } from '../../state';
+import { useParty } from '../../party';
 
 export function OrgParty() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [state] = usePrototypeState();
+  const { name, dateShort, bookedTime, guests, size } = useParty();
   const r = restaurants.find((x) => x.id === state.selectedRestaurant)!;
+  const [banner, setBanner] = useState<boolean>(location.state?.banner === 'reservationChanged');
   const [directions, setDirections] = useState(false);
   const [calendar, setCalendar] = useState(false);
+  const closeBanner = useCallback(() => setBanner(false), []);
   return (
-    <Screen title={party.name} subtitle={`${party.dateLong} at ${state.selectedTime}`}>
+    <Screen>
+      <Cover choice={state.cover} />
+      <div className="screen__title">
+        <h1 className="t-title">{name}</h1>
+        <p className="t-secondary c-secondary">{bookedTime}</p>
+      </div>
       <div className="card">
-        <div className="row"><Chip variant="success">Booked</Chip><span className="t-caption c-secondary">Table for {party.size}</span></div>
+        <div className="row"><Chip variant="success">Booked</Chip><span className="t-caption c-secondary">Table for {size}</span></div>
         <p className="t-heading">{r.name}</p>
         <p className="t-secondary c-secondary">{r.address}. Fair for everyone.</p>
         <div className="hstack">
@@ -28,14 +42,16 @@ export function OrgParty() {
       </div>
       <div className="row"><h2 className="t-heading">Guests</h2><div className="avatar-stack">{guests.map((g) => <Avatar key={g.id} initial={g.initial} size={32} />)}</div></div>
       <div className="card" style={{ gap: 0, padding: '0 16px' }}>
-        {['Change time or place', 'Change party size'].map((l) => <button key={l} className="row menu-row t-body">{l}<Chevron size={20} /></button>)}
+        <button className="row menu-row t-body" onClick={() => navigate('/org/edit')}>Change time or place<Chevron size={20} /></button>
+        <button className="row menu-row t-body" onClick={() => navigate('/org/edit', { state: { focus: 'size' } })}>Change party size<Chevron size={20} /></button>
         <button className="row menu-row t-body" style={{ color: 'var(--error)' }}>Cancel reservation<Chevron size={20} /></button>
       </div>
       <p className="t-caption c-secondary" style={{ textAlign: 'center' }}>Any change texts everyone and updates their calendar invite.</p>
       <DevHint to="/org/sms-after">the morning after</DevHint>
+      <Notification open={banner} onClose={closeBanner} text={`${sms.reservationChanged.text} ${r.name}, ${dateShort} at ${state.selectedTime}. Details: ${sms.reservationChanged.link}`} />
       <ActionSheet open={directions} onClose={() => setDirections(false)} title={`Open ${r.name} in`}
         options={[{ label: 'Apple Maps' }, { label: 'Google Maps' }, { label: 'Waze' }, { label: 'Copy address' }]} />
-      <ActionSheet open={calendar} onClose={() => setCalendar(false)} title={`Add ${party.name} to`}
+      <ActionSheet open={calendar} onClose={() => setCalendar(false)} title={`Add ${name} to`}
         options={[{ label: 'Apple Calendar' }, { label: 'Google Calendar' }, { label: 'Outlook' }, { label: 'Download .ics file' }]} />
     </Screen>
   );

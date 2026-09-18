@@ -2,7 +2,6 @@ import { createBrowserRouter, Navigate, Outlet, useLocation, useNavigationType, 
 import { NotFound } from './screens/NotFound';
 import { OrgLanding } from './screens/org/OrgLanding';
 import { OrgCreateParty } from './screens/org/OrgCreateParty';
-import { OrgSmsLink } from './screens/org/OrgSmsLink';
 import { OrgVerify } from './screens/org/OrgVerify';
 import { OrgHub } from './screens/org/OrgHub';
 import { OrgListReady } from './screens/org/OrgListReady';
@@ -11,6 +10,7 @@ import { OrgReservation } from './screens/org/OrgReservation';
 import { OrgWalkIn } from './screens/org/OrgWalkIn';
 import { OrgConfirmed } from './screens/org/OrgConfirmed';
 import { OrgParty } from './screens/org/OrgParty';
+import { OrgEditReservation } from './screens/org/OrgEditReservation';
 import { OrgSmsAfter } from './screens/org/OrgSmsAfter';
 import { PSmsInvite } from './screens/p/PSmsInvite';
 import { PVerify } from './screens/p/PVerify';
@@ -40,7 +40,6 @@ export function RouteShell() {
 export const orgRoutes: RouteObject[] = [
   { path: '/org', element: <OrgLanding /> },
   { path: '/org/create', element: <OrgCreateParty /> },
-  { path: '/org/sms-link', element: <OrgSmsLink /> },
   { path: '/org/verify', element: <OrgVerify /> },
   { path: '/org/hub', element: <OrgHub /> },
   { path: '/org/list-ready', element: <OrgListReady /> },
@@ -49,6 +48,7 @@ export const orgRoutes: RouteObject[] = [
   { path: '/org/walk-in', element: <OrgWalkIn /> },
   { path: '/org/confirmed', element: <OrgConfirmed /> },
   { path: '/org/party', element: <OrgParty /> },
+  { path: '/org/edit', element: <OrgEditReservation /> },
   { path: '/org/sms-after', element: <OrgSmsAfter /> },
 ];
 

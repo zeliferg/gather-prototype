@@ -55,5 +55,30 @@ export const sms = {
   reminder2h: { time: 'Today 5:00 PM', text: "Jordan's Dinner starts in 2 hours at Tavola Verde, 214 Elm Street.", link: party.inviteLink },
   afterGuest: { time: 'Today 10:00 AM', text: 'It was a blast! Thanks for joining Jordan at Tavola Verde. Want to plan your own? Start a party at', link: 'gather.app' },
   afterHost: { time: 'Today 10:00 AM', text: "Thanks for hosting Jordan's Dinner at Tavola Verde! Hope it was a blast. Start your next party any time at", link: 'gather.app' },
+  reservationChanged: { time: 'Today 5:40 PM', text: "Reservation changed: Jordan's Dinner is now", link: party.inviteLink },
   dropped: { time: 'Today 3:30 PM', text: "Priya can't make it to Jordan's Dinner anymore (“Sorry, a work thing came up”). You're now 4. Manage the party:", link: party.manageLink },
 };
+
+export const permissionBody = {
+  host: "Only used to find a spot that's fair for everyone. Guests never see it.",
+  guest: "Only used to find a spot that's fair for everyone. Nobody sees your exact location.",
+};
+
+export const coverColours: { id: 'blue' | 'sage' | 'matcha' | 'oat' | 'kale' | 'ink'; label: string; token: string }[] = [
+  { id: 'blue', label: 'Blue', token: 'var(--bg-info-tint)' },
+  { id: 'sage', label: 'Sage', token: 'var(--bg-accent-tint)' },
+  { id: 'matcha', label: 'Matcha', token: 'var(--accent-matcha)' },
+  { id: 'oat', label: 'Oat', token: 'var(--bg-subtle)' },
+  { id: 'kale', label: 'Kale', token: 'var(--accent)' },
+  { id: 'ink', label: 'Ink', token: 'var(--text-primary)' },
+];
+
+// Downtown Denver; the map centres here for "Around me" and every pin is placed relative to it.
+export const denver = { lat: 39.7392, lng: -104.9903 };
+export const pinDrop = { lat: 39.7590, lng: -104.9820 }; // RiNo
+export const restaurantCoords: Record<RestaurantId, { lat: number; lng: number }> = {
+  tavola: { lat: 39.7435, lng: -104.9950 },
+  corner: { lat: 39.7590, lng: -104.9840 },
+  noodle: { lat: 39.7570, lng: -105.0100 },
+};
+export const fairCoords = { lat: 39.7515, lng: -104.9990 };

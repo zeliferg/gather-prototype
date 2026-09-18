@@ -14,7 +14,16 @@ export type PrototypeState = {
   selectedTime: string;
   booked: boolean;
   guestBooked: boolean;
+  partySize: number;
+  cover: CoverChoice;
+  addedGuests: AddedGuest[];
+  hostName: string;
+  partyName: string;
+  when: string; // datetime-local value, '' until the host picks one
 };
+
+export type CoverChoice = 'photo' | 'none' | 'blue' | 'sage' | 'matcha' | 'oat' | 'kale' | 'ink';
+export type AddedGuest = { id: string; name: string; initial: string };
 
 export const defaultState: PrototypeState = {
   permission: 'unknown',
@@ -29,6 +38,12 @@ export const defaultState: PrototypeState = {
   selectedTime: '7:00 PM',
   booked: false,
   guestBooked: false,
+  partySize: 5,
+  cover: 'photo',
+  addedGuests: [],
+  hostName: '',
+  partyName: '',
+  when: '',
 };
 
 export const STORAGE_KEY = 'gather-prototype';

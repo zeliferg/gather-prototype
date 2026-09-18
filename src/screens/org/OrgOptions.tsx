@@ -33,7 +33,7 @@ export function OrgOptions() {
   };
 
   return (
-    <Screen back title="3 places that work" subtitle="Fair for where everyone's coming from.">
+    <Screen back title="3 places that work" subtitle="Each one is close to the middle of where everyone's coming from.">
       <Segmented options={[{ value: 'list', label: 'List' }, { value: 'map', label: 'Map' }]} value={view} onChange={setView} />
       {view === 'list'
         ? restaurants.map((r) => <RestaurantCard key={r.id} restaurant={r} onOpen={() => openRestaurant(r.id)} />)
