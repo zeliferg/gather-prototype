@@ -89,8 +89,9 @@ route any more: it shows as a `Notification` banner on the hub after Verify,
 and "Reservation changed" does the same on ORG 10 after ORG 11. Likewise
 P 6 (spot-confirmed SMS) is a banner over `PBooked` (`/p/booked`, the
 guest-side success screen), and P 3b is the guest's hub in both states:
-waiting, then booked (restaurant card + "See the details" → P 9, which has an
-X back). The guest order is invite → P 3 lobby ("Verify and join") → P 2 →
+waiting, then booked. P 9 is no longer a route: its content is the "See the
+details" drawer on P 3b's booked card, and P 9b Who's coming lives on P 3b
+too. "Join the party" on `PJoinInfo` plays spinner → check like Verify. The guest order is invite → P 3 lobby ("Verify and join") → P 2 →
 `PJoinInfo` (`/p/join`, not in Figma: My location row + Preferences sheet,
 Count me in disabled until a location is saved) → P 3 map (`/p/location`,
 Save returns) → P 3b. P 3b's Edit reopens `PJoinInfo` at `/p/edit`. The host

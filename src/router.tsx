@@ -21,7 +21,6 @@ import { BookingWatcher } from './screens/p/BookingWatcher';
 import { PWaiting } from './screens/p/PWaiting';
 import { PDropped } from './screens/p/PDropped';
 import { PBooked } from './screens/p/PBooked';
-import { PParty } from './screens/p/PParty';
 import { PSmsAfter } from './screens/p/PSmsAfter';
 import { FLOW } from './flow';
 
@@ -64,7 +63,6 @@ export const pRoutes: RouteObject[] = [
   { path: '/p/location', element: <PJoin /> },
   { path: '/p/waiting', element: <PWaiting /> },
   { path: '/p/booked', element: <PBooked /> },
-  { path: '/p/party', element: <PParty /> },
   { path: '/p/dropped', element: <PDropped /> },
   { path: '/p/sms-after', element: <PSmsAfter /> },
 ];
