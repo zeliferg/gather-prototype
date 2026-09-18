@@ -91,7 +91,12 @@ P 6 (spot-confirmed SMS) is a banner over `PBooked` (`/p/booked`, the
 guest-side success screen), and P 3b is the guest's hub in both states:
 waiting, then booked (restaurant card + "See the details" → P 9, which has an
 X back). The guest order is invite → P 3 lobby ("Verify and join") → P 2 →
-P 3 join → P 3b.
+`PJoinInfo` (`/p/join`, not in Figma: My location row + Preferences sheet,
+Count me in disabled until a location is saved) → P 3 map (`/p/location`,
+Save returns) → P 3b. P 3b's Edit reopens `PJoinInfo` at `/p/edit`. The host
+"books" `BOOKING_DELAY_MS` (15 s) after the guest joins: `BookingWatcher`,
+mounted by `RouteShell` on guest routes, flips `guestBooked` and drops the
+banner on whatever screen is open; tapping it opens `PBooked`.
 Inert-by-design controls: Resend code, Choose from contacts, Choose from
 photos / Take a photo (both just restore the photo cover), Add preferences,
 Edit info, See full menu, Cancel reservation. "Share invite link" uses the

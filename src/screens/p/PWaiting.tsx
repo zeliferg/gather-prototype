@@ -26,8 +26,7 @@ export function PWaiting() {
 
   return (
     <Screen footer={<>
-      <Button variant="ghost" onClick={() => setLeaving(true)}>{booked ? `Can't make it? Let ${party.hostFirst} know` : `Can't make it anymore? Let ${party.hostFirst} know`}</Button>
-      {!booked && <p className="t-caption c-secondary" style={{ textAlign: 'center' }}>Only the host sees who has responded.</p>}
+      <Button variant="ghost" onClick={() => setLeaving(true)}>Can't make it? Let {party.hostFirst} know</Button>
     </>}>
       <div className="cover"><img src="/photos/cover.jpg" alt="" /></div>
       <div className="screen__title"><h1 className="t-title">{party.name}</h1><p className="t-secondary c-secondary">{booked ? `${party.dateLong} at ${state.selectedTime}` : party.roughTime}</p></div>
@@ -50,10 +49,11 @@ export function PWaiting() {
       )}
       <div className="card" style={{ padding: '4px 16px' }}><GuestRow guest={guests[0]} right={<Chip variant="info">Host</Chip>} /></div>
       <div className="card">
-        <div className="row"><span className="t-body-med">Your info</span><button className="link t-label">Edit</button></div>
-        <p className="t-secondary c-secondary">{state.flexible ? "You're flexible." : `${state.locationMode === 'pin' ? 'RiNo' : 'Downtown'}, within ${radius}.`} Vegetarian, $$.</p>
+        <div className="row"><span className="t-body-med">Your info</span><button className="link t-label" onClick={() => navigate('/p/edit')}>Edit</button></div>
+        <p className="t-secondary c-secondary">{state.flexible && !state.locationSet ? "You're flexible." : `${state.locationMode === 'pin' ? 'RiNo' : 'Downtown'}, within ${radius}.`}{state.prefs.length ? ` ${state.prefs.join(', ')}.` : ''}</p>
       </div>
-      {booked ? <DevHint to="/p/sms-after">the morning after</DevHint> : <DevHint to="/p/booked">{party.hostFirst} books a spot</DevHint>}
+      {!booked && <p className="t-caption c-secondary" style={{ textAlign: 'center' }}>Only the host sees who has responded.</p>}
+      {booked && <DevHint to="/p/sms-after">the morning after</DevHint>}
 
       <ActionSheet open={directions} onClose={() => setDirections(false)} title={`Open ${r.name} in`}
         options={[{ label: 'Apple Maps' }, { label: 'Google Maps' }, { label: 'Waze' }, { label: 'Copy address' }]} />

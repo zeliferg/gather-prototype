@@ -16,6 +16,8 @@ import { PSmsInvite } from './screens/p/PSmsInvite';
 import { PVerify } from './screens/p/PVerify';
 import { PLobby } from './screens/p/PLobby';
 import { PJoin } from './screens/p/PJoin';
+import { PJoinInfo } from './screens/p/PJoinInfo';
+import { BookingWatcher } from './screens/p/BookingWatcher';
 import { PWaiting } from './screens/p/PWaiting';
 import { PDropped } from './screens/p/PDropped';
 import { PBooked } from './screens/p/PBooked';
@@ -33,6 +35,7 @@ export function RouteShell() {
       <div key={location.key} className={`route ${navType === 'POP' ? 'route--back' : 'route--forward'}`}>
         <Outlet />
       </div>
+      {location.pathname.startsWith('/p') && <BookingWatcher />}
     </div>
   );
 }
@@ -56,7 +59,9 @@ export const pRoutes: RouteObject[] = [
   { path: '/p', element: <PSmsInvite /> },
   { path: '/p/verify', element: <PVerify /> },
   { path: '/p/lobby', element: <PLobby /> },
-  { path: '/p/join', element: <PJoin /> },
+  { path: '/p/join', element: <PJoinInfo mode="join" /> },
+  { path: '/p/edit', element: <PJoinInfo mode="edit" /> },
+  { path: '/p/location', element: <PJoin /> },
   { path: '/p/waiting', element: <PWaiting /> },
   { path: '/p/booked', element: <PBooked /> },
   { path: '/p/party', element: <PParty /> },

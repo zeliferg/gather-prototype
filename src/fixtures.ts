@@ -83,3 +83,12 @@ export const restaurantCoords: Record<RestaurantId, { lat: number; lng: number }
   noodle: { lat: 39.7570, lng: -105.0100 },
 };
 export const fairCoords = { lat: 39.7515, lng: -104.9990 };
+
+export const BOOKING_DELAY_MS = 15_000; // how long after joining the host "books a spot"
+
+export const prefGroups: { label: string; options: string[] }[] = [
+  { label: 'Dietary', options: ['Vegetarian', 'Vegan', 'Gluten-free', 'Halal'] },
+  { label: 'Budget', options: ['$', '$$', '$$$'] },
+  { label: 'Vibe', options: ['Casual', 'Lively', 'Quiet', 'Outdoor'] },
+  { label: 'Access', options: ['Wheelchair accessible'] },
+];

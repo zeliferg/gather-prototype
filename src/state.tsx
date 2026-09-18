@@ -20,6 +20,9 @@ export type PrototypeState = {
   hostName: string;
   partyName: string;
   when: string; // datetime-local value, '' until the host picks one
+  locationSet: boolean; // the guest saved a location on the map screen
+  prefs: string[];
+  joinedAt: number | null; // ms epoch; the host "books" BOOKING_DELAY_MS after this
 };
 
 export type CoverChoice = 'photo' | 'none' | 'blue' | 'sage' | 'matcha' | 'oat' | 'kale' | 'ink';
@@ -44,6 +47,9 @@ export const defaultState: PrototypeState = {
   hostName: '',
   partyName: '',
   when: '',
+  locationSet: false,
+  prefs: [],
+  joinedAt: null,
 };
 
 export const STORAGE_KEY = 'gather-prototype';

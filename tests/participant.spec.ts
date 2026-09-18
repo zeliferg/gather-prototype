@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('participant spine: invite to the morning after, including dropping out and rejoining', async ({ page }) => {
+  test.setTimeout(60_000); // the booking arrives on its own 15s after joining
   await page.goto('/p');
   await page.getByRole('link', { name: 'gather.app/p/7k3m9' }).click();
 
@@ -12,18 +13,37 @@ test('participant spine: invite to the morning after, including dropping out and
   await expect(page.getByRole('button', { name: 'Continue' })).toBeDisabled(); // until the code is in
   await page.getByLabel('6-digit code').click();
   await page.getByRole('button', { name: 'Continue' }).click();
-  await expect(page.getByRole('heading', { name: 'Where are you coming from?' })).toBeVisible();
+
+  // The join screen: location first (permission dialog, then the map screen with Save), preferences optional.
+  await expect(page.getByRole('heading', { name: "Join Jordan's Dinner" })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Count me in' })).toBeDisabled();
+  await page.getByRole('button', { name: 'My location' }).click();
+  await expect(page.getByRole('alertdialog', { name: 'Location permission' })).toBeVisible();
   await page.getByRole('button', { name: 'Allow', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Where are you coming from?' })).toBeVisible();
   await page.getByRole('tab', { name: 'Drop a pin' }).click();
   await page.getByRole('button', { name: '1 mi', exact: true }).click();
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(page.getByRole('heading', { name: "Join Jordan's Dinner" })).toBeVisible();
+  await expect(page.getByText('RiNo · within 1 mi')).toBeVisible();
+  await page.getByRole('button', { name: 'Preferences (optional)' }).click();
+  await page.getByRole('button', { name: 'Vegetarian' }).click();
+  await page.getByRole('button', { name: 'Save preferences' }).click();
   await page.getByRole('button', { name: 'Count me in' }).click();
   await expect(page.getByText("You're in")).toBeVisible();
-  await expect(page.getByText('RiNo, within 1 mi.')).toBeVisible();
+  await expect(page.getByText('RiNo, within 1 mi. Vegetarian.')).toBeVisible();
 
-  // The host books: banner on top of a success screen, then the details page with an X.
-  await page.getByRole('link', { name: /books a spot/ }).click();
+  // P 3b's Edit opens the same screen in edit mode.
+  await page.getByRole('button', { name: 'Edit', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Your info' })).toBeVisible();
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(page.getByText("You're in")).toBeVisible();
+
+  // The host books on its own ~15s after joining: banner on whatever screen, page flips to Booked.
+  await expect(page.getByRole('status')).toContainText("You're all set", { timeout: 25_000 });
+  await expect(page.getByText('Booked')).toBeVisible();
+  await page.getByRole('status').click();
   await expect(page.getByRole('heading', { name: 'Jordan booked a spot' })).toBeVisible();
-  await expect(page.getByRole('status')).toContainText("You're all set");
   await page.getByRole('button', { name: 'View the details' }).click();
   await expect(page.getByRole('heading', { name: 'Tavola Verde' })).toBeVisible();
   await page.getByRole('button', { name: 'Directions', exact: true }).click();

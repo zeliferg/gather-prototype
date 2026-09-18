@@ -41,4 +41,10 @@ describe('reservation and hub state', () => {
     expect(defaultState.cover).toBe('photo');
     expect(defaultState.addedGuests).toEqual([]);
   });
+
+  it('starts the guest with no location, no preferences and no join time', () => {
+    expect(defaultState.locationSet).toBe(false);
+    expect(defaultState.prefs).toEqual([]);
+    expect(defaultState.joinedAt).toBeNull();
+  });
 });

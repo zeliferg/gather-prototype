@@ -4,9 +4,9 @@ import { createPortal } from 'react-dom';
 import { usePresence } from './usePresence';
 import { Close } from './icons';
 
-type Props = { open: boolean; text: string; onClose: () => void; app?: string; /** 0 keeps it up until dismissed */ autoHideMs?: number; closeButton?: boolean };
+type Props = { open: boolean; text: string; onClose: () => void; app?: string; /** 0 keeps it up until dismissed */ autoHideMs?: number; closeButton?: boolean; /** tapping the body does this (and closes) instead of just closing */ onTap?: () => void };
 
-export function Notification({ open, text, onClose, app = 'Messages', autoHideMs = 6000, closeButton = false }: Props) {
+export function Notification({ open, text, onClose, app = 'Messages', autoHideMs = 6000, closeButton = false, onTap }: Props) {
   const { mounted, visible } = usePresence(open);
   useEffect(() => {
     if (!open || autoHideMs === 0) return;
@@ -16,7 +16,7 @@ export function Notification({ open, text, onClose, app = 'Messages', autoHideMs
   if (!mounted) return null;
   return createPortal(
     <div className={`banner-wrap ${visible ? 'banner-wrap--in' : ''}`} inert={!visible} aria-hidden={!visible}>
-      <div className="notif" role="status" onClick={closeButton ? undefined : onClose}>
+      <div className="notif" role="status" onClick={onTap ? () => { onClose(); onTap(); } : closeButton ? undefined : onClose}>
         <span className="notif__icon t-label" aria-hidden>G</span>
         <span className="notif__body">
           <span className="row"><span className="t-label">{app}</span><span className="t-caption c-secondary">now</span></span>

@@ -184,6 +184,8 @@ button.chip:active { transform: scale(0.95); }
 .cover { transition: background var(--dur-slow) var(--ease-out); }
 .location-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); width: 100%; min-height: 52px; padding: 0 var(--space-3) 0 var(--space-4); border: 1px solid var(--border-hairline); border-radius: var(--radius-input); background: var(--bg-surface); text-align: left; transition: transform var(--dur-fast) var(--ease-out), background var(--dur-fast); }
 .location-row:active { transform: scale(0.99); background: var(--bg-subtle); }
+.location-row > :first-child { white-space: nowrap; }
+.location-row > :last-child { flex: 1; min-width: 0; justify-content: flex-end; }
 .progress { height: 6px; border-radius: 3px; background: var(--bg-subtle); overflow: hidden; }
 .progress__bar { display: block; height: 100%; background: var(--accent); border-radius: 3px; transition: width var(--dur-slow) var(--ease-out); }
 .list { display: flex; flex-direction: column; }
@@ -256,3 +258,4 @@ button.chip:active { transform: scale(0.95); }
 .stepper__btn:active { transform: scale(0.9); }
 .stepper__btn:disabled { opacity: 0.35; }
 .stepper__value { min-width: 36px; text-align: center; }
+.ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
