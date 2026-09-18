@@ -94,7 +94,9 @@ details" drawer on P 3b's booked card, and P 9b Who's coming lives on P 3b
 too. "Join the party" on `PJoinInfo` plays spinner → check like Verify. The guest order is invite → P 3 lobby ("Verify and join") → P 2 →
 `PJoinInfo` (`/p/join`, not in Figma: My location row + Preferences sheet,
 Count me in disabled until a location is saved) → P 3 map (`/p/location`,
-Save returns) → P 3b. P 3b's Edit reopens `PJoinInfo` at `/p/edit`. The host
+Save returns) → P 3b. P 3b's Edit opens a Your info drawer (location row →
+the map screen, which returns with the drawer reopened; preference chips
+inline). The host
 "books" `BOOKING_DELAY_MS` (15 s) after the guest joins: `BookingWatcher`,
 mounted by `RouteShell` on guest routes, flips `guestBooked` and drops the
 banner on whatever screen is open; tapping it opens `PBooked`.

@@ -1,5 +1,5 @@
-// Not in Figma yet: the guest's join screen (after P 2 Verify) and, in edit mode, P 3b's "Your info" editor.
-// Location and optional preferences live here; the map itself is P 3 (/p/location).
+// Not in Figma yet: the guest's join screen (after P 2 Verify). Location and optional preferences live here;
+// the map itself is P 3 (/p/location). Editing later happens in P 3b's Your info drawer.
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Screen } from '../../components/Screen';
@@ -11,7 +11,7 @@ import { Check, Chevron } from '../../components/icons';
 import { party, permissionBody, prefGroups, radiusOptions } from '../../fixtures';
 import { usePrototypeState } from '../../state';
 
-export function PJoinInfo({ mode }: { mode: 'join' | 'edit' }) {
+export function PJoinInfo() {
   const navigate = useNavigate();
   const [state, update] = usePrototypeState();
   const [asking, setAsking] = useState(false);
@@ -19,15 +19,15 @@ export function PJoinInfo({ mode }: { mode: 'join' | 'edit' }) {
   const [draft, setDraft] = useState<string[]>(state.prefs);
   const [phase, setPhase] = useState<'idle' | 'busy' | 'done'>('idle');
   const radius = radiusOptions.find((o) => o.value === state.radiusMi)!.label;
-  const locationSummary = state.locationSet ? `${state.locationMode === 'pin' ? 'RiNo' : 'Downtown'} · within ${radius}` : state.flexible && mode === 'edit' ? "You're flexible" : 'Tap to set';
+  const locationSummary = state.locationSet ? `${state.locationMode === 'pin' ? 'RiNo' : 'Downtown'} · within ${radius}` : 'Tap to set';
   const prefsSummary = state.prefs.length ? state.prefs.join(', ') : 'Tap to add';
 
   // Like the host's Create Party: the browser's permission prompt comes first, then the map screen.
-  const tapLocation = () => { if (state.permission === 'unknown') setAsking(true); else navigate('/p/location'); };
+  const tapLocation = () => { if (state.permission === 'unknown') setAsking(true); else navigate('/p/location', { state: { from: '/p/join' } }); };
   const answered = (permission: 'granted' | 'denied') => {
     update({ permission, locationMode: permission === 'granted' ? 'around' : 'pin' });
     setAsking(false);
-    navigate('/p/location');
+    navigate('/p/location', { state: { from: '/p/join' } });
   };
   const join = (flexible: boolean) => update({ joined: true, flexible, droppedOut: false, joinedAt: state.joinedAt ?? Date.now() });
   const go = (flexible: boolean) => { join(flexible); navigate('/p/waiting'); };
@@ -43,12 +43,9 @@ export function PJoinInfo({ mode }: { mode: 'join' | 'edit' }) {
   const toggle = (o: string) => setDraft((d) => (d.includes(o) ? d.filter((x) => x !== o) : [...d, o]));
 
   return (
-    <Screen back={mode === 'edit' ? () => navigate('/p/waiting') : true}
-      title={mode === 'edit' ? 'Your info' : `Join ${party.name}`}
-      subtitle={mode === 'edit' ? 'Change where you\'re coming from or what you\'d like.' : "Add where you're coming from so we can find a spot that's fair for everyone. Nobody sees your exact location."}
-      footer={mode === 'edit'
-        ? <Button onClick={() => navigate('/p/waiting')} disabled={!state.locationSet && !state.flexible}>Save</Button>
-        : <>
+    <Screen back title={`Join ${party.name}`}
+      subtitle="Add where you're coming from so we can find a spot that's fair for everyone. Nobody sees your exact location."
+      footer={<>
           <Button className={`btn--progress btn--${phase}`} onClick={() => setPhase('busy')} disabled={!state.locationSet || phase !== 'idle'} aria-live="polite">
             {phase === 'idle' && 'Join the party'}
             {phase === 'busy' && <><span className="spinner" aria-hidden />Joining…</>}
@@ -61,7 +58,7 @@ export function PJoinInfo({ mode }: { mode: 'join' | 'edit' }) {
         <span className="hstack c-secondary t-secondary">{locationSummary}<Chevron size={20} /></span>
       </button>
       <button className="location-row" onClick={() => { setDraft(state.prefs); setPrefsOpen(true); }}>
-        <span className="t-body-med">{mode === 'edit' ? 'Preferences' : 'Preferences (optional)'}</span>
+        <span className="t-body-med">Preferences (optional)</span>
         <span className="hstack c-secondary t-secondary" style={{ minWidth: 0 }}><span className="ellipsis">{prefsSummary}</span><Chevron size={20} /></span>
       </button>
       <p className="t-caption c-secondary">Preferences help {party.hostFirst} pick, they don't limit the options.</p>

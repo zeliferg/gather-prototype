@@ -36,11 +36,20 @@ test('participant spine: invite to the morning after, including dropping out and
   await expect(page.getByText('RiNo, within 1 mi. Vegetarian.')).toBeVisible();
   await expect(page.getByRole('heading', { name: "Who's coming" })).toBeVisible();
 
-  // P 3b's Edit opens the same screen in edit mode.
+  // P 3b's Edit opens Your info as a drawer; preferences change inline, location via the map screen and back.
   await page.getByRole('button', { name: 'Edit', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Your info' })).toBeVisible();
+  const info = page.getByRole('dialog', { name: 'Your info' });
+  await expect(info).toBeVisible();
+  await info.getByRole('button', { name: 'Vegan' }).click();
+  await info.getByRole('button', { name: 'My location' }).click();
+  await expect(page.getByRole('heading', { name: 'Where are you coming from?' })).toBeVisible();
+  await page.getByRole('button', { name: '2 mi', exact: true }).click();
   await page.getByRole('button', { name: 'Save', exact: true }).click();
-  await expect(page.getByText("You're in")).toBeVisible();
+  await expect(info).toBeVisible(); // back on P 3b with the drawer reopened
+  await expect(info.getByText('RiNo · within 2 mi')).toBeVisible();
+  await info.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(page.getByRole('dialog', { name: 'Your info' })).toHaveCount(0);
+  await expect(page.getByText('RiNo, within 2 mi. Vegetarian, Vegan.')).toBeVisible();
 
   // The host books on its own ~15s after joining: banner on whatever screen, page flips to Booked.
   await expect(page.getByRole('status')).toContainText("You're all set", { timeout: 25_000 });
@@ -69,6 +78,10 @@ test('participant spine: invite to the morning after, including dropping out and
   await page.getByRole('button', { name: "Can't make it? Let Jordan know" }).click();
   await page.getByRole('button', { name: "I can't make it" }).click();
   await expect(page.getByText("You're out")).toBeVisible();
+  await expect(page.getByRole('heading', { name: "Who's coming" })).toBeVisible();
+  await page.getByRole('button', { name: 'See everyone', exact: true }).click();
+  await expect(page.getByText('4 people, without you')).toBeVisible();
+  await page.getByRole('button', { name: 'Close', exact: true }).click({ position: { x: 10, y: 10 } });
   await page.getByRole('button', { name: 'Changed your mind? Rejoin' }).click();
   await expect(page.getByText('Tavola Verde')).toBeVisible();
   await page.getByRole('link', { name: /morning after/ }).click();
