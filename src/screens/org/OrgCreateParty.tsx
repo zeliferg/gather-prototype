@@ -20,6 +20,7 @@ export function OrgCreateParty() {
   const [touched, setTouched] = useState(false);
   const radius = radiusOptions.find((o) => o.value === state.radiusMi)!.label;
   const summary = touched ? `${state.locationMode === 'pin' ? 'RiNo' : 'Downtown'} · within ${radius}` : 'Tap to set';
+  const complete = state.hostName.trim() !== '' && state.partyName.trim() !== '' && state.when !== '' && phone.trim() !== '' && touched;
 
   // ORG 1a: the browser's permission prompt comes first, on its own; the drawer opens once it's answered.
   const tapLocation = () => { if (state.permission === 'unknown') setAsking(true); else setOpen(true); };
@@ -31,11 +32,11 @@ export function OrgCreateParty() {
 
   return (
     <Screen back title="Start a party" subtitle="Everyone else just adds where they're coming from."
-      footer={<Button onClick={() => navigate('/org/verify')}>Create party</Button>}>
-      <Input label="Your name" value={state.hostName} onChange={(v) => update({ hostName: v })} placeholder="Jordan Reyes" />
-      <Input label="Party name (optional)" value={state.partyName} onChange={(v) => update({ partyName: v })} placeholder="Jordan's Dinner" />
+      footer={<Button onClick={() => navigate('/org/verify')} disabled={!complete}>Create party</Button>}>
+      <Input label="Your name" value={state.hostName} onChange={(v) => update({ hostName: v })} placeholder="Your name" />
+      <Input label="Party name" value={state.partyName} onChange={(v) => update({ partyName: v })} placeholder="Taco Tuesday" />
       <Input label="When" type="datetime-local" value={state.when} onChange={(v) => update({ when: v })} />
-      <Input label="Your phone" value={phone} onChange={setPhone} inputMode="tel" type="tel" placeholder="(555) 019-2244" />
+      <Input label="Your phone" value={phone} onChange={setPhone} inputMode="tel" type="tel" placeholder="(111) 111-1111" />
       <button className="location-row" onClick={tapLocation}>
         <span className="t-body-med">Your location</span>
         <span className="hstack c-secondary t-secondary">{summary}<Chevron size={20} /></span>

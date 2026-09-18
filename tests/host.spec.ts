@@ -4,11 +4,15 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await page.goto('/org');
   await page.getByRole('button', { name: 'Start a party' }).click();
 
-  // ORG 1: fields start empty; the tester fills them.
+  // ORG 1: fields start empty and Create party stays disabled until every one is filled.
   await expect(page.getByLabel('Your name')).toHaveValue('');
+  await expect(page.getByRole('button', { name: 'Create party' })).toBeDisabled();
   await page.getByLabel('Your name').fill('Jordan Reyes');
+  await page.getByLabel('Party name').fill("Jordan's Dinner");
   await page.getByLabel('When').fill('2025-09-12T19:00'); // a Friday, matching the fixture copy
   await expect(page.getByLabel('When')).toHaveValue('2025-09-12T19:00');
+  await page.getByLabel('Your phone').fill('(555) 019-2244');
+  await expect(page.getByRole('button', { name: 'Create party' })).toBeDisabled(); // location still unset
 
   // ORG 1a: the permission dialog comes first, alone; the drawer only opens after Allow.
   await page.getByRole('button', { name: 'Your location' }).click();
@@ -19,6 +23,7 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await page.getByRole('button', { name: '5 mi' }).click();
   await page.getByRole('button', { name: 'Use this location' }).click();
   await expect(page.getByText('within 5 mi')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Create party' })).toBeEnabled();
 
   // Create party goes straight to Verify (no SMS screen in between).
   await page.getByRole('button', { name: 'Create party' }).click();
@@ -35,21 +40,29 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   // The management-link text arrives as a banner on the hub.
   await expect(page.getByRole('status')).toContainText('is live');
 
-  // ORG 4: edit the date.
+  // ORG 4: Edit details opens prefilled with what the host entered.
   await page.getByRole('button', { name: 'Edit details' }).click();
-  await expect(page.getByRole('dialog', { name: 'Edit details' })).toBeVisible();
+  const editDialog = page.getByRole('dialog', { name: 'Edit details' });
+  await expect(editDialog).toBeVisible();
+  await expect(editDialog.getByLabel('Party name')).toHaveValue("Jordan's Dinner");
+  await expect(editDialog.getByLabel('When')).toHaveValue('2025-09-12T19:00');
   await page.getByRole('button', { name: 'Save', exact: true }).click();
 
-  // ORG 4b: add a guest manually; the count grows.
+  // ORG 4b: add a guest manually; Send invite waits for both fields, then confirms and the count grows.
   await page.getByRole('button', { name: 'Add a guest' }).click();
+  await expect(page.getByRole('button', { name: 'Send invite' })).toBeDisabled();
   await page.getByLabel('Name', { exact: true }).fill('Lena Park');
   await page.getByLabel('Phone').fill('(555) 310-8842');
   await page.getByRole('button', { name: 'Send invite' }).click();
+  await expect(page.getByRole('status').filter({ hasText: 'Invite sent' })).toContainText('Invite sent to Lena Park');
+  await page.getByRole('button', { name: 'Dismiss notification' }).click();
   await expect(page.getByText('3 of 6 have responded')).toBeVisible();
 
-  // ORG 4d: edit cover; a colour replaces the photo.
+  // ORG 4d: edit cover; a colour is staged and Save applies it.
   await page.getByRole('button', { name: 'Edit cover' }).click();
   await page.getByRole('button', { name: 'Matcha' }).click();
+  await expect(page.getByRole('dialog', { name: 'Edit cover' })).toBeVisible();
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
   await expect(page.getByRole('dialog', { name: 'Edit cover' })).toHaveCount(0);
 
   await page.getByRole('button', { name: 'See everyone', exact: true }).click();
@@ -62,6 +75,7 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   // ORG 5 → X → hub with Browse places as the primary CTA.
   await page.getByRole('button', { name: 'Close' }).click();
   await expect(page.getByRole('heading', { name: "Jordan's Dinner" })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Share invite link' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Browse places' }).click();
 
   await page.getByRole('tab', { name: 'Map' }).click();

@@ -34,8 +34,7 @@ export function OrgVerify() {
         </Button>
       }>
       <CodeInput value={code} onChange={setCode} />
-      <p className="t-caption c-secondary">Tap the boxes to fill in the code from your messages.</p>
-      <button className="link t-secondary" style={{ alignSelf: 'flex-start' }}>Didn't get it? Resend code</button>
+      <button className="link t-secondary" style={{ alignSelf: 'center' }}>Didn't get it? Resend code</button>
     </Screen>
   );
 }

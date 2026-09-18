@@ -13,6 +13,7 @@ export const party = {
   dateLong: 'Friday, Sep 12',
   dateShort: 'Fri, Sep 12',
   time: '7:00 PM',
+  whenIso: '2025-09-12T19:00', // datetime-local form of dateLong + time
   roughTime: 'Friday, Sep 12 · around 7:00 PM',
   exactTime: 'Friday, Sep 12 at 7:00 PM',
   code: '7K3M9',

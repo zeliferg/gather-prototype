@@ -28,11 +28,15 @@ export function OrgHub() {
   const [copied, setCopied] = useState(false);
   const [sending, setSending] = useState(false);
   const [ready, setReady] = useState(false);
-  const [draft, setDraft] = useState({ name: state.partyName, when: state.when });
+  const [draft, setDraft] = useState({ name, when: state.when || party.whenIso });
+  const [coverDraft, setCoverDraft] = useState(state.cover);
+  const [invited, setInvited] = useState<string | null>(null);
   const [newGuest, setNewGuest] = useState({ name: '', phone: '' });
   const responded = sending || state.everyoneIn ? guests.length : guests.filter((g) => g.status !== 'waiting').length;
   const waiting = guests.length - guests.filter((g) => g.status !== 'waiting').length;
   const closeBanner = useCallback(() => setBanner(false), []);
+  const closeInvited = useCallback(() => setInvited(null), []);
+  const guestReady = newGuest.name.trim() !== '' && newGuest.phone.trim() !== '';
 
   useEffect(() => {
     if (!sending) return;
@@ -59,26 +63,25 @@ export function OrgHub() {
     copy();
   };
   const addGuest = () => {
-    const n = newGuest.name.trim() || 'New guest';
+    const n = newGuest.name.trim();
     update({ addedGuests: [...state.addedGuests, { id: `added-${Date.now()}`, name: n, initial: n[0].toUpperCase() }] });
     setNewGuest({ name: '', phone: '' });
     setAdding(false);
+    setBanner(false); // one banner at a time
+    setInvited(n);
   };
 
   return (
-    <Screen footer={state.everyoneIn ? <>
-      <Button onClick={() => navigate('/org/options')}>Browse places</Button>
-      <Button variant="secondary" onClick={share}>Share invite link</Button>
-    </> : <>
+    <Screen footer={state.everyoneIn ? <Button onClick={() => navigate('/org/options')}>Browse places</Button> : <>
       <Button variant="secondary" onClick={() => setSending(true)} disabled={sending || waiting === 0}>Remind the {waiting} who haven't</Button>
       <Button onClick={share}>Share invite link</Button>
     </>}>
-      <Cover choice={state.cover}><Chip className="cover__edit" onClick={() => setCover(true)}>{state.cover === 'none' ? 'Add cover' : 'Edit cover'}</Chip></Cover>
+      <Cover choice={state.cover}><Chip className="cover__edit" onClick={() => { setCoverDraft(state.cover); setCover(true); }}>{state.cover === 'none' ? 'Add cover' : 'Edit cover'}</Chip></Cover>
       <div className="screen__title">
         <h1 className="t-title">{name}</h1>
         <div className="row">
           <p className="t-secondary c-secondary">{roughTime}</p>
-          <button className="link t-label" onClick={() => { setDraft({ name: state.partyName, when: state.when }); setEditing(true); }}>Edit details</button>
+          <button className="link t-label" onClick={() => { setDraft({ name, when: state.when || party.whenIso }); setEditing(true); }}>Edit details</button>
         </div>
       </div>
       <div className="card row">
@@ -99,6 +102,7 @@ export function OrgHub() {
       </div>
 
       <Notification open={banner} onClose={closeBanner} text={`${sms.manageLink.text} ${sms.manageLink.link}`} />
+      <Notification open={invited !== null} onClose={closeInvited} app="Gather" autoHideMs={0} closeButton text={`Invite sent to ${invited ?? ''}. They'll get a text with the link.`} />
 
       <Sheet open={everyone} onClose={() => { setEveryone(false); update({ remindedIds: [] }); }} title="Guests" subtitle={`${responded} of ${guests.length} have responded`}>
         <div className="list">
@@ -114,33 +118,34 @@ export function OrgHub() {
       </Sheet>
 
       <Sheet open={editing} onClose={() => setEditing(false)} title="Edit details" subtitle="Everyone gets a text if the time changes.">
-        <Input label="Party name" value={draft.name} onChange={(v) => setDraft({ ...draft, name: v })} placeholder={party.name} />
+        <Input label="Party name" value={draft.name} onChange={(v) => setDraft({ ...draft, name: v })} placeholder="Party name" />
         <Input label="When" type="datetime-local" value={draft.when} onChange={(v) => setDraft({ ...draft, when: v })} />
         <Button onClick={() => { update({ partyName: draft.name, when: draft.when }); setEditing(false); }}>Save</Button>
       </Sheet>
 
       {/* ORG 4b */}
       <Sheet open={adding} onClose={() => setAdding(false)} title="Add a guest" subtitle="They'll get a text with the invite link.">
-        <Input label="Name" value={newGuest.name} onChange={(v) => setNewGuest({ ...newGuest, name: v })} placeholder="Priya Nair" />
-        <Input label="Phone" value={newGuest.phone} onChange={(v) => setNewGuest({ ...newGuest, phone: v })} type="tel" inputMode="tel" placeholder="(555) 204-1187" />
-        <Button onClick={addGuest}>Send invite</Button>
+        <Input label="Name" value={newGuest.name} onChange={(v) => setNewGuest({ ...newGuest, name: v })} placeholder="Name" />
+        <Input label="Phone" value={newGuest.phone} onChange={(v) => setNewGuest({ ...newGuest, phone: v })} type="tel" inputMode="tel" placeholder="(111) 111-1111" />
+        <Button onClick={addGuest} disabled={!guestReady}>Send invite</Button>
         <Button variant="secondary">Choose from contacts</Button>
       </Sheet>
 
       {/* ORG 4d */}
       <Sheet open={cover} onClose={() => setCover(false)} title="Edit cover" subtitle="Guests see it at the top of the party page.">
         <div className="list">
-          <button className="row menu-row t-body" onClick={() => { update({ cover: 'photo' }); setCover(false); }}>Choose from photos<Chevron size={20} /></button>
-          <button className="row menu-row t-body" onClick={() => { update({ cover: 'photo' }); setCover(false); }}>Take a photo<Chevron size={20} /></button>
+          <button className={`row menu-row t-body ${coverDraft === 'photo' ? 'c-accent' : ''}`} onClick={() => setCoverDraft('photo')}>Choose from photos<Chevron size={20} /></button>
+          <button className="row menu-row t-body" onClick={() => setCoverDraft('photo')}>Take a photo<Chevron size={20} /></button>
         </div>
         <p className="t-caption c-secondary">Or pick a colour</p>
         <div className="swatches">
           {coverColours.map((c) => (
-            <button key={c.id} className={`swatch ${state.cover === c.id ? 'swatch--on' : ''}`} style={{ background: c.token }} aria-label={c.label} aria-pressed={state.cover === c.id}
-              onClick={() => { update({ cover: c.id }); setCover(false); }} />
+            <button key={c.id} className={`swatch ${coverDraft === c.id ? 'swatch--on' : ''}`} style={{ background: c.token }} aria-label={c.label} aria-pressed={coverDraft === c.id}
+              onClick={() => setCoverDraft(c.id)} />
           ))}
         </div>
-        <button className="t-body" style={{ color: 'var(--error)', textAlign: 'left' }} onClick={() => { update({ cover: 'none' }); setCover(false); }}>Remove cover</button>
+        <button className="t-body" style={{ color: coverDraft === 'none' ? 'var(--text-primary)' : 'var(--error)', textAlign: 'left' }} aria-pressed={coverDraft === 'none'} onClick={() => setCoverDraft('none')}>{coverDraft === 'none' ? 'Cover removed' : 'Remove cover'}</button>
+        <Button onClick={() => { update({ cover: coverDraft }); setCover(false); }}>Save</Button>
         <Button variant="ghost" onClick={() => setCover(false)}>Cancel</Button>
       </Sheet>
     </Screen>

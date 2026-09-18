@@ -226,6 +226,8 @@ button.chip:active { transform: scale(0.95); }
 .notif:active { transform: translateY(0) scale(0.985); }
 .notif__icon { flex: none; width: 36px; height: 36px; border-radius: 9px; background: var(--accent); color: var(--text-on-accent); display: grid; place-items: center; }
 .notif__body { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.notif__close { flex: none; align-self: flex-start; width: 32px; height: 32px; margin: -6px -8px 0 0; display: grid; place-items: center; border-radius: 50%; color: var(--text-secondary); }
+.notif__close:active { background: var(--bg-subtle); }
 .notif__text { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 
 /* Progress button (Verify) */
@@ -233,7 +235,7 @@ button.chip:active { transform: scale(0.95); }
 .spinner { width: 18px; height: 18px; border-radius: 50%; border: 2.5px solid rgba(255,255,255,0.35); border-top-color: var(--text-on-accent); animation: spin var(--dur-ring) linear infinite; }
 .btn--busy:disabled, .btn--done:disabled { opacity: 1; }
 .btn--done { background: var(--accent-pressed); }
-.btn__check { display: grid; place-items: center; animation: seat-in var(--dur-base) var(--ease-spring) both; }
+.btn__check { display: grid; place-items: center; animation: badge-in var(--dur-base) var(--ease-spring) both; }
 .btn__check .check-path { stroke-dasharray: 24; stroke-dashoffset: 24; animation: draw var(--dur-base) var(--ease-out) var(--dur-fast) forwards; }
 
 /* Edit cover swatches */
