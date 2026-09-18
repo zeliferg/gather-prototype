@@ -1,16 +1,15 @@
-// Figma: P 9 — Party is here (+ P 9b Who's coming, P 9c Directions, P 9d Add to calendar, P 3d Can't make it)
+// Figma: P 9 — Party is here (+ P 9b Who's coming, P 9c Directions, P 9d Add to calendar)
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Screen } from '../../components/Screen';
 import { Button } from '../../components/Button';
 import { Chip } from '../../components/Chip';
 import { Avatar } from '../../components/Avatar';
-import { Input } from '../../components/Input';
 import { Sheet } from '../../components/Sheet';
 import { ActionSheet } from '../../components/ActionSheet';
 import { GuestRow } from '../../components/GuestRow';
 import { DevHint } from '../../components/DevHint';
-import { Chevron } from '../../components/icons';
+import { Chevron, Close } from '../../components/icons';
 import { guests, me, party, restaurants } from '../../fixtures';
 import { usePrototypeState } from '../../state';
 
@@ -21,22 +20,25 @@ export function PParty() {
   const [who, setWho] = useState(false);
   const [directions, setDirections] = useState(false);
   const [calendar, setCalendar] = useState(false);
-  const [leaving, setLeaving] = useState(false);
-  const [note, setNote] = useState('Sorry, a work thing came up');
   useEffect(() => { if (!state.guestBooked) update({ guestBooked: true }); }, [state.guestBooked, update]);
 
   return (
-    <Screen footer={<Button variant="ghost" onClick={() => setLeaving(true)}>Can't make it? Let {party.hostFirst} know</Button>}>
+    <Screen right={<button className="icon-btn icon-btn--right" aria-label="Close details" onClick={() => navigate('/p/waiting')}><Close /></button>}>
       <div className="cover"><img src={r.photo} alt="" /></div>
       <div className="stack">
         <Chip variant="success" className="rcard__fair">Booked</Chip>
         <h1 className="t-title">{r.name}</h1>
         <p className="t-body">{party.dateLong} at {state.selectedTime}. Table for {party.size}.</p>
-        <p className="t-secondary c-secondary">{r.address}.</p>
+        <p className="t-secondary c-secondary">{r.address}. {r.hours}.</p>
       </div>
       <div className="hstack">
         <Button variant="secondary" onClick={() => setDirections(true)}>Directions</Button>
         <Button variant="secondary" onClick={() => setCalendar(true)}>Add to calendar</Button>
+      </div>
+      <div className="card">
+        <p className="t-body-med">Good to know</p>
+        <p className="t-secondary c-secondary">{r.cuisine}. {r.reservations ? 'Booked under ' + party.hostFirst + "'s name." : 'Walk-in, so arrive together.'}</p>
+        <Button variant="ghost" inline>See full menu</Button>
       </div>
       <div className="row">
         <h2 className="t-heading">Who's coming</h2>
@@ -57,11 +59,6 @@ export function PParty() {
         options={[{ label: 'Apple Maps' }, { label: 'Google Maps' }, { label: 'Waze' }, { label: 'Copy address' }]} />
       <ActionSheet open={calendar} onClose={() => setCalendar(false)} title={`Add ${party.name} to`}
         options={[{ label: 'Apple Calendar' }, { label: 'Google Calendar' }, { label: 'Outlook' }, { label: 'Download .ics file' }]} />
-      <Sheet open={leaving} onClose={() => setLeaving(false)} title="Can't make it?" subtitle={`We'll take you off the headcount and let ${party.hostFirst} know. If plans change again, rejoin from your link.`}>
-        <Input label={`Add a note for ${party.hostFirst} (optional)`} value={note} onChange={setNote} />
-        <Button variant="danger" onClick={() => { update({ droppedOut: true }); setLeaving(false); navigate('/p/dropped'); }}>I can't make it</Button>
-        <Button variant="ghost" onClick={() => setLeaving(false)}>Never mind</Button>
-      </Sheet>
     </Screen>
   );
 }

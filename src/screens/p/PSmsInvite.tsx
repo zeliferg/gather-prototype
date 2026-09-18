@@ -6,7 +6,7 @@ import { usePrototypeState } from '../../state';
 export function PSmsInvite() {
   const [, , reset] = usePrototypeState();
   return (
-    <SmsScreen {...sms.invite} to="/p/verify">
+    <SmsScreen {...sms.invite} to="/p/lobby">
       <button className="devhint t-caption" onClick={reset}>Prototype: start over</button>
     </SmsScreen>
   );

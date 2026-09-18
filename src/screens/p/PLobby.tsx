@@ -8,7 +8,10 @@ import { party } from '../../fixtures';
 export function PLobby() {
   const navigate = useNavigate();
   return (
-    <Screen footer={<Button onClick={() => navigate('/p/join')}>Join the party</Button>}>
+    <Screen footer={<>
+      <Button onClick={() => navigate('/p/verify')}>Verify and join</Button>
+      <p className="t-caption c-secondary" style={{ textAlign: 'center' }}>We'll text a code to your number first.</p>
+    </>}>
       <div className="cover"><img src="/photos/cover.jpg" alt="" /></div>
       <div className="screen__title" style={{ alignItems: 'center', textAlign: 'center' }}>
         <h1 className="t-title">{party.name}</h1>

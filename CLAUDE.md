@@ -86,7 +86,12 @@ of 16 Sep 2026 — the tests prove the taps land, not that it feels right.
 Second-pass screens not built: Join with a code (Landing's button hits
 NotFound), reminder SMS variants. ORG 2 (management-link SMS) is not a
 route any more: it shows as a `Notification` banner on the hub after Verify,
-and "Reservation changed" does the same on ORG 10 after ORG 11.
+and "Reservation changed" does the same on ORG 10 after ORG 11. Likewise
+P 6 (spot-confirmed SMS) is a banner over `PBooked` (`/p/booked`, the
+guest-side success screen), and P 3b is the guest's hub in both states:
+waiting, then booked (restaurant card + "See the details" → P 9, which has an
+X back). The guest order is invite → P 3 lobby ("Verify and join") → P 2 →
+P 3 join → P 3b.
 Inert-by-design controls: Resend code, Choose from contacts, Choose from
 photos / Take a photo (both just restore the photo cover), Add preferences,
 Edit info, See full menu, Cancel reservation. "Share invite link" uses the
@@ -94,8 +99,7 @@ Web Share API where available and falls back to copy.
 Deferred polish: `Segmented` uses `role=tab` (should be radiogroup), sheets
 lack focus trapping/Escape/swipe-to-dismiss, type scale is px not rem, the
 first screen slides in from the left on initial load, SMS routes slide rather
-than fade, the Can't-make-it sheet is duplicated in `PWaiting` and `PParty`,
-landscape safe-area sides unused. Cross-device realism: location permission
+than fade, landscape safe-area sides unused. Cross-device realism: location permission
 and other state persist per tab across host → participant walk-throughs; use
 "Prototype: start over". Map tiles come straight from tile.openstreetmap.org
 (fine for prototype traffic, not for production); "Around me" always centres

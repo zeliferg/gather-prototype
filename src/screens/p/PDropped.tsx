@@ -9,8 +9,8 @@ import { usePrototypeState } from '../../state';
 
 export function PDropped() {
   const navigate = useNavigate();
-  const [state, update] = usePrototypeState();
-  const back = state.guestBooked ? '/p/party' : '/p/waiting';
+  const [, update] = usePrototypeState();
+  const back = '/p/waiting'; // the party page shows the booked spot itself once there is one
   return (
     <Screen footer={<Button variant="ghost" onClick={() => { update({ droppedOut: false }); navigate(back); }}>Changed your mind? Rejoin</Button>}>
       <div className="cover"><img src="/photos/cover.jpg" alt="" /></div>
