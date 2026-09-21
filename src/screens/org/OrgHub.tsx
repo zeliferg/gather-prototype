@@ -11,6 +11,7 @@ import { Cover } from '../../components/Cover';
 import { Notification } from '../../components/Notification';
 import { GuestRow } from '../../components/GuestRow';
 import { Chevron, Plus } from '../../components/icons';
+import { formatPhone, isCompletePhone } from '../../components/phone';
 import { coverColours, party, sms } from '../../fixtures';
 import { usePrototypeState } from '../../state';
 import { useParty } from '../../party';
@@ -36,7 +37,7 @@ export function OrgHub() {
   const waiting = guests.length - guests.filter((g) => g.status !== 'waiting').length;
   const closeBanner = useCallback(() => setBanner(false), []);
   const closeInvited = useCallback(() => setInvited(null), []);
-  const guestReady = newGuest.name.trim() !== '' && newGuest.phone.trim() !== '';
+  const guestReady = newGuest.name.trim() !== '' && isCompletePhone(newGuest.phone);
 
   useEffect(() => {
     if (!sending) return;
@@ -126,7 +127,7 @@ export function OrgHub() {
       {/* ORG 4b */}
       <Sheet open={adding} onClose={() => setAdding(false)} title="Add a guest" subtitle="They'll get a text with the invite link.">
         <Input label="Name" value={newGuest.name} onChange={(v) => setNewGuest({ ...newGuest, name: v })} placeholder="Name" />
-        <Input label="Phone" value={newGuest.phone} onChange={(v) => setNewGuest({ ...newGuest, phone: v })} type="tel" inputMode="tel" placeholder="(111) 111-1111" />
+        <Input label="Phone" value={newGuest.phone} onChange={(v) => setNewGuest({ ...newGuest, phone: formatPhone(v) })} type="tel" inputMode="tel" placeholder="(111) 111-1111" />
         <Button onClick={addGuest} disabled={!guestReady}>Send invite</Button>
         <Button variant="secondary">Choose from contacts</Button>
       </Sheet>

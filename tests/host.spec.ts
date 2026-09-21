@@ -11,7 +11,8 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await page.getByLabel('Party name').fill("Jordan's Dinner");
   await page.getByLabel('When').fill('2025-09-12T19:00'); // a Friday, matching the fixture copy
   await expect(page.getByLabel('When')).toHaveValue('2025-09-12T19:00');
-  await page.getByLabel('Your phone').fill('(555) 019-2244');
+  await page.getByLabel('Your phone').fill('5550192244');
+  await expect(page.getByLabel('Your phone')).toHaveValue('(555) 019-2244'); // formatted as typed
   await expect(page.getByRole('button', { name: 'Create party' })).toBeDisabled(); // location still unset
 
   // ORG 1a: the permission dialog comes first, alone; the drawer only opens after Allow.
@@ -28,12 +29,18 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   // Create party goes straight to Verify (no SMS screen in between).
   await page.getByRole('button', { name: 'Create party' }).click();
   await expect(page.getByRole('heading', { name: "Verify it's you" })).toBeVisible();
+  await expect(page.getByText('We texted a 6-digit code to (555) 019-2244.')).toBeVisible(); // the number from ORG 1
 
   // ORG 3: boxes start empty and fill when the field is tapped; Continue shows progress then lands on the hub.
   await expect(page.getByLabel('6-digit code')).toHaveValue('');
   await expect(page.getByRole('button', { name: 'Continue' })).toBeDisabled();
   await page.getByLabel('6-digit code').click();
-  await expect(page.getByLabel('6-digit code')).toHaveValue(/^\d{6}$/);
+  await expect(page.getByLabel('6-digit code')).toHaveValue('428913');
+  // Resend: the link reports progress, a Messages banner brings a new code, and the boxes refill with it.
+  await page.getByRole('button', { name: "Didn't get it? Resend code" }).click();
+  await expect(page.getByRole('button', { name: /Sending a new code|New code sent/ })).toBeDisabled();
+  await expect(page.getByRole('status')).toContainText('Your Gather code is 917204', { timeout: 5000 });
+  await expect(page.getByLabel('6-digit code')).toHaveValue('917204');
   await page.getByRole('button', { name: 'Continue' }).click();
   await expect(page.getByRole('button', { name: /Verifying|Verified/ })).toBeVisible();
   await expect(page.getByRole('heading', { name: "Jordan's Dinner" })).toBeVisible({ timeout: 5000 });
@@ -53,7 +60,8 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await page.getByRole('button', { name: 'Add a guest' }).click();
   await expect(page.getByRole('button', { name: 'Send invite' })).toBeDisabled();
   await page.getByLabel('Name', { exact: true }).fill('Lena Park');
-  await page.getByLabel('Phone').fill('(555) 310-8842');
+  await page.getByLabel('Phone').fill('5553108842');
+  await expect(page.getByLabel('Phone')).toHaveValue('(555) 310-8842');
   await page.getByRole('button', { name: 'Send invite' }).click();
   await expect(page.getByRole('status').filter({ hasText: 'Invite sent' })).toContainText('Invite sent to Lena Park');
   await page.getByRole('button', { name: 'Dismiss notification' }).click();
@@ -80,19 +88,28 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Share invite link' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Browse places' }).click();
 
+  // ORG 6c from a pin, with no slot tapped first: nothing is selected and the CTA waits for a time.
   await page.getByRole('tab', { name: 'Map' }).click();
   await page.getByRole('button', { name: 'Corner Table' }).click();
-  await expect(page.getByRole('dialog', { name: 'Corner Table' })).toBeVisible();
+  const corner = page.getByRole('dialog', { name: 'Corner Table' });
+  await expect(corner).toBeVisible();
+  await expect(corner.getByRole('button', { pressed: true })).toHaveCount(0);
+  await expect(corner.getByRole('button', { name: 'Book with [Partner]' })).toBeDisabled();
   await page.getByRole('button', { name: 'Close' }).click({ position: { x: 10, y: 10 } }); // scrim centre is under the sheet panel
+  // ORG 6: a slot tapped on the card carries into the sheet.
   await page.getByRole('tab', { name: 'List' }).click();
+  await page.getByRole('group', { name: 'Tavola Verde times' }).getByRole('button', { name: '7:00', exact: true }).click();
   await page.getByRole('button', { name: 'Tavola Verde' }).click();
+  await expect(page.getByRole('dialog', { name: 'Tavola Verde' }).getByRole('button', { name: '7:00 PM', pressed: true })).toBeVisible();
   await page.getByRole('button', { name: 'Book 7:00 PM with [Partner]' }).click();
 
-  // ORG 8 confirms the time already chosen.
+  // ORG 8 confirms the time already chosen, shows the place, and books with progress on the button.
   await expect(page.getByRole('heading', { name: 'Confirm your booking' })).toBeVisible();
   await expect(page.getByRole('button', { name: '7:00 PM', pressed: true })).toBeVisible();
+  await expect(page.locator('.card img')).toBeVisible();
   await page.getByRole('button', { name: 'Book 7:00 PM', exact: true }).click();
-  await expect(page.getByRole('heading', { name: "You're all set" })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Booking your table|Booked/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: "You're all set" })).toBeVisible({ timeout: 5000 });
   await page.getByRole('button', { name: 'Back to the party' }).click();
 
   // ORG 10 keeps the cover; ORG 11 changes the reservation and the party page reflects it.
@@ -101,12 +118,20 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Change the reservation' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Save and notify everyone' })).toBeDisabled(); // nothing changed yet
   await page.getByRole('button', { name: '7:30 PM' }).click();
+  // A table for 7 can't have 7:30 at Tavola Verde: the slots change and Save waits for a new pick.
   await page.getByRole('button', { name: 'Increase party size' }).click();
+  await page.getByRole('button', { name: 'Increase party size' }).click();
+  await expect(page.getByText("7:30 PM isn't available for 7")).toBeVisible();
+  await expect(page.getByRole('button', { name: '7:30 PM' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Save and notify everyone' })).toBeDisabled();
+  await page.getByRole('button', { name: 'Decrease party size' }).click();
+  await expect(page.getByRole('button', { name: '7:30 PM', pressed: true })).toBeVisible(); // back to 6, the pick returns
   await page.getByRole('button', { name: 'Save and notify everyone' }).click();
   await expect(page.getByText('Friday, Sep 12 at 7:30 PM')).toBeVisible();
   await expect(page.getByText('Table for 6')).toBeVisible();
   await expect(page.getByRole('status')).toContainText('Reservation changed');
 
-  await page.getByRole('link', { name: /morning after/ }).click();
+  // ORG 12 has no in-app link any more; it is reached by its route.
+  await page.goto('/org/sms-after');
   await expect(page.getByText('Thanks for hosting')).toBeVisible();
 });

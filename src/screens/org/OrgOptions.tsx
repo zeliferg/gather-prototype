@@ -13,30 +13,31 @@ import { usePrototypeState } from '../../state';
 
 export function OrgOptions() {
   const navigate = useNavigate();
-  const [state, update] = usePrototypeState();
+  const [, update] = usePrototypeState();
   const [view, setView] = useState<'list' | 'map'>('list');
   const [openId, setOpenId] = useState<RestaurantId | null>(null);
+  // A slot tapped on a card carries into the sheet; opening a card with nothing tapped shows no slot selected.
+  const [picked, setPicked] = useState<Partial<Record<RestaurantId, string | null>>>({});
+  const [time, setTime] = useState<string | null>(null);
   const open = restaurants.find((r) => r.id === openId);
-  const time = state.selectedTime;
 
-  const openRestaurant = (id: RestaurantId) => {
-    const r = restaurants.find((x) => x.id === id);
-    if (r && !r.times.includes(state.selectedTime)) update({ selectedTime: r.times[0] });
-    setOpenId(id);
-  };
+  const openRestaurant = (id: RestaurantId) => { setTime(picked[id] ?? null); setOpenId(id); };
 
   const book = () => {
-    if (!open) return;
-    update({ selectedRestaurant: open.id });
+    if (!open || !time) return;
+    update({ selectedRestaurant: open.id, selectedTime: time });
     setOpenId(null);
     navigate(open.reservations ? '/org/reserve' : '/org/walk-in');
   };
+  const cta = open ? (open.reservations
+    ? (time ? `Book ${time} with [Partner]` : 'Book with [Partner]')
+    : (time ? `Set ${time} for the group` : 'Set a time for the group')) : '';
 
   return (
     <Screen back title="3 places that work" subtitle="Each one is close to the middle of where everyone's coming from.">
       <Segmented options={[{ value: 'list', label: 'List' }, { value: 'map', label: 'Map' }]} value={view} onChange={setView} />
       {view === 'list'
-        ? restaurants.map((r) => <RestaurantCard key={r.id} restaurant={r} onOpen={() => openRestaurant(r.id)} />)
+        ? restaurants.map((r) => <RestaurantCard key={r.id} restaurant={r} picked={picked[r.id] ?? null} onPick={(t) => setPicked({ ...picked, [r.id]: t })} onOpen={() => openRestaurant(r.id)} />)
         : <MapView mode="options" height={620} onSelectPin={openRestaurant} />}
       <Sheet open={!!open} onClose={() => setOpenId(null)} title={open?.name}>
         {open && (
@@ -44,9 +45,9 @@ export function OrgOptions() {
             <div className="rcard__photo rcard__photo--tall"><img src={open.photo} alt="" /></div>
             <Chip variant="success" className="rcard__fair">Fair for everyone</Chip>
             <p className="t-secondary c-secondary">{open.cuisine}. {open.address}. {open.hours}.</p>
-            <p className="t-caption c-secondary">{open.reservations ? 'Available tonight' : 'Walk-in only'}</p>
-            <div className="chip-row">{open.times.map((t) => <Chip key={t} variant={t === time ? 'selected' : 'neutral'} onClick={() => update({ selectedTime: t })}>{t}</Chip>)}</div>
-            <Button onClick={book}>{open.reservations ? `Book ${time} with [Partner]` : `Set ${time} for the group`}</Button>
+            <p className="t-caption c-secondary">{open.reservations ? 'Available tonight' : 'Walk-in only'}{time ? '' : ' · pick a time'}</p>
+            <div className="chip-row">{open.times.map((t) => <Chip key={t} className="chip--lg" variant={t === time ? 'selected' : 'neutral'} onClick={() => setTime(t)}>{t}</Chip>)}</div>
+            <Button onClick={book} disabled={!time}>{cta}</Button>
             <Button variant="ghost">See full menu</Button>
           </>
         )}

@@ -8,7 +8,6 @@ import { Avatar } from '../../components/Avatar';
 import { Cover } from '../../components/Cover';
 import { ActionSheet } from '../../components/ActionSheet';
 import { Notification } from '../../components/Notification';
-import { DevHint } from '../../components/DevHint';
 import { Chevron } from '../../components/icons';
 import { restaurants, sms } from '../../fixtures';
 import { usePrototypeState } from '../../state';
@@ -47,7 +46,6 @@ export function OrgParty() {
         <button className="row menu-row t-body" style={{ color: 'var(--error)' }}>Cancel reservation<Chevron size={20} /></button>
       </div>
       <p className="t-caption c-secondary" style={{ textAlign: 'center' }}>Any change texts everyone and updates their calendar invite.</p>
-      <DevHint to="/org/sms-after">the morning after</DevHint>
       <Notification open={banner} onClose={closeBanner} text={`${sms.reservationChanged.text} ${r.name}, ${dateShort} at ${state.selectedTime}. Details: ${sms.reservationChanged.link}`} />
       <ActionSheet open={directions} onClose={() => setDirections(false)} title={`Open ${r.name} in`}
         options={[{ label: 'Apple Maps' }, { label: 'Google Maps' }, { label: 'Waze' }, { label: 'Copy address' }]} />

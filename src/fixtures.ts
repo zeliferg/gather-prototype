@@ -2,7 +2,7 @@ export type Guest = { id: string; name: string; initial: string; status: 'host' 
 export type RestaurantId = 'tavola' | 'corner' | 'noodle';
 export type Restaurant = {
   id: RestaurantId; name: string; cuisine: string; address: string; hours: string;
-  reservations: boolean; times: string[]; photo: string; pin: { x: number; y: number };
+  reservations: boolean; times: string[]; /** slots a table for 7 or more can still get */ bigTableTimes: string[]; photo: string; pin: { x: number; y: number };
 };
 export type RadiusMi = 0.5 | 1 | 2 | 5;
 
@@ -36,12 +36,21 @@ export const guests: Guest[] = [
 export const me = guests[1];
 
 export const restaurants: Restaurant[] = [
-  { id: 'tavola', name: 'Tavola Verde', cuisine: 'Italian, $$', address: '214 Elm Street', hours: 'Open until 10 PM', reservations: true, times: ['6:30 PM', '7:00 PM', '7:30 PM', '8:00 PM'], photo: '/photos/tavola.jpg', pin: { x: 0.26, y: 0.2 } },
-  { id: 'corner', name: 'Corner Table', cuisine: 'New American, $$$', address: '88 Larimer Street', hours: 'Open until 11 PM', reservations: true, times: ['7:00 PM', '8:00 PM'], photo: '/photos/corner.jpg', pin: { x: 0.36, y: 0.32 } },
-  { id: 'noodle', name: 'Noodle Bar Riverside', cuisine: 'Noodles, $', address: '17 Platte Street', hours: 'Open until 9:30 PM', reservations: false, times: ['6:30 PM', '7:00 PM', '7:30 PM'], photo: '/photos/noodle.jpg', pin: { x: 0.2, y: 0.72 } },
+  { id: 'tavola', name: 'Tavola Verde', cuisine: 'Italian, $$', address: '214 Elm Street', hours: 'Open until 10 PM', reservations: true, times: ['6:30 PM', '7:00 PM', '7:30 PM', '8:00 PM'], bigTableTimes: ['6:30 PM', '8:00 PM'], photo: '/photos/tavola.jpg', pin: { x: 0.26, y: 0.2 } },
+  { id: 'corner', name: 'Corner Table', cuisine: 'New American, $$$', address: '88 Larimer Street', hours: 'Open until 11 PM', reservations: true, times: ['7:00 PM', '8:00 PM'], bigTableTimes: ['8:00 PM'], photo: '/photos/corner.jpg', pin: { x: 0.36, y: 0.32 } },
+  { id: 'noodle', name: 'Noodle Bar Riverside', cuisine: 'Noodles, $', address: '17 Platte Street', hours: 'Open until 9:30 PM', reservations: false, times: ['6:30 PM', '7:00 PM', '7:30 PM'], bigTableTimes: ['6:30 PM', '7:00 PM', '7:30 PM'], photo: '/photos/noodle.jpg', pin: { x: 0.2, y: 0.72 } },
 ];
 
 export const fairPoint = { x: 0.52, y: 0.45 };
+
+/** Parties above this size get the restaurant's bigTableTimes instead of times. */
+export const BIG_TABLE_FROM = 7;
+
+/** The slots a place can offer a table of `size`: bigger parties get fewer; reservation places also offer a late 8:30. */
+export function slotsFor(r: Restaurant, size: number): string[] {
+  if (size >= BIG_TABLE_FROM) return r.bigTableTimes;
+  return r.reservations ? [...r.times, '8:30 PM'] : r.times;
+}
 
 export const radiusOptions: { value: RadiusMi; label: string }[] = [
   { value: 0.5, label: '½ mi' }, { value: 1, label: '1 mi' }, { value: 2, label: '2 mi' }, { value: 5, label: '5 mi' },

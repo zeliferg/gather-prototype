@@ -18,6 +18,7 @@ export type PrototypeState = {
   cover: CoverChoice;
   addedGuests: AddedGuest[];
   hostName: string;
+  hostPhone: string; // formatted as typed on Create Party, shown again on Verify
   partyName: string;
   when: string; // datetime-local value, '' until the host picks one
   locationSet: boolean; // the guest saved a location on the map screen
@@ -45,6 +46,7 @@ export const defaultState: PrototypeState = {
   cover: 'photo',
   addedGuests: [],
   hostName: '',
+  hostPhone: '',
   partyName: '',
   when: '',
   locationSet: false,

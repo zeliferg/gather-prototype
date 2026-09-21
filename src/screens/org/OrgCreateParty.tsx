@@ -8,19 +8,19 @@ import { Sheet } from '../../components/Sheet';
 import { PermissionDialog } from '../../components/PermissionDialog';
 import { LocationPicker } from '../../components/LocationPicker';
 import { Chevron } from '../../components/icons';
+import { formatPhone, isCompletePhone } from '../../components/phone';
 import { permissionBody, radiusOptions } from '../../fixtures';
 import { usePrototypeState } from '../../state';
 
 export function OrgCreateParty() {
   const navigate = useNavigate();
   const [state, update] = usePrototypeState();
-  const [phone, setPhone] = useState('');
   const [asking, setAsking] = useState(false);
   const [open, setOpen] = useState(false);
   const [touched, setTouched] = useState(false);
   const radius = radiusOptions.find((o) => o.value === state.radiusMi)!.label;
   const summary = touched ? `${state.locationMode === 'pin' ? 'RiNo' : 'Downtown'} · within ${radius}` : 'Tap to set';
-  const complete = state.hostName.trim() !== '' && state.partyName.trim() !== '' && state.when !== '' && phone.trim() !== '' && touched;
+  const complete = state.hostName.trim() !== '' && state.partyName.trim() !== '' && state.when !== '' && isCompletePhone(state.hostPhone) && touched;
 
   // ORG 1a: the browser's permission prompt comes first, on its own; the drawer opens once it's answered.
   const tapLocation = () => { if (state.permission === 'unknown') setAsking(true); else setOpen(true); };
@@ -36,7 +36,7 @@ export function OrgCreateParty() {
       <Input label="Your name" value={state.hostName} onChange={(v) => update({ hostName: v })} placeholder="Your name" />
       <Input label="Party name" value={state.partyName} onChange={(v) => update({ partyName: v })} placeholder="Taco Tuesday" />
       <Input label="When" type="datetime-local" value={state.when} onChange={(v) => update({ when: v })} />
-      <Input label="Your phone" value={phone} onChange={setPhone} inputMode="tel" type="tel" placeholder="(111) 111-1111" />
+      <Input label="Your phone" value={state.hostPhone} onChange={(v) => update({ hostPhone: formatPhone(v) })} inputMode="tel" type="tel" placeholder="(111) 111-1111" />
       <button className="location-row" onClick={tapLocation}>
         <span className="t-body-med">Your location</span>
         <span className="hstack c-secondary t-secondary">{summary}<Chevron size={20} /></span>

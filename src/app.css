@@ -72,6 +72,12 @@ button.chip:active { transform: scale(0.95); }
 .chip--success { background: var(--bg-accent-tint); color: var(--text-accent); }
 .chip--info { background: var(--bg-info-tint); color: var(--text-primary); }
 .chip-row { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.chip--lg { min-height: 40px; padding: 10px 16px; font: 500 15px/20px var(--font-sans); }
+.chip-row--in > .chip { animation: fade-in var(--dur-base) var(--ease-out) both; }
+.chip-row--in > .chip:nth-child(2) { animation-delay: var(--stagger); }
+.chip-row--in > .chip:nth-child(3) { animation-delay: calc(var(--stagger) * 2); }
+.chip-row--in > .chip:nth-child(4) { animation-delay: calc(var(--stagger) * 3); }
+.chip-row--in > .chip:nth-child(5) { animation-delay: calc(var(--stagger) * 4); }
 
 /* Input */
 .input { display: flex; flex-direction: column; gap: 6px; }
@@ -203,7 +209,8 @@ button.chip:active { transform: scale(0.95); }
 
 /* Organizer screens B */
 .rcard { width: 100%; text-align: left; background: var(--bg-surface); border: 1px solid var(--border-hairline); border-radius: var(--radius-card); padding: 12px; display: flex; flex-direction: column; gap: 11px; transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast); }
-.rcard:active { transform: scale(0.985); }
+.rcard__main { display: flex; flex-direction: column; gap: 11px; width: 100%; text-align: left; transition: transform var(--dur-fast) var(--ease-out); }
+.rcard__main:active { transform: scale(0.985); }
 .rcard__photo { position: relative; height: 140px; border-radius: 10px; overflow: hidden; }
 .rcard__photo--tall { height: 160px; border-radius: 14px; }
 .rcard__photo img { width: 100%; height: 100%; object-fit: cover; }
@@ -253,9 +260,10 @@ button.chip:active { transform: scale(0.95); }
 /* Edit reservation */
 .radio { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--border-hairline); flex: none; transition: background var(--dur-fast), border-color var(--dur-fast); }
 .radio--on { background: var(--accent); border-color: var(--accent); box-shadow: inset 0 0 0 4px var(--bg-surface); }
-.stepper { display: inline-flex; align-items: center; align-self: flex-start; background: var(--bg-subtle); border-radius: var(--radius-input); }
-.stepper__btn { width: 44px; height: 44px; display: grid; place-items: center; transition: transform var(--dur-fast) var(--ease-out); }
+.stepper { display: inline-flex; align-items: center; align-self: flex-start; height: 40px; background: var(--bg-subtle); border-radius: var(--radius-pill); }
+.stepper__btn { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; font: 500 20px/20px var(--font-sans); transition: transform var(--dur-fast) var(--ease-out), background var(--dur-fast); }
+.stepper__btn:active { background: var(--border-hairline); }
 .stepper__btn:active { transform: scale(0.9); }
 .stepper__btn:disabled { opacity: 0.35; }
-.stepper__value { min-width: 36px; text-align: center; }
+.stepper__value { min-width: 36px; text-align: center; font: 500 15px/20px var(--font-sans); }
 .ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

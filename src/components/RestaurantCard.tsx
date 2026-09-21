@@ -2,16 +2,28 @@ import type { Restaurant } from '../fixtures';
 import { Chip } from './Chip';
 import { Chevron } from './icons';
 
-export function RestaurantCard({ restaurant: r, onOpen }: { restaurant: Restaurant; onOpen: () => void }) {
+type Props = {
+  restaurant: Restaurant;
+  /** A time slot the host tapped on this card; the detail sheet opens with it selected. */
+  picked: string | null;
+  onPick: (time: string | null) => void;
+  onOpen: () => void;
+};
+
+export function RestaurantCard({ restaurant: r, picked, onPick, onOpen }: Props) {
   return (
-    <button className="rcard" onClick={onOpen} aria-label={r.name}>
-      <div className="rcard__photo"><img src={r.photo} alt="" /><Chip className="rcard__tag">{r.reservations ? 'Takes reservations' : 'Walk-in only'}</Chip></div>
-      <div className="stack" style={{ padding: '0 4px 4px' }}>
-        <Chip variant="success" className="rcard__fair">Fair for everyone</Chip>
-        <div className="row"><span className="t-heading">{r.name}</span><Chevron size={20} /></div>
-        <span className="t-secondary c-secondary">{r.cuisine}</span>
-        <div className="chip-row">{r.times.map((t) => <Chip key={t}>{t.replace(' PM', '')}</Chip>)}</div>
+    <div className="rcard">
+      <button className="rcard__main" onClick={onOpen} aria-label={r.name}>
+        <div className="rcard__photo"><img src={r.photo} alt="" /><Chip className="rcard__tag">{r.reservations ? 'Takes reservations' : 'Walk-in only'}</Chip></div>
+        <div className="stack" style={{ padding: '0 4px' }}>
+          <Chip variant="success" className="rcard__fair">Fair for everyone</Chip>
+          <div className="row"><span className="t-heading">{r.name}</span><Chevron size={20} /></div>
+          <span className="t-secondary c-secondary">{r.cuisine}</span>
+        </div>
+      </button>
+      <div className="chip-row" style={{ padding: '0 4px 4px' }} role="group" aria-label={`${r.name} times`}>
+        {r.times.map((t) => <Chip key={t} variant={t === picked ? 'selected' : 'neutral'} onClick={() => onPick(t === picked ? null : t)}>{t.replace(' PM', '')}</Chip>)}
       </div>
-    </button>
+    </div>
   );
 }

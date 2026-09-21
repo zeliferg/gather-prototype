@@ -26,7 +26,8 @@ Vite 6 + React 19 + TypeScript (strict), react-router-dom 6, plain CSS.
   Priya), three Denver restaurants, all SMS copy.
 - `src/state.tsx` — `usePrototypeState()` → `[state, update, reset]`, backed
   by `sessionStorage`. Only tester choices go here. `reset()` is wired to the
-  "Prototype: start over" links on both entry screens.
+  "Prototype: start over" link on P 1 only (the host landing lost its link on
+  21 Sep 2026; a new tab is the host's reset).
 - `src/components/` — primitives (`Screen`, `Button`, `Chip`, `Input`,
   `Avatar`, `Segmented`, `CodeInput`), overlays (`Sheet`, `ActionSheet`,
   `PermissionDialog`, `Notification` — all portal to `document.body`,
@@ -35,7 +36,8 @@ Vite 6 + React 19 + TypeScript (strict), react-router-dom 6, plain CSS.
   `SmsScreen`, `MapView` (Leaflet + OpenStreetMap raster tiles, desaturated
   in CSS, draggable; ring and pins are React overlays re-projected on move;
   needs the "© OpenStreetMap contributors" attribution it renders),
-  `LocationPicker`, `Cover`, `DevHint`.
+  `LocationPicker`, `Cover`, `DevHint`, `ProgressButton` (spinner → check →
+  navigate; Verify, Join, Book, Set time), `phone.ts` (`formatPhone` as typed).
 - `src/party.ts` — `useParty()` layers what the tester typed on Create Party
   (name, party name, When) and manually added guests over the fixtures.
 - `src/screens/org/*` and `src/screens/p/*` — one file per Figma frame.
@@ -100,7 +102,13 @@ inline). The host
 "books" `BOOKING_DELAY_MS` (15 s) after the guest joins: `BookingWatcher`,
 mounted by `RouteShell` on guest routes, flips `guestBooked` and drops the
 banner on whatever screen is open; tapping it opens `PBooked`.
-Inert-by-design controls: Resend code, Choose from contacts, Choose from
+ORG 12 (host morning-after text) has no in-app link since 21 Sep 2026: reach
+it by `/org/sms-after`. Resend code is live: the link reports progress, a
+Messages banner brings a second code, the boxes refill. ORG 6 card time chips
+are tappable and carry into ORG 6c; opening a card without one shows no slot
+selected and the CTA waits for a time. Party size changes the slots on ORG 8
+and ORG 11 (`slotsFor`, `bigTableTimes` from 7 guests). Inert-by-design
+controls: Choose from contacts, Choose from
 photos / Take a photo (both just restore the photo cover), Add preferences,
 Edit info, See full menu, Cancel reservation. "Share invite link" uses the
 Web Share API where available and falls back to copy.

@@ -1,10 +1,14 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Notification } from './Notification';
 
-type Props = { value: string; onChange: (v: string) => void; autofill?: string };
+type Props = { value: string; onChange: (v: string) => void; autofill?: string; /** bump to replay the autofill (a resent code) */ fillNonce?: number };
+
+export const FIRST_CODE = '428913';
+export const RESENT_CODE = '917204';
 
 // Boxes start empty. Tapping the field plays the one-time-code autofill: digits land one by
 // one (each box pops via .code__box:not(:empty)), the way iOS fills a code from Messages.
-export function CodeInput({ value, onChange, autofill = '428913' }: Props) {
+export function CodeInput({ value, onChange, autofill = FIRST_CODE, fillNonce = 0 }: Props) {
   const ref = useRef<HTMLInputElement>(null);
   const [filling, setFilling] = useState(false);
   const digits = value.replace(/\D/g, '').slice(0, 6);
@@ -18,6 +22,13 @@ export function CodeInput({ value, onChange, autofill = '428913' }: Props) {
     return () => clearTimeout(t);
   }, [filling, digits, autofill, onChange]);
 
+  // A resent code arrives the same way: the boxes empty, then fill again.
+  useEffect(() => {
+    if (fillNonce === 0) return;
+    onChange('');
+    setFilling(true);
+  }, [fillNonce]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const tap = () => { ref.current?.focus(); if (digits.length === 0) setFilling(true); };
 
   return (
@@ -28,5 +39,34 @@ export function CodeInput({ value, onChange, autofill = '428913' }: Props) {
         <span key={i} className={`code__box t-heading ${i === digits.length ? 'code__box--active' : ''}`}>{digits[i] ?? ''}</span>
       ))}
     </div>
+  );
+}
+
+const SEND_MS = 900;
+const SENT_MS = 2400;
+
+/** "Didn't get it? Resend code": sends, a Messages banner brings the new code, and the boxes refill with it. */
+export function ResendCode({ onResent }: { onResent: (code: string) => void }) {
+  const [state, setState] = useState<'idle' | 'sending' | 'sent'>('idle');
+  const [banner, setBanner] = useState(false);
+  const closeBanner = useCallback(() => setBanner(false), []);
+
+  useEffect(() => {
+    if (state === 'idle') return;
+    const t = setTimeout(() => {
+      if (state === 'sending') { setState('sent'); setBanner(true); onResent(RESENT_CODE); } else setState('idle');
+    }, state === 'sending' ? SEND_MS : SENT_MS);
+    return () => clearTimeout(t);
+  }, [state]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return (
+    <>
+      <button className="link t-secondary" style={{ alignSelf: 'center' }} disabled={state !== 'idle'} aria-live="polite" onClick={() => setState('sending')}>
+        {state === 'idle' && "Didn't get it? Resend code"}
+        {state === 'sending' && 'Sending a new code…'}
+        {state === 'sent' && 'New code sent'}
+      </button>
+      <Notification open={banner} onClose={closeBanner} text={`Your Gather code is ${RESENT_CODE}. It expires in 10 minutes.`} />
+    </>
   );
 }

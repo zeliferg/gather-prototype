@@ -1,13 +1,14 @@
 // Not in Figma yet: the guest's join screen (after P 2 Verify). Location and optional preferences live here;
 // the map itself is P 3 (/p/location). Editing later happens in P 3b's Your info drawer.
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Screen } from '../../components/Screen';
 import { Button } from '../../components/Button';
+import { ProgressButton } from '../../components/ProgressButton';
 import { Chip } from '../../components/Chip';
 import { Sheet } from '../../components/Sheet';
 import { PermissionDialog } from '../../components/PermissionDialog';
-import { Check, Chevron } from '../../components/icons';
+import { Chevron } from '../../components/icons';
 import { party, permissionBody, prefGroups, radiusOptions } from '../../fixtures';
 import { usePrototypeState } from '../../state';
 
@@ -17,7 +18,7 @@ export function PJoinInfo() {
   const [asking, setAsking] = useState(false);
   const [prefsOpen, setPrefsOpen] = useState(false);
   const [draft, setDraft] = useState<string[]>(state.prefs);
-  const [phase, setPhase] = useState<'idle' | 'busy' | 'done'>('idle');
+  const [joining, setJoining] = useState(false);
   const radius = radiusOptions.find((o) => o.value === state.radiusMi)!.label;
   const locationSummary = state.locationSet ? `${state.locationMode === 'pin' ? 'RiNo' : 'Downtown'} · within ${radius}` : 'Tap to set';
   const prefsSummary = state.prefs.length ? state.prefs.join(', ') : 'Tap to add';
@@ -32,26 +33,16 @@ export function PJoinInfo() {
   const join = (flexible: boolean) => update({ joined: true, flexible, droppedOut: false, joinedAt: state.joinedAt ?? Date.now() });
   const go = (flexible: boolean) => { join(flexible); navigate('/p/waiting'); };
 
-  // Join the party: spinner while "joining", a check, then the party page (same beat as Verify).
-  useEffect(() => {
-    if (phase === 'idle') return;
-    const t = setTimeout(() => {
-      if (phase === 'busy') { join(false); setPhase('done'); } else navigate('/p/waiting');
-    }, phase === 'busy' ? 900 : 550);
-    return () => clearTimeout(t);
-  }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
   const toggle = (o: string) => setDraft((d) => (d.includes(o) ? d.filter((x) => x !== o) : [...d, o]));
 
   return (
     <Screen back title={`Join ${party.name}`}
       subtitle="Add where you're coming from so we can find a spot that's fair for everyone. Nobody sees your exact location."
       footer={<>
-          <Button className={`btn--progress btn--${phase}`} onClick={() => setPhase('busy')} disabled={!state.locationSet || phase !== 'idle'} aria-live="polite">
-            {phase === 'idle' && 'Join the party'}
-            {phase === 'busy' && <><span className="spinner" aria-hidden />Joining…</>}
-            {phase === 'done' && <><span className="btn__check" aria-hidden><Check size={20} /></span>You're in</>}
-          </Button>
-          <Button variant="ghost" onClick={() => go(true)} disabled={phase !== 'idle'}>I'm flexible, skip this</Button>
+          {/* Join the party: spinner while "joining", a check, then the party page (same beat as Verify). */}
+          <ProgressButton idle="Join the party" busy="Joining…" done="You're in" busyMs={900} disabled={!state.locationSet}
+            onStart={() => setJoining(true)} onBusyEnd={() => join(false)} onDone={() => navigate('/p/waiting')} />
+          <Button variant="ghost" onClick={() => go(true)} disabled={joining}>I'm flexible, skip this</Button>
         </>}>
       <button className="location-row" onClick={tapLocation}>
         <span className="t-body-med">My location</span>
