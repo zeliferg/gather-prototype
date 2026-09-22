@@ -1,5 +1,5 @@
 import { guests as fixtureGuests, party, type Guest } from './fixtures';
-import { usePrototypeState } from './state';
+import { usePrototypeState, type AddedGuest } from './state';
 
 export function formatWhen(when: string): { dateLong: string; dateShort: string; time: string } | null {
   if (!when) return null;
@@ -12,6 +12,12 @@ export function formatWhen(when: string): { dateLong: string; dateShort: string;
   };
 }
 
+/** The host's guest list: fixtures minus anyone removed, plus manually added guests (always waiting). */
+export function deriveGuests(removedIds: string[], added: AddedGuest[]): { all: Guest[]; coming: Guest[]; out: Guest[] } {
+  const all: Guest[] = [...fixtureGuests.filter((g) => !removedIds.includes(g.id)), ...added.map((g) => ({ ...g, status: 'waiting' as const }))];
+  return { all, coming: all.filter((g) => g.status !== 'out'), out: all.filter((g) => g.status === 'out') };
+}
+
 /** Party labels and guest list, with whatever the tester typed on Create Party layered over the fixtures. */
 export function useParty() {
   const [state] = usePrototypeState();
@@ -21,12 +27,15 @@ export function useParty() {
   const dateLong = when?.dateLong ?? party.dateLong;
   const dateShort = when?.dateShort ?? party.dateShort;
   const targetTime = when?.time ?? party.time;
-  const guests: Guest[] = [...fixtureGuests, ...state.addedGuests.map((g) => ({ ...g, status: 'waiting' as const }))];
+  const { all, coming, out } = deriveGuests(state.removedIds, state.addedGuests);
   return {
     name, hostName, dateLong, dateShort, targetTime,
     roughTime: `${dateLong} · around ${targetTime}`,
     bookedTime: `${dateLong} at ${state.selectedTime}`,
-    guests,
+    /** everyone on the list, including those who can't make it */
+    guests: all,
+    coming,
+    out,
     size: state.partySize,
   };
 }

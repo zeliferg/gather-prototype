@@ -1,4 +1,4 @@
-import type { Restaurant } from '../fixtures';
+import { partner, type Restaurant } from '../fixtures';
 import { Chip } from './Chip';
 import { Chevron } from './icons';
 
@@ -14,9 +14,9 @@ export function RestaurantCard({ restaurant: r, picked, onPick, onOpen }: Props)
   return (
     <div className="rcard">
       <button className="rcard__main" onClick={onOpen} aria-label={r.name}>
-        <div className="rcard__photo"><img src={r.photo} alt="" /><Chip className="rcard__tag">{r.reservations ? 'Takes reservations' : 'Walk-in only'}</Chip></div>
+        <div className="rcard__photo"><img src={r.photo} alt="" /><Chip className="rcard__tag">{r.reservations ? `Reserve on ${partner}` : 'Walk-in only'}</Chip></div>
         <div className="stack" style={{ padding: '0 4px' }}>
-          <Chip variant="success" className="rcard__fair">Fair for everyone</Chip>
+          <Chip variant="success" className="rcard__fair">Close to everyone</Chip>
           <div className="row"><span className="t-heading">{r.name}</span><Chevron size={20} /></div>
           <span className="t-secondary c-secondary">{r.cuisine}</span>
         </div>

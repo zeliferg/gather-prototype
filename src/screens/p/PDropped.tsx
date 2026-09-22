@@ -4,11 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { Screen } from '../../components/Screen';
 import { Button } from '../../components/Button';
 import { Chip } from '../../components/Chip';
-import { Avatar } from '../../components/Avatar';
+import { AvatarStack } from '../../components/Avatar';
 import { Sheet } from '../../components/Sheet';
 import { GuestRow } from '../../components/GuestRow';
 import { Chevron } from '../../components/icons';
-import { guests, me, party } from '../../fixtures';
+import { guestsComing as guests, me, party } from '../../fixtures';
 import { usePrototypeState } from '../../state';
 
 export function PDropped() {
@@ -28,10 +28,7 @@ export function PDropped() {
         <h2 className="t-heading">Who's coming</h2>
         <button className="hstack link t-label" onClick={() => setWho(true)}>See everyone <Chevron size={18} /></button>
       </div>
-      <div className="avatar-stack">
-        {others.slice(0, 3).map((g) => <Avatar key={g.id} initial={g.initial} />)}
-        {others.length > 3 && <span className="avatar avatar--more t-label" style={{ width: 40, height: 40 }}>+{others.length - 3}</span>}
-      </div>
+      <AvatarStack guests={others} />
       <Sheet open={who} onClose={() => setWho(false)} title="Who's coming" subtitle={`${others.length} people, without you`}>
         <div className="list">
           {others.map((g) => <GuestRow key={g.id} guest={g} right={g.status === 'host' ? <Chip variant="info">Host</Chip> : null} />)}

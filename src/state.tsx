@@ -23,6 +23,8 @@ export type PrototypeState = {
   when: string; // datetime-local value, '' until the host picks one
   locationSet: boolean; // the guest saved a location on the map screen
   prefs: string[];
+  hostPrefs: string[]; // the host's own preferences, set on Create Party
+  removedIds: string[]; // guests the host removed from See everyone
   joinedAt: number | null; // ms epoch; the host "books" BOOKING_DELAY_MS after this
 };
 
@@ -51,6 +53,8 @@ export const defaultState: PrototypeState = {
   when: '',
   locationSet: false,
   prefs: [],
+  hostPrefs: [],
+  removedIds: [],
   joinedAt: null,
 };
 

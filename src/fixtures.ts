@@ -1,4 +1,5 @@
-export type Guest = { id: string; name: string; initial: string; status: 'host' | 'responded' | 'waiting' };
+/** `out` = replied "can't make it"; they stay on the host's list until removed but never count as coming. */
+export type Guest = { id: string; name: string; initial: string; status: 'host' | 'responded' | 'waiting' | 'out'; avatar?: string; note?: string };
 export type RestaurantId = 'tavola' | 'corner' | 'noodle';
 export type Restaurant = {
   id: RestaurantId; name: string; cuisine: string; address: string; hours: string;
@@ -24,16 +25,24 @@ export const party = {
   size: 5,
 };
 
+// Memoji-style avatars in public/avatars; a real Memoji export dropped there as <id>.png replaces one.
 export const guests: Guest[] = [
-  { id: 'jordan', name: 'Jordan Reyes', initial: 'J', status: 'host' },
-  { id: 'priya', name: 'Priya Nair', initial: 'P', status: 'responded' },
-  { id: 'marcus', name: 'Marcus Webb', initial: 'M', status: 'responded' },
-  { id: 'alex', name: 'Alex Chen', initial: 'A', status: 'waiting' },
-  { id: 'sam', name: 'Sam Okafor', initial: 'S', status: 'waiting' },
+  { id: 'jordan', name: 'Jordan Reyes', initial: 'J', status: 'host', avatar: '/avatars/jordan.svg' },
+  { id: 'priya', name: 'Priya Nair', initial: 'P', status: 'responded', avatar: '/avatars/priya.svg' },
+  { id: 'marcus', name: 'Marcus Webb', initial: 'M', status: 'responded', avatar: '/avatars/marcus.svg' },
+  { id: 'alex', name: 'Alex Chen', initial: 'A', status: 'waiting', avatar: '/avatars/alex.svg' },
+  { id: 'sam', name: 'Sam Okafor', initial: 'S', status: 'waiting', avatar: '/avatars/sam.svg' },
+  { id: 'leo', name: 'Leo Martins', initial: 'L', status: 'out', avatar: '/avatars/leo.svg', note: 'Away that weekend' },
 ];
+
+/** Everyone who might still show up: what the guest side calls "who's coming" and what the table is sized for. */
+export const guestsComing = guests.filter((g) => g.status !== 'out');
 
 // The participant tester plays Priya.
 export const me = guests[1];
+
+/** The reservations partner the host books through. */
+export const partner = 'OpenTable';
 
 export const restaurants: Restaurant[] = [
   { id: 'tavola', name: 'Tavola Verde', cuisine: 'Italian, $$', address: '214 Elm Street', hours: 'Open until 10 PM', reservations: true, times: ['6:30 PM', '7:00 PM', '7:30 PM', '8:00 PM'], bigTableTimes: ['6:30 PM', '8:00 PM'], photo: '/photos/tavola.jpg', pin: { x: 0.26, y: 0.2 } },

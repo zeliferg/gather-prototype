@@ -5,7 +5,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Screen } from '../../components/Screen';
 import { Button } from '../../components/Button';
 import { Chip } from '../../components/Chip';
-import { Avatar } from '../../components/Avatar';
+import { AvatarStack } from '../../components/Avatar';
+import { PreferenceChips } from '../../components/Preferences';
 import { Input } from '../../components/Input';
 import { Sheet } from '../../components/Sheet';
 import { ActionSheet } from '../../components/ActionSheet';
@@ -13,7 +14,7 @@ import { GuestRow } from '../../components/GuestRow';
 import { DevHint } from '../../components/DevHint';
 import { PermissionDialog } from '../../components/PermissionDialog';
 import { Chevron } from '../../components/icons';
-import { guests, me, party, permissionBody, prefGroups, radiusOptions, restaurants } from '../../fixtures';
+import { guestsComing as guests, me, party, permissionBody, radiusOptions, restaurants } from '../../fixtures';
 import { usePrototypeState } from '../../state';
 
 export function PWaiting() {
@@ -75,10 +76,7 @@ export function PWaiting() {
         <h2 className="t-heading">Who's coming</h2>
         <button className="hstack link t-label" onClick={() => setWho(true)}>See everyone <Chevron size={18} /></button>
       </div>
-      <div className="avatar-stack">
-        {guests.slice(0, 3).map((g) => <Avatar key={g.id} initial={g.initial} />)}
-        <span className="avatar avatar--more t-label" style={{ width: 40, height: 40 }}>+{guests.length - 3}</span>
-      </div>
+      <AvatarStack guests={guests} />
       <div className="card">
         <div className="row"><span className="t-body-med">Your info</span><button className="link t-label" onClick={openInfo}>Edit</button></div>
         <p className="t-secondary c-secondary">{state.flexible && !state.locationSet ? "You're flexible." : `${state.locationMode === 'pin' ? 'RiNo' : 'Downtown'}, within ${radius}.`}{state.prefs.length ? ` ${state.prefs.join(', ')}.` : ''}</p>
@@ -92,12 +90,7 @@ export function PWaiting() {
           <span className="t-body-med">My location</span>
           <span className="hstack c-secondary t-secondary">{locationSummary}<Chevron size={20} /></span>
         </button>
-        {prefGroups.map((g) => (
-          <div key={g.label} className="stack">
-            <p className="t-caption c-secondary">{g.label}</p>
-            <div className="chip-row">{g.options.map((o) => <Chip key={o} variant={prefDraft.includes(o) ? 'selected' : 'neutral'} onClick={() => togglePref(o)}>{o}</Chip>)}</div>
-          </div>
-        ))}
+        <PreferenceChips value={prefDraft} onToggle={togglePref} />
         <Button onClick={() => { update({ prefs: prefDraft }); setInfo(false); }}>Save</Button>
       </Sheet>
       <PermissionDialog open={asking} body={permissionBody.guest} onAllow={() => answered('granted')} onDeny={() => answered('denied')} />

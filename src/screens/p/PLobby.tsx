@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Screen } from '../../components/Screen';
 import { Button } from '../../components/Button';
 import { Avatar } from '../../components/Avatar';
-import { party } from '../../fixtures';
+import { guests, party } from '../../fixtures';
 
 export function PLobby() {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ export function PLobby() {
         <h1 className="t-title">{party.name}</h1>
         <p className="t-secondary c-secondary">{party.roughTime}</p>
       </div>
-      <div className="hstack" style={{ justifyContent: 'center' }}><Avatar initial="J" size={32} /><span className="t-secondary">Hosted by {party.hostFirst}</span></div>
+      <div className="hstack" style={{ justifyContent: 'center' }}><Avatar initial="J" photo={guests[0].avatar} size={32} /><span className="t-secondary">Hosted by {party.hostFirst}</span></div>
       <div className="divider" />
       <div className="avatar-stack" style={{ justifyContent: 'center' }}><Avatar initial="A" /><Avatar initial="C" /><span className="avatar avatar--more t-label" style={{ width: 40, height: 40 }}>+3</span></div>
       <p className="t-secondary c-secondary" style={{ textAlign: 'center' }}>A., C., and 3 others are in. Names show once you join.</p>

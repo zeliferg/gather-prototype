@@ -80,7 +80,7 @@ export function MapView({ mode, radiusMi = 2, height = 220, onSelectPin }: Props
         {mode === 'pin' && <span className="map__pin" style={project(pin)}><Pin size={28} /></span>}
         {mode === 'options' && (
           <>
-            <span className="map__fair" style={project(fairCoords)}><span className="map__fair-dot" /><span className="t-label">Middle of the group</span></span>
+            <span className="map__fair" style={project(fairCoords)} role="img" aria-label="Middle of the group"><span className="map__fair-dot" /></span>
             {restaurants.map((r) => (
               <button key={r.id} className="map__option t-label" style={project(restaurantCoords[r.id])} onClick={() => onSelectPin?.(r.id)}>
                 <span className="map__dot" />{r.name}

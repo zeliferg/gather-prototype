@@ -6,7 +6,7 @@ type Props = {
   back?: boolean | (() => void);
   title?: string;
   subtitle?: string;
-  /** Small centred label in the header row (e.g. the "Gather" wordmark on Landing). */
+  /** Centred wordmark in the header row (Landing). */
   brand?: string;
   right?: ReactNode;
   footer?: ReactNode;
@@ -23,7 +23,7 @@ export function Screen({ back, title, subtitle, brand, right, footer, className,
         {back ? (
           <button className="icon-btn" aria-label="Back" onClick={onBack}><Back /></button>
         ) : <span />}
-        {brand && <span className="screen__brand t-label">{brand}</span>}
+        {brand && <span className="screen__brand">{brand}</span>}
         {right ?? <span />}
       </div>
       <div className="screen__body">

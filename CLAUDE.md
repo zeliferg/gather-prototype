@@ -22,12 +22,16 @@ Vite 6 + React 19 + TypeScript (strict), react-router-dom 6, plain CSS.
   motion durations live. No hex or `ms` literals anywhere else (structural px
   like touch-target sizes are fine). Reduced motion zeroes every `--dur-*`,
   `--delay-*`, `--stagger` token.
-- `src/fixtures.ts` — Jordan's Dinner, five guests (the participant tester is
-  Priya), three Denver restaurants, all SMS copy.
+- `src/fixtures.ts` — Jordan's Dinner, six guests (the participant tester is
+  Priya; Leo replied "can't make it" and is `status: 'out'`), three Denver
+  restaurants, the `partner` (OpenTable), all SMS copy. `guestsComing` is
+  the guest-side list; the host side goes through `useParty().coming/out`.
+  Memoji-style avatars are hand-drawn SVGs in `public/avatars/<id>.svg`
+  (`Avatar` falls back to the initial when there is no photo).
 - `src/state.tsx` — `usePrototypeState()` → `[state, update, reset]`, backed
   by `sessionStorage`. Only tester choices go here. `reset()` is wired to the
-  "Prototype: start over" link on P 1 only (the host landing lost its link on
-  21 Sep 2026; a new tab is the host's reset).
+  "Prototype: start over" link on P 1 and to "Start over" at the foot of
+  ORG 10 (the host landing lost its link on 21 Sep 2026).
 - `src/components/` — primitives (`Screen`, `Button`, `Chip`, `Input`,
   `Avatar`, `Segmented`, `CodeInput`), overlays (`Sheet`, `ActionSheet`,
   `PermissionDialog`, `Notification` — all portal to `document.body`,
@@ -37,9 +41,13 @@ Vite 6 + React 19 + TypeScript (strict), react-router-dom 6, plain CSS.
   in CSS, draggable; ring and pins are React overlays re-projected on move;
   needs the "© OpenStreetMap contributors" attribution it renders),
   `LocationPicker`, `Cover`, `DevHint`, `ProgressButton` (spinner → check →
-  navigate; Verify, Join, Book, Set time), `phone.ts` (`formatPhone` as typed).
+  navigate; Verify, Join, Book, Set time), `phone.ts` (`formatPhone` as typed),
+  `Preferences` (`PreferencesSheet` = P 2b, used by the guest join screen and
+  the host's Create Party; `PreferenceChips` inline in the guest's Your info
+  drawer), `AvatarStack` (up to 5 faces then "+N").
 - `src/party.ts` — `useParty()` layers what the tester typed on Create Party
-  (name, party name, When) and manually added guests over the fixtures.
+  (name, party name, When), manually added guests and removed guests over the
+  fixtures (`deriveGuests` is the pure, tested part).
 - `src/screens/org/*` and `src/screens/p/*` — one file per Figma frame.
 - `src/flow.ts` — `FLOW` from `VITE_FLOW` (`host|participant|all`), validated,
   falls back to `all`. `src/router.tsx` registers only that track's routes.
@@ -109,8 +117,17 @@ are tappable and carry into ORG 6c; opening a card without one shows no slot
 selected and the CTA waits for a time. Party size changes the slots on ORG 8
 and ORG 11 (`slotsFor`, `bigTableTimes` from 7 guests). Inert-by-design
 controls: Choose from contacts, Choose from
-photos / Take a photo (both just restore the photo cover), Add preferences,
-Edit info, See full menu, Cancel reservation. "Share invite link" uses the
+photos / Take a photo (both just restore the photo cover),
+Edit info, See full menu, Cancel reservation. Since 22 Sep 2026: the hub's
+Guests card is faces + "3 of 5 responded · 1 can't make it" (no bar), and
+once everyone's in it shows an "Everyone's in" chip plus a Places card whose
+rows open ORG 6 with that place's sheet already up (`location.state.open`);
+See everyone rows (except the host) open an ActionSheet (Send a reminder /
+Remove from the party) and guests who can't make it sit in their own group;
+"Fair for everyone" is now "Close to everyone" and the map's centre is a
+pulsing dot with no label; ORG 6c lists address / hours / booking as icon
+rows; ORG 10 ends with a small "Start over" link that resets the tab; the
+host picks preferences on ORG 1 (`hostPrefs`, separate from the guest's). "Share invite link" uses the
 Web Share API where available and falls back to copy.
 Deferred polish: `Segmented` uses `role=tab` (should be radiogroup), sheets
 lack focus trapping/Escape/swipe-to-dismiss, type scale is px not rem, the

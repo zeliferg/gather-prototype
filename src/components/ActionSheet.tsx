@@ -1,7 +1,7 @@
 import { createPortal } from 'react-dom';
 import { usePresence } from './usePresence';
 
-type Option = { label: string; onSelect?: () => void };
+type Option = { label: string; onSelect?: () => void; /** red: removes or cancels something */ danger?: boolean };
 type Props = { open: boolean; title: string; options: Option[]; onClose: () => void };
 
 export function ActionSheet({ open, title, options, onClose }: Props) {
@@ -14,7 +14,7 @@ export function ActionSheet({ open, title, options, onClose }: Props) {
         <div className="action-sheet__group">
           <div className="action-sheet__title t-caption c-secondary">{title}</div>
           {options.map((o) => (
-            <button key={o.label} className="action-sheet__option t-body c-accent" onClick={() => { o.onSelect?.(); onClose(); }}>{o.label}</button>
+            <button key={o.label} className={`action-sheet__option t-body ${o.danger ? 'action-sheet__option--danger' : 'c-accent'}`} onClick={() => { o.onSelect?.(); onClose(); }}>{o.label}</button>
           ))}
         </div>
         <div className="action-sheet__group">

@@ -7,6 +7,7 @@ import { Input } from '../../components/Input';
 import { Sheet } from '../../components/Sheet';
 import { PermissionDialog } from '../../components/PermissionDialog';
 import { LocationPicker } from '../../components/LocationPicker';
+import { PreferencesSheet } from '../../components/Preferences';
 import { Chevron } from '../../components/icons';
 import { formatPhone, isCompletePhone } from '../../components/phone';
 import { permissionBody, radiusOptions } from '../../fixtures';
@@ -18,6 +19,8 @@ export function OrgCreateParty() {
   const [asking, setAsking] = useState(false);
   const [open, setOpen] = useState(false);
   const [touched, setTouched] = useState(false);
+  const [prefsOpen, setPrefsOpen] = useState(false);
+  const prefsSummary = state.hostPrefs.length ? state.hostPrefs.join(', ') : 'Tap to add';
   const radius = radiusOptions.find((o) => o.value === state.radiusMi)!.label;
   const summary = touched ? `${state.locationMode === 'pin' ? 'RiNo' : 'Downtown'} · within ${radius}` : 'Tap to set';
   const complete = state.hostName.trim() !== '' && state.partyName.trim() !== '' && state.when !== '' && isCompletePhone(state.hostPhone) && touched;
@@ -41,6 +44,12 @@ export function OrgCreateParty() {
         <span className="t-body-med">Your location</span>
         <span className="hstack c-secondary t-secondary">{summary}<Chevron size={20} /></span>
       </button>
+      <button className="location-row" onClick={() => setPrefsOpen(true)}>
+        <span className="t-body-med">Preferences (optional)</span>
+        <span className="hstack c-secondary t-secondary" style={{ minWidth: 0 }}><span className="ellipsis">{prefsSummary}</span><Chevron size={20} /></span>
+      </button>
+      <p className="t-caption c-secondary">Guests add theirs when they join. Preferences shape the list, they don't limit it.</p>
+      <PreferencesSheet open={prefsOpen} onClose={() => setPrefsOpen(false)} value={state.hostPrefs} onSave={(hostPrefs) => update({ hostPrefs })} />
       <PermissionDialog open={asking} body={permissionBody.host} onAllow={() => answered('granted')} onDeny={() => answered('denied')} />
       <Sheet open={open} onClose={() => setOpen(false)} title="Your location" subtitle="Only used to find a fair spot. Guests never see it.">
         <LocationPicker context="host" askPermission={false} />

@@ -8,13 +8,13 @@ import { useParty } from '../../party';
 
 export function OrgListReady() {
   const navigate = useNavigate();
-  const { guests } = useParty();
+  const { coming } = useParty();
   return (
     <Screen className="landing" right={<button className="icon-btn icon-btn--right" aria-label="Close" onClick={() => navigate('/org/hub')}><Close /></button>}
       footer={<Button onClick={() => navigate('/org/options')}>Browse places</Button>}>
-      <GatheringCircle initials={guests.map((g) => g.initial)} centerCheck />
+      <GatheringCircle seats={coming} centerCheck />
       <h1 className="t-display" style={{ textAlign: 'center' }}>Everyone's in</h1>
-      <p className="t-secondary c-secondary" style={{ textAlign: 'center' }}>All {guests.length} responded. We found 3 places that are fair for the whole group.</p>
+      <p className="t-secondary c-secondary" style={{ textAlign: 'center' }}>All {coming.length} responded. We found 3 places close to everyone.</p>
     </Screen>
   );
 }
