@@ -6,11 +6,12 @@ import { Button } from '../../components/Button';
 import { Chip } from '../../components/Chip';
 import { AvatarStack } from '../../components/Avatar';
 import { Cover } from '../../components/Cover';
+import { CoverSheet } from '../../components/CoverSheet';
 import { ActionSheet } from '../../components/ActionSheet';
 import { Notification } from '../../components/Notification';
 import { Chevron } from '../../components/icons';
 import { restaurants, sms } from '../../fixtures';
-import { usePrototypeState } from '../../state';
+import { usePrototypeState, type CoverChoice } from '../../state';
 import { useParty } from '../../party';
 
 export function OrgParty() {
@@ -21,11 +22,12 @@ export function OrgParty() {
   const r = restaurants.find((x) => x.id === state.selectedRestaurant)!;
   const [banner, setBanner] = useState<boolean>(location.state?.banner === 'reservationChanged');
   const [directions, setDirections] = useState(false);
+  const [coverOpenedOn, setCoverOpenedOn] = useState<CoverChoice | null>(null);
   const [calendar, setCalendar] = useState(false);
   const closeBanner = useCallback(() => setBanner(false), []);
   return (
     <Screen>
-      <Cover choice={state.cover} />
+      <Cover choice={state.cover}><Chip className="cover__edit" onClick={() => setCoverOpenedOn(state.cover)}>{state.cover === 'none' ? 'Add cover' : 'Edit cover'}</Chip></Cover>
       <div className="screen__title">
         <h1 className="t-title">{name}</h1>
         <p className="t-secondary c-secondary">{bookedTime}</p>
@@ -48,7 +50,8 @@ export function OrgParty() {
       <p className="t-caption c-secondary" style={{ textAlign: 'center' }}>Any change texts everyone and updates their calendar invite.</p>
       {/* The end of the flow: a small way back to the start, which also clears everything this tab chose. */}
       <button className="link t-label" style={{ alignSelf: 'center', padding: '4px 12px', marginBottom: 8 }} onClick={() => { reset(); navigate('/org'); }}>Start over</button>
-      <Notification open={banner} onClose={closeBanner} text={`${sms.reservationChanged.text} ${r.name}, ${dateShort} at ${state.selectedTime}. Details: ${sms.reservationChanged.link}`} />
+      <Notification open={banner} onClose={closeBanner} text={`${sms.reservationChanged(name).text} ${r.name}, ${dateShort} at ${state.selectedTime}. Details: ${sms.reservationChanged(name).link}`} />
+      <CoverSheet original={coverOpenedOn} onClose={() => setCoverOpenedOn(null)} />
       <ActionSheet open={directions} onClose={() => setDirections(false)} title={`Open ${r.name} in`}
         options={[{ label: 'Apple Maps' }, { label: 'Google Maps' }, { label: 'Waze' }, { label: 'Copy address' }]} />
       <ActionSheet open={calendar} onClose={() => setCalendar(false)} title={`Add ${name} to`}

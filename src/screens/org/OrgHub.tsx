@@ -9,12 +9,14 @@ import { Sheet } from '../../components/Sheet';
 import { ActionSheet } from '../../components/ActionSheet';
 import { Input } from '../../components/Input';
 import { Cover } from '../../components/Cover';
+import { CoverSheet } from '../../components/CoverSheet';
+import { PreferencesSheet } from '../../components/Preferences';
 import { Notification } from '../../components/Notification';
 import { GuestRow } from '../../components/GuestRow';
 import { Chevron, Plus } from '../../components/icons';
 import { formatPhone, isCompletePhone } from '../../components/phone';
-import { coverColours, party, restaurants, sms, type Guest } from '../../fixtures';
-import { usePrototypeState } from '../../state';
+import { party, restaurants, sms, type Guest } from '../../fixtures';
+import { usePrototypeState, type CoverChoice } from '../../state';
 import { useParty } from '../../party';
 
 export function OrgHub() {
@@ -26,12 +28,12 @@ export function OrgHub() {
   const [everyone, setEveryone] = useState(false);
   const [editing, setEditing] = useState(false);
   const [adding, setAdding] = useState(false);
-  const [cover, setCover] = useState(false);
+  const [coverOpenedOn, setCoverOpenedOn] = useState<CoverChoice | null>(null);
+  const [prefsOpen, setPrefsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [sending, setSending] = useState(false);
   const [acting, setActing] = useState<Guest | null>(null); // the guest whose action sheet is open
   const [draft, setDraft] = useState({ name, when: state.when || party.whenIso });
-  const [coverDraft, setCoverDraft] = useState(state.cover);
   const [invited, setInvited] = useState<string | null>(null);
   const [newGuest, setNewGuest] = useState({ name: '', phone: '' });
   const respondedCount = sending || state.everyoneIn ? coming.length : coming.filter((g) => g.status !== 'waiting').length;
@@ -39,7 +41,8 @@ export function OrgHub() {
   const closeBanner = useCallback(() => setBanner(false), []);
   const closeInvited = useCallback(() => setInvited(null), []);
   const guestReady = newGuest.name.trim() !== '' && isCompletePhone(newGuest.phone);
-  const countLine = `${respondedCount} of ${coming.length} responded${out.length ? ` · ${out.length} can't make it` : ''}`;
+  const countLine = `${respondedCount} of ${coming.length} responded`;
+  const sheetLine = `${countLine}${out.length ? ` · ${out.length} can't make it` : ''}`;
 
   useEffect(() => {
     if (!sending) return;
@@ -71,7 +74,7 @@ export function OrgHub() {
   };
   const statusChip = (g: Guest) =>
     g.status === 'host' ? <Chip variant="info">Host</Chip>
-    : g.status === 'out' ? <Chip>Can't make it</Chip>
+    : g.status === 'out' ? <Chip variant="danger">Can't make it</Chip>
     : g.status === 'responded' || state.everyoneIn ? <Chip variant="success">Responded</Chip>
     : state.remindedIds.includes(g.id) ? <Chip variant="success" className="chip--swap">Reminder sent</Chip>
     : <Chip>Waiting</Chip>;
@@ -82,13 +85,19 @@ export function OrgHub() {
       <Button variant="secondary" onClick={() => setSending(true)} disabled={sending || waiting === 0}>Remind the {waiting} who haven't</Button>
       <Button onClick={share}>Share invite link</Button>
     </>}>
-      <Cover choice={state.cover}><Chip className="cover__edit" onClick={() => { setCoverDraft(state.cover); setCover(true); }}>{state.cover === 'none' ? 'Add cover' : 'Edit cover'}</Chip></Cover>
+      <Cover choice={state.cover}><Chip className="cover__edit" onClick={() => setCoverOpenedOn(state.cover)}>{state.cover === 'none' ? 'Add cover' : 'Edit cover'}</Chip></Cover>
       <div className="screen__title">
         <h1 className="t-title">{name}</h1>
         <div className="row">
           <p className="t-secondary c-secondary">{roughTime}</p>
           <button className="link t-label" onClick={() => { setDraft({ name, when: state.when || party.whenIso }); setEditing(true); }}>Edit details</button>
         </div>
+        {/* The host's preferences from Create Party, when there are any; tap to change them */}
+        {state.hostPrefs.length > 0 && (
+          <button className="chip-row" aria-label="Preferences" onClick={() => setPrefsOpen(true)} style={{ marginTop: 6 }}>
+            {state.hostPrefs.map((p) => <Chip key={p} className="chip--sm">{p}</Chip>)}
+          </button>
+        )}
       </div>
       {state.everyoneIn ? (
         /* Everyone's in: the places lead, as one card and one tap. Inviting is over, so the link card and + go. */
@@ -120,15 +129,15 @@ export function OrgHub() {
       {/* One row, one tap: three faces, the count, a chevron into See everyone */}
       <button className="card guests" aria-label="See everyone" onClick={() => setEveryone(true)}>
         <AvatarStack guests={coming} max={3} size={32} />
-        <span className="t-secondary" style={{ flex: 1, minWidth: 0 }}>{state.everyoneIn ? `Everyone's in${out.length ? ` · ${out.length} can't make it` : ''}` : countLine}</span>
+        <span className="t-secondary" style={{ flex: 1, minWidth: 0 }}>{state.everyoneIn ? "Everyone's in" : countLine}</span>
         <span className="c-secondary" style={{ display: 'grid' }}><Chevron size={20} /></span>
       </button>
 
-      <Notification open={banner} onClose={closeBanner} text={`${sms.manageLink.text} ${sms.manageLink.link}`} />
+      <Notification open={banner} onClose={closeBanner} text={`${sms.manageLink(name).text} ${sms.manageLink(name).link}`} />
       <Notification open={invited !== null} onClose={closeInvited} app="Gather" autoHideMs={0} closeButton text={`Invite sent to ${invited ?? ''}. They'll get a text with the link.`} />
 
       {/* ORG 4c: tap a guest for their actions; anyone who can't make it sits in their own group */}
-      <Sheet open={everyone} onClose={() => { setEveryone(false); update({ remindedIds: [] }); }} title="Guests" subtitle={countLine}>
+      <Sheet open={everyone} onClose={() => { setEveryone(false); update({ remindedIds: [] }); }} title="Guests" subtitle={sheetLine}>
         <div className="list">
           {coming.map((g) => (
             <GuestRow key={g.id} guest={g} right={statusChip(g)} onClick={g.status === 'host' ? undefined : () => setActing(g)} />
@@ -164,22 +173,8 @@ export function OrgHub() {
       </Sheet>
 
       {/* ORG 4d */}
-      <Sheet open={cover} onClose={() => setCover(false)} title="Edit cover" subtitle="Guests see it at the top of the party page.">
-        <div className="list">
-          <button className={`row menu-row t-body ${coverDraft === 'photo' ? 'c-accent' : ''}`} onClick={() => setCoverDraft('photo')}>Choose from photos<Chevron size={20} /></button>
-          <button className="row menu-row t-body" onClick={() => setCoverDraft('photo')}>Take a photo<Chevron size={20} /></button>
-        </div>
-        <p className="t-caption c-secondary">Or pick a colour</p>
-        <div className="swatches">
-          {coverColours.map((c) => (
-            <button key={c.id} className={`swatch ${coverDraft === c.id ? 'swatch--on' : ''}`} style={{ background: c.token }} aria-label={c.label} aria-pressed={coverDraft === c.id}
-              onClick={() => setCoverDraft(c.id)} />
-          ))}
-        </div>
-        <button className="t-body" style={{ color: coverDraft === 'none' ? 'var(--text-primary)' : 'var(--error)', textAlign: 'left' }} aria-pressed={coverDraft === 'none'} onClick={() => setCoverDraft('none')}>{coverDraft === 'none' ? 'Cover removed' : 'Remove cover'}</button>
-        <Button onClick={() => { update({ cover: coverDraft }); setCover(false); }} disabled={coverDraft === state.cover}>Save</Button>
-        <Button variant="ghost" onClick={() => setCover(false)}>Cancel</Button>
-      </Sheet>
+      <CoverSheet original={coverOpenedOn} onClose={() => setCoverOpenedOn(null)} />
+      <PreferencesSheet open={prefsOpen} onClose={() => setPrefsOpen(false)} value={state.hostPrefs} onSave={(hostPrefs) => update({ hostPrefs })} />
     </Screen>
   );
 }

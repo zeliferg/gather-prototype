@@ -71,15 +71,15 @@ export const radiusOptions: { value: RadiusMi; label: string }[] = [
 ];
 
 export const sms = {
-  manageLink: { time: 'Today 2:14 PM', text: 'Your party "Jordan\'s Dinner" is live. Manage it anytime here:', link: party.manageLink },
+  manageLink: (partyName: string) => ({ time: 'Today 2:14 PM', text: `Your party "${partyName}" is live. Manage it anytime here:`, link: party.manageLink }),
   reminder: { time: 'Today 4:02 PM', text: "Reminder from Jordan: still need your location for Jordan's Dinner. Or just tell us you're in:", link: party.inviteLink },
   invite: { time: 'Today 2:10 PM', text: "Jordan invited you to Jordan's Dinner. Add where you're coming from so we can find a spot that works for everyone:", link: party.inviteLink },
   spotConfirmed: { time: 'Today 5:15 PM', text: "You're all set. Jordan's Dinner is at Tavola Verde, Fri Sep 12 at 7:00 PM. Details and directions:", link: party.inviteLink },
   reminderTomorrow: { time: 'Yesterday 6:00 PM', text: "Reminder: Jordan's Dinner is tomorrow at 7:00 PM at Tavola Verde. See you there.", link: party.inviteLink },
   reminder2h: { time: 'Today 5:00 PM', text: "Jordan's Dinner starts in 2 hours at Tavola Verde, 214 Elm Street.", link: party.inviteLink },
   afterGuest: { time: 'Today 10:00 AM', text: 'It was a blast! Thanks for joining Jordan at Tavola Verde. Want to plan your own? Start a party at', link: 'gather.app' },
-  afterHost: { time: 'Today 10:00 AM', text: "Thanks for hosting Jordan's Dinner at Tavola Verde! Hope it was a blast. Start your next party any time at", link: 'gather.app' },
-  reservationChanged: { time: 'Today 5:40 PM', text: "Reservation changed: Jordan's Dinner is now", link: party.inviteLink },
+  afterHost: (partyName: string, place: string) => ({ time: 'Today 10:00 AM', text: `Thanks for hosting ${partyName} at ${place}! Hope it was a blast. Start your next party any time at`, link: 'gather.app' }),
+  reservationChanged: (partyName: string) => ({ time: 'Today 5:40 PM', text: `Reservation changed: ${partyName} is now`, link: party.inviteLink }),
   dropped: { time: 'Today 3:30 PM', text: "Priya can't make it to Jordan's Dinner anymore (“Sorry, a work thing came up”). You're now 4. Manage the party:", link: party.manageLink },
 };
 

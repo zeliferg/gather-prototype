@@ -6,9 +6,9 @@ type Props = {
   restaurant: Restaurant;
   /** position in the ranked list; 0 is the best spot */
   index: number;
-  /** A time slot the host tapped on this card; the detail sheet opens with it selected. */
+  /** A time slot the host tapped on this card; tapping one opens the detail sheet with it selected. */
   picked: string | null;
-  onPick: (time: string | null) => void;
+  onPick: (time: string) => void;
   onOpen: () => void;
 };
 
@@ -24,9 +24,11 @@ export function RestaurantCard({ restaurant: r, index, picked, onPick, onOpen }:
           <span className="t-secondary c-secondary">{r.cuisine}</span>
         </div>
       </button>
-      <div className="chip-row" style={{ padding: '0 4px 4px' }} role="group" aria-label={`${r.name} times`}>
-        {r.times.map((t) => <Chip key={t} className="chip--time" variant={t === picked ? 'selected' : 'neutral'} onClick={() => onPick(t === picked ? null : t)}>{t.replace(' PM', '')}</Chip>)}
-      </div>
+      {r.reservations && (
+        <div className="chip-row" style={{ padding: '0 4px 4px' }} role="group" aria-label={`${r.name} times`}>
+          {r.times.map((t) => <Chip key={t} className="chip--time" variant={t === picked ? 'selected' : 'neutral'} onClick={() => onPick(t)}>{t.replace(' PM', '')}</Chip>)}
+        </div>
+      )}
     </div>
   );
 }

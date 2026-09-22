@@ -71,6 +71,7 @@ button.chip:active { transform: scale(0.95); }
 .chip--selected { background: var(--accent); color: var(--text-on-accent); }
 .chip--success { background: var(--bg-accent-tint); color: var(--text-accent); }
 .chip--info { background: var(--bg-info-tint); color: var(--text-primary); }
+.chip--danger { background: var(--bg-error-tint); color: var(--error); }
 .chip-row { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .chip--lg { min-height: 40px; padding: 10px 16px; font: 500 15px/20px var(--font-sans); }
 .chip--sm { min-height: 24px; padding: 3px 9px; font: 500 12px/18px var(--font-sans); }

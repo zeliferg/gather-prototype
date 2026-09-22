@@ -65,7 +65,7 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await page.getByRole('button', { name: 'Send invite' }).click();
   await expect(page.getByRole('status').filter({ hasText: 'Invite sent' })).toContainText('Invite sent to Lena Park');
   await page.getByRole('button', { name: 'Dismiss notification' }).click();
-  await expect(page.getByText("3 of 6 responded · 1 can't make it")).toBeVisible(); // Leo replied he's out
+  await expect(page.getByText('3 of 6 responded')).toBeVisible(); // Leo, who replied he's out, only shows in the sheet
 
   // ORG 4d: edit cover; a colour is staged and Save applies it.
   await page.getByRole('button', { name: 'Edit cover' }).click();
@@ -77,6 +77,8 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
 
   // ORG 4c: a guest row opens their actions; Leo, who can't make it, sits in his own group and can be removed.
   await page.getByRole('button', { name: 'See everyone', exact: true }).click();
+  await expect(page.getByRole('dialog', { name: 'Guests' })).toContainText("1 can't make it");
+  await expect(page.getByRole('dialog', { name: 'Guests' })).toContainText('Jordan Reyes'); // the host row carries the typed name
   await page.getByRole('button', { name: 'Alex Chen' }).click();
   await page.getByRole('button', { name: 'Send a reminder' }).click();
   await expect(page.getByText('Reminder sent')).toBeVisible();
@@ -107,10 +109,9 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await expect(corner.getByRole('button', { pressed: true })).toHaveCount(0);
   await expect(corner.getByRole('button', { name: 'Book with OpenTable' })).toBeDisabled();
   await page.getByRole('button', { name: 'Close' }).click({ position: { x: 10, y: 10 } }); // scrim centre is under the sheet panel
-  // ORG 6: a slot tapped on the card carries into the sheet.
+  // ORG 6: tapping a slot on the card opens the sheet with it selected.
   await page.getByRole('tab', { name: 'List' }).click();
   await page.getByRole('group', { name: 'Tavola Verde times' }).getByRole('button', { name: '7:00', exact: true }).click();
-  await page.getByRole('button', { name: 'Tavola Verde' }).click();
   await expect(page.getByRole('dialog', { name: 'Tavola Verde' }).getByRole('button', { name: '7:00 PM', pressed: true })).toBeVisible();
   await page.getByRole('button', { name: 'Book 7:00 PM with OpenTable' }).click();
 
@@ -123,8 +124,15 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await expect(page.getByRole('heading', { name: "You're all set" })).toBeVisible({ timeout: 5000 });
   await page.getByRole('button', { name: 'Back to the party' }).click();
 
-  // ORG 10 keeps the cover; ORG 11 changes the reservation and the party page reflects it.
+  // ORG 10 keeps the cover and can still edit it: choices preview at once, Cancel puts the old one back.
   await expect(page.locator('.cover')).toBeVisible();
+  await page.getByRole('button', { name: 'Edit cover' }).click();
+  await page.getByRole('button', { name: 'Blue' }).click();
+  await expect(page.getByRole('button', { name: 'Blue', pressed: true })).toBeVisible();
+  await page.getByRole('dialog', { name: 'Edit cover' }).getByRole('button', { name: 'Cancel', exact: true }).click();
+  await expect(page.getByRole('dialog', { name: 'Edit cover' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Edit cover' })).toBeVisible();
+  // ORG 11 changes the reservation and the party page reflects it.
   await page.getByRole('button', { name: 'Change time or place' }).click();
   await expect(page.getByRole('heading', { name: 'Change the reservation' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Save and notify everyone' })).toBeDisabled(); // nothing changed yet

@@ -12,9 +12,12 @@ export function formatWhen(when: string): { dateLong: string; dateShort: string;
   };
 }
 
-/** The host's guest list: fixtures minus anyone removed, plus manually added guests (always waiting). */
-export function deriveGuests(removedIds: string[], added: AddedGuest[]): { all: Guest[]; coming: Guest[]; out: Guest[] } {
-  const all: Guest[] = [...fixtureGuests.filter((g) => !removedIds.includes(g.id)), ...added.map((g) => ({ ...g, status: 'waiting' as const }))];
+/** The host's guest list: fixtures minus anyone removed, plus manually added guests (always waiting).
+ *  The host row takes the name typed on Create Party and, for now, shows an initial instead of a photo. */
+export function deriveGuests(removedIds: string[], added: AddedGuest[], hostName = ''): { all: Guest[]; coming: Guest[]; out: Guest[] } {
+  const typed = hostName.trim();
+  const withHost = fixtureGuests.map((g) => (g.status === 'host' && typed ? { ...g, name: typed, initial: typed[0].toUpperCase(), avatar: undefined } : g));
+  const all: Guest[] = [...withHost.filter((g) => !removedIds.includes(g.id)), ...added.map((g) => ({ ...g, status: 'waiting' as const }))];
   return { all, coming: all.filter((g) => g.status !== 'out'), out: all.filter((g) => g.status === 'out') };
 }
 
@@ -27,7 +30,7 @@ export function useParty() {
   const dateLong = when?.dateLong ?? party.dateLong;
   const dateShort = when?.dateShort ?? party.dateShort;
   const targetTime = when?.time ?? party.time;
-  const { all, coming, out } = deriveGuests(state.removedIds, state.addedGuests);
+  const { all, coming, out } = deriveGuests(state.removedIds, state.addedGuests, state.hostName);
   return {
     name, hostName, dateLong, dateShort, targetTime,
     roughTime: `${dateLong} · around ${targetTime}`,

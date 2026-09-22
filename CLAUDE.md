@@ -133,7 +133,14 @@ same anatomy as `Input`); ORG 6c stacks tag / address / hours · booking by type
 weight, no icons; time slots everywhere are outlined `chip--time` (36px, the
 stepper matches); ORG 10 ends with a small "Start over" link that resets the tab; the
 host picks preferences on ORG 1 from an "Add preferences (optional)" link
-(`hostPrefs`, separate from the guest's); ORG 1 fields sit in a `.form` (12px gap). The When picker
+(`hostPrefs`, separate from the guest's) and sees them as small chips under
+the date on ORG 4 (tap to change); banner and SMS copy that names the party
+takes the typed name (`sms.manageLink(name)` etc.); the host row in
+`deriveGuests` carries the typed host name with an initial, no photo; tapping
+a slot on an ORG 6 card opens ORG 6c with it selected; walk-in places have no
+slots anywhere, the party's own time is used ("Choose this spot" → ORG 8b
+"Notify everyone"); `CoverSheet` (ORG 4d) previews choices live and Cancel
+restores, used on ORG 4 and ORG 10; "Can't make it" is `chip--danger`; ORG 1 fields sit in a `.form` (12px gap). The When picker
 (`Input type="datetime-local"`) steps by 15 minutes and rounds typed values to
 the grid (`snapMinutes`, tested); the same Input serves Edit details on ORG 4. "Share invite link" uses the
 Web Share API where available and falls back to copy.

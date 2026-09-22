@@ -10,11 +10,13 @@ import { MapView } from '../../components/MapView';
 import { RestaurantCard } from '../../components/RestaurantCard';
 import { partner, restaurants, spotTag, type RestaurantId } from '../../fixtures';
 import { usePrototypeState } from '../../state';
+import { useParty } from '../../party';
 
 export function OrgOptions() {
   const navigate = useNavigate();
   const location = useLocation();
   const [, update] = usePrototypeState();
+  const { targetTime } = useParty();
   const [view, setView] = useState<'list' | 'map'>('list');
   // The hub's Places card lands here with that place already open.
   const [openId, setOpenId] = useState<RestaurantId | null>(location.state?.open ?? null);
@@ -24,23 +26,26 @@ export function OrgOptions() {
   const open = restaurants.find((r) => r.id === openId);
   const tag = spotTag(restaurants.findIndex((r) => r.id === openId));
 
-  const openRestaurant = (id: RestaurantId) => { setTime(picked[id] ?? null); setOpenId(id); };
+  const openRestaurant = (id: RestaurantId, slot?: string) => { setTime(slot ?? picked[id] ?? null); setOpenId(id); };
+  // A slot tapped on a card opens the sheet with it selected.
+  const pickSlot = (id: RestaurantId, slot: string) => { setPicked({ ...picked, [id]: slot }); openRestaurant(id, slot); };
 
+  // Walk-in places take the party's own time: the host already chose it on Create Party.
   const book = () => {
-    if (!open || !time) return;
-    update({ selectedRestaurant: open.id, selectedTime: time });
+    if (!open) return;
+    const t = open.reservations ? time : targetTime;
+    if (!t) return;
+    update({ selectedRestaurant: open.id, selectedTime: t });
     setOpenId(null);
     navigate(open.reservations ? '/org/reserve' : '/org/walk-in');
   };
-  const cta = open ? (open.reservations
-    ? (time ? `Book ${time} with ${partner}` : `Book with ${partner}`)
-    : (time ? `Set ${time} for the group` : 'Set a time for the group')) : '';
+  const cta = open ? (open.reservations ? (time ? `Book ${time} with ${partner}` : `Book with ${partner}`) : 'Choose this spot') : '';
 
   return (
     <Screen back title="3 places that work" subtitle="Each one is close to the middle of where everyone's coming from.">
       <Segmented options={[{ value: 'list', label: 'List' }, { value: 'map', label: 'Map' }]} value={view} onChange={setView} />
       {view === 'list'
-        ? restaurants.map((r, i) => <RestaurantCard key={r.id} restaurant={r} index={i} picked={picked[r.id] ?? null} onPick={(t) => setPicked({ ...picked, [r.id]: t })} onOpen={() => openRestaurant(r.id)} />)
+        ? restaurants.map((r, i) => <RestaurantCard key={r.id} restaurant={r} index={i} picked={picked[r.id] ?? null} onPick={(t) => pickSlot(r.id, t)} onOpen={() => openRestaurant(r.id)} />)
         : <MapView mode="options" height={620} onSelectPin={openRestaurant} />}
       <Sheet open={!!open} onClose={() => setOpenId(null)} title={open?.name} subtitle={open?.cuisine}>
         {open && (
@@ -51,9 +56,15 @@ export function OrgOptions() {
               <p className="t-body">{open.address}</p>
               <p className="t-secondary c-secondary">{open.hours} · {open.reservations ? `Reserve on ${partner}` : 'Walk-in only'}</p>
             </div>
-            <p className="t-caption c-secondary">{time ? 'Time' : 'Pick a time'}</p>
-            <div className="chip-row">{open.times.map((t) => <Chip key={t} className="chip--time" variant={t === time ? 'selected' : 'neutral'} onClick={() => setTime(t)}>{t}</Chip>)}</div>
-            <Button onClick={book} disabled={!time}>{cta}</Button>
+            {open.reservations ? (
+              <>
+                <p className="t-caption c-secondary">{time ? 'Time' : 'Pick a time'}</p>
+                <div className="chip-row">{open.times.map((t) => <Chip key={t} className="chip--time" variant={t === time ? 'selected' : 'neutral'} onClick={() => setTime(t)}>{t}</Chip>)}</div>
+              </>
+            ) : (
+              <p className="t-secondary c-secondary">No reservations here. The group heads over at {targetTime}, the time you set for the party.</p>
+            )}
+            <Button onClick={book} disabled={open.reservations && !time}>{cta}</Button>
             <Button variant="ghost">See full menu</Button>
           </>
         )}

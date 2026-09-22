@@ -18,6 +18,13 @@ describe('deriveGuests', () => {
     expect(out).toEqual([]);
   });
 
+  it('gives the host row the typed name and drops the photo', () => {
+    const { coming } = deriveGuests([], [], 'Maya Lin');
+    expect(coming[0]).toMatchObject({ status: 'host', name: 'Maya Lin', initial: 'M' });
+    expect(coming[0].avatar).toBeUndefined();
+    expect(deriveGuests([], [], '  ').coming[0].name).toBe('Jordan Reyes');
+  });
+
   it('appends manually added guests as waiting, without a photo', () => {
     const { coming } = deriveGuests([], [{ id: 'added-1', name: 'Lena Park', initial: 'L' }]);
     const lena = coming[coming.length - 1];

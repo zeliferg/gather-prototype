@@ -1,7 +1,12 @@
 // Figma: ORG 12 — SMS: After the dinner
 import { SmsScreen } from '../../components/SmsScreen';
-import { sms } from '../../fixtures';
+import { restaurants, sms } from '../../fixtures';
+import { usePrototypeState } from '../../state';
+import { useParty } from '../../party';
 
 export function OrgSmsAfter() {
-  return <SmsScreen {...sms.afterHost} to="/org" />;
+  const [state] = usePrototypeState();
+  const { name } = useParty();
+  const r = restaurants.find((x) => x.id === state.selectedRestaurant)!;
+  return <SmsScreen {...sms.afterHost(name, r.name)} to="/org" />;
 }
