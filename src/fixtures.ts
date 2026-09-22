@@ -84,8 +84,8 @@ export const sms = {
 };
 
 export const permissionBody = {
-  host: "Only used to find a spot that's fair for everyone. Guests never see it.",
-  guest: "Only used to find a spot that's fair for everyone. Nobody sees your exact location.",
+  host: "Only used to find a spot that works for everyone. Guests never see it.",
+  guest: "Only used to find a spot that works for everyone. Nobody sees your exact location.",
 };
 
 export const coverColours: { id: 'blue' | 'sage' | 'matcha' | 'oat' | 'kale' | 'ink'; label: string; token: string }[] = [

@@ -6,8 +6,6 @@ import { OrgVerify } from './screens/org/OrgVerify';
 import { OrgHub } from './screens/org/OrgHub';
 import { OrgListReady } from './screens/org/OrgListReady';
 import { OrgOptions } from './screens/org/OrgOptions';
-import { OrgReservation } from './screens/org/OrgReservation';
-import { OrgWalkIn } from './screens/org/OrgWalkIn';
 import { OrgConfirmed } from './screens/org/OrgConfirmed';
 import { OrgParty } from './screens/org/OrgParty';
 import { OrgEditReservation } from './screens/org/OrgEditReservation';
@@ -46,8 +44,6 @@ export const orgRoutes: RouteObject[] = [
   { path: '/org/hub', element: <OrgHub /> },
   { path: '/org/list-ready', element: <OrgListReady /> },
   { path: '/org/options', element: <OrgOptions /> },
-  { path: '/org/reserve', element: <OrgReservation /> },
-  { path: '/org/walk-in', element: <OrgWalkIn /> },
   { path: '/org/confirmed', element: <OrgConfirmed /> },
   { path: '/org/party', element: <OrgParty /> },
   { path: '/org/edit', element: <OrgEditReservation /> },

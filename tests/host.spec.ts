@@ -67,6 +67,15 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await page.getByRole('button', { name: 'Dismiss notification' }).click();
   await expect(page.getByText('3 of 6 responded')).toBeVisible(); // Leo, who replied he's out, only shows in the sheet
 
+  // Share invite: the link card opens one drawer with Copy and quick ways to send; Remind is the page's only CTA.
+  await page.getByRole('button', { name: 'Share invite link' }).click();
+  const share = page.getByRole('dialog', { name: 'Invite people' });
+  await expect(share.getByRole('link', { name: 'Messages' })).toBeVisible();
+  await share.getByRole('button', { name: 'Copy' }).click();
+  await expect(share.getByRole('button', { name: 'Copied' })).toBeVisible();
+  await page.getByRole('button', { name: 'Close' }).click({ position: { x: 10, y: 10 } });
+  await expect(share).toHaveCount(0);
+
   // ORG 4d: edit cover; a colour is staged and Save applies it.
   await page.getByRole('button', { name: 'Edit cover' }).click();
   await expect(page.getByRole('button', { name: 'Save', exact: true })).toBeDisabled(); // nothing changed yet
@@ -115,12 +124,13 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await expect(page.getByRole('dialog', { name: 'Tavola Verde' }).getByRole('button', { name: '7:00 PM', pressed: true })).toBeVisible();
   await page.getByRole('button', { name: 'Book 7:00 PM with OpenTable' }).click();
 
-  // ORG 8 confirms the time already chosen, shows the place, and books with progress on the button.
-  await expect(page.getByRole('heading', { name: 'Confirm your booking' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '7:00 PM', pressed: true })).toBeVisible();
-  await expect(page.locator('.card img')).toBeVisible();
-  await page.getByRole('button', { name: 'Book 7:00 PM', exact: true }).click();
-  await expect(page.getByRole('button', { name: /Booking your table|Booked/ })).toBeVisible();
+  // ORG 8 is the same sheet's confirm step: the photo stays, the time carries, and it books with progress on the button.
+  const confirm = page.getByRole('dialog', { name: 'Confirm your booking' });
+  await expect(confirm).toContainText('Tavola Verde');
+  await expect(confirm.getByRole('button', { name: '7:00 PM', pressed: true })).toBeVisible();
+  await expect(confirm.locator('.rcard__photo img')).toBeVisible();
+  await confirm.getByRole('button', { name: 'Book 7:00 PM', exact: true }).click();
+  await expect(confirm.getByRole('button', { name: /Booking your table|Booked/ })).toBeVisible();
   await expect(page.getByRole('heading', { name: "You're all set" })).toBeVisible({ timeout: 5000 });
   await page.getByRole('button', { name: 'Back to the party' }).click();
 

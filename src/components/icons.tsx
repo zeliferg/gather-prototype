@@ -7,3 +7,7 @@ export const Check = ({ size }: P) => <svg {...base(size)}><path className="chec
 export const Plus = ({ size }: P) => <svg {...base(size)}><path d="M12 5v14M5 12h14" /></svg>;
 export const Pin = ({ size }: P) => <svg width={size ?? 24} height={size ?? 24} viewBox="0 0 24 24" aria-hidden><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z" fill="currentColor" /><circle cx="12" cy="9" r="2.5" style={{ fill: 'var(--bg-surface)' }} /></svg>;
 export const More = ({ size }: P) => <svg width={size ?? 24} height={size ?? 24} viewBox="0 0 24 24" aria-hidden><circle cx="5" cy="12" r="1.8" fill="currentColor" /><circle cx="12" cy="12" r="1.8" fill="currentColor" /><circle cx="19" cy="12" r="1.8" fill="currentColor" /></svg>;
+export const Share = ({ size }: P) => <svg {...base(size)}><path d="M12 3v12M8 7l4-4 4 4" /><path d="M6 11v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-8" /></svg>;
+export const Message = ({ size }: P) => <svg {...base(size)}><path d="M4 5h16v11H9l-5 4z" /></svg>;
+export const Phone = ({ size }: P) => <svg {...base(size)}><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" /></svg>;
+export const Mail = ({ size }: P) => <svg {...base(size)}><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" /></svg>;

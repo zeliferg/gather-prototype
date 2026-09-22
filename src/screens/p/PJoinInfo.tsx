@@ -33,7 +33,7 @@ export function PJoinInfo() {
 
   return (
     <Screen back title={`Join ${party.name}`}
-      subtitle="Add where you're coming from so we can find a spot that's fair for everyone. Nobody sees your exact location."
+      subtitle="Add where you're coming from so we can find a spot that works for everyone. Nobody sees your exact location."
       footer={<>
           {/* Join the party: spinner while "joining", a check, then the party page (same beat as Verify). */}
           <ProgressButton idle="Join the party" busy="Joining…" done="You're in" busyMs={900} disabled={!state.locationSet}

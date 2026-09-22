@@ -96,7 +96,10 @@ of 16 Sep 2026 — the tests prove the taps land, not that it feels right.
 Second-pass screens not built: Join with a code (Landing's button hits
 NotFound), reminder SMS variants. ORG 2 (management-link SMS) is not a
 route any more: it shows as a `Notification` banner on the hub after Verify,
-and "Reservation changed" does the same on ORG 10 after ORG 11. Likewise
+and "Reservation changed" does the same on ORG 10 after ORG 11. ORG 8
+(Reservation) and ORG 8b (Walk-in notice) are not routes either since 22 Sep
+2026: they are the confirm step of ORG 6c's sheet (same photo, Back returns to
+the detail step); on Booked the sheet slides away, then ORG 9. Likewise
 P 6 (spot-confirmed SMS) is a banner over `PBooked` (`/p/booked`, the
 guest-side success screen), and P 3b is the guest's hub in both states:
 waiting, then booked. P 9 is no longer a route: its content is the "See the
@@ -133,8 +136,7 @@ same anatomy as `Input`); ORG 6c stacks tag / address / hours · booking by type
 weight, no icons; time slots everywhere are outlined `chip--time` (36px, the
 stepper matches); ORG 10 ends with a small "Start over" link that resets the tab; the
 host picks preferences on ORG 1 from an "Add preferences (optional)" link
-(`hostPrefs`, separate from the guest's) and sees them as small chips under
-the date on ORG 4 (tap to change); banner and SMS copy that names the party
+(`hostPrefs`, separate from the guest's) and sees them as a "Your preferences" row under the Guests card on ORG 4 (tap to change); banner and SMS copy that names the party
 takes the typed name (`sms.manageLink(name)` etc.); the host row in
 `deriveGuests` carries the typed host name with an initial, no photo; tapping
 a slot on an ORG 6 card opens ORG 6c with it selected; walk-in places have no
@@ -142,8 +144,11 @@ slots anywhere, the party's own time is used ("Choose this spot" → ORG 8b
 "Notify everyone"); `CoverSheet` (ORG 4d) previews choices live and Cancel
 restores, used on ORG 4 and ORG 10; "Can't make it" is `chip--danger`; ORG 1 fields sit in a `.form` (12px gap). The When picker
 (`Input type="datetime-local"`) steps by 15 minutes and rounds typed values to
-the grid (`snapMinutes`, tested); the same Input serves Edit details on ORG 4. "Share invite link" uses the
-Web Share API where available and falls back to copy.
+the grid (`snapMinutes`, tested); the same Input serves Edit details on ORG 4. On ORG 4 before everyone's in, the footer is only "Remind the N who haven't";
+the invite-link card opens an "Invite people" drawer (link + Copy, then
+Messages / WhatsApp / Email as real `sms:`/`wa.me`/`mailto:` links, and More =
+Web Share API, falling back to copy). Copy avoids the word "fair" (22 Sep
+2026): say "a spot that works for everyone".
 Deferred polish: `Segmented` uses `role=tab` (should be radiogroup), sheets
 lack focus trapping/Escape/swipe-to-dismiss, type scale is px not rem, the
 first screen slides in from the left on initial load, SMS routes slide rather

@@ -1,4 +1,4 @@
-// Figma: ORG 4 — Invite & Party Details (+ ORG 4b Add a guest, ORG 4c See everyone, ORG 4d Edit cover, ORG 4e Reminder sent)
+// Figma: ORG 4 — Invite & Party Details (+ ORG 4b Add a guest, ORG 4c See everyone, ORG 4d Edit cover, ORG 4e Reminder sent, Share invite drawer)
 import { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Screen } from '../../components/Screen';
@@ -13,7 +13,7 @@ import { CoverSheet } from '../../components/CoverSheet';
 import { PreferencesSheet } from '../../components/Preferences';
 import { Notification } from '../../components/Notification';
 import { GuestRow } from '../../components/GuestRow';
-import { Chevron, Plus } from '../../components/icons';
+import { Chevron, Mail, Message, Phone, Plus, Share } from '../../components/icons';
 import { formatPhone, isCompletePhone } from '../../components/phone';
 import { party, restaurants, sms, type Guest } from '../../fixtures';
 import { usePrototypeState, type CoverChoice } from '../../state';
@@ -31,6 +31,7 @@ export function OrgHub() {
   const [coverOpenedOn, setCoverOpenedOn] = useState<CoverChoice | null>(null);
   const [prefsOpen, setPrefsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [sharing, setSharing] = useState(false);
   const [sending, setSending] = useState(false);
   const [acting, setActing] = useState<Guest | null>(null); // the guest whose action sheet is open
   const [draft, setDraft] = useState({ name, when: state.when || party.whenIso });
@@ -59,9 +60,12 @@ export function OrgHub() {
   const remindOne = (id: string) => update({ remindedIds: [...state.remindedIds, id] });
   const removeOne = (id: string) => update({ removedIds: [...state.removedIds, id] });
   const url = `https://${party.inviteLink}`;
+  const inviteText = `Join ${name} on Gather. Add where you're coming from and we'll find a spot that works for everyone: ${url}`;
+  const body = encodeURIComponent(inviteText);
   const copy = async () => { try { await navigator.clipboard.writeText(url); } catch { /* no clipboard */ } setCopied(true); };
-  const share = async () => {
-    if (navigator.share) { try { await navigator.share({ title: name, text: `Join ${name}`, url }); return; } catch { /* dismissed */ } }
+  // The share drawer's last option hands off to the system sheet where there is one; elsewhere it copies.
+  const moreOptions = async () => {
+    if (navigator.share) { try { await navigator.share({ title: name, text: inviteText, url }); return; } catch { /* dismissed */ } }
     copy();
   };
   const addGuest = () => {
@@ -81,10 +85,9 @@ export function OrgHub() {
   const canRemind = (g: Guest) => g.status === 'waiting' && !state.everyoneIn && !state.remindedIds.includes(g.id);
 
   return (
-    <Screen footer={state.everyoneIn ? <Button onClick={() => navigate('/org/options')}>Browse places</Button> : <>
-      <Button variant="secondary" onClick={() => setSending(true)} disabled={sending || waiting === 0}>Remind the {waiting} who haven't</Button>
-      <Button onClick={share}>Share invite link</Button>
-    </>}>
+    <Screen footer={state.everyoneIn
+      ? <Button onClick={() => navigate('/org/options')}>Browse places</Button>
+      : <Button onClick={() => setSending(true)} disabled={sending || waiting === 0}>Remind the {waiting} who haven't</Button>}>
       <Cover choice={state.cover}><Chip className="cover__edit" onClick={() => setCoverOpenedOn(state.cover)}>{state.cover === 'none' ? 'Add cover' : 'Edit cover'}</Chip></Cover>
       <div className="screen__title">
         <h1 className="t-title">{name}</h1>
@@ -92,12 +95,6 @@ export function OrgHub() {
           <p className="t-secondary c-secondary">{roughTime}</p>
           <button className="link t-label" onClick={() => { setDraft({ name, when: state.when || party.whenIso }); setEditing(true); }}>Edit details</button>
         </div>
-        {/* The host's preferences from Create Party, when there are any; tap to change them */}
-        {state.hostPrefs.length > 0 && (
-          <button className="chip-row" aria-label="Preferences" onClick={() => setPrefsOpen(true)} style={{ marginTop: 6 }}>
-            {state.hostPrefs.map((p) => <Chip key={p} className="chip--sm">{p}</Chip>)}
-          </button>
-        )}
       </div>
       {state.everyoneIn ? (
         /* Everyone's in: the places lead, as one card and one tap. Inviting is over, so the link card and + go. */
@@ -117,10 +114,11 @@ export function OrgHub() {
           </span>
         </button>
       ) : (
-        <div className="card row">
-          <div className="stack" style={{ gap: 2 }}><span className="t-caption c-secondary">Invite link</span><span className="t-body-med">{party.inviteLink}</span></div>
-          <button className="link t-body-med" onClick={copy}>{copied ? 'Copied' : 'Copy'}</button>
-        </div>
+        /* One way in to inviting: the card opens the share drawer (copy, text, email, more). */
+        <button className="card row card--tap" aria-label="Share invite link" onClick={() => setSharing(true)}>
+          <span className="stack" style={{ gap: 2, minWidth: 0 }}><span className="t-caption c-secondary">Invite link</span><span className="t-body-med ellipsis">{party.inviteLink}</span></span>
+          <span className="icon-btn icon-btn--right icon-btn--filled c-accent"><Share size={20} /></span>
+        </button>
       )}
       <div className="row">
         <h2 className="t-heading">Guests</h2>
@@ -132,6 +130,13 @@ export function OrgHub() {
         <span className="t-secondary" style={{ flex: 1, minWidth: 0 }}>{state.everyoneIn ? "Everyone's in" : countLine}</span>
         <span className="c-secondary" style={{ display: 'grid' }}><Chevron size={20} /></span>
       </button>
+      {/* The host is one of the guests: their own picks from Create Party sit with the guests, labelled as theirs */}
+      {state.hostPrefs.length > 0 && (
+        <button className="card row card--tap" aria-label="Your preferences" onClick={() => setPrefsOpen(true)}>
+          <span className="stack" style={{ gap: 2, minWidth: 0 }}><span className="t-caption c-secondary">Your preferences</span><span className="t-body-med ellipsis">{state.hostPrefs.join(' · ')}</span></span>
+          <span className="c-secondary" style={{ display: 'grid' }}><Chevron size={20} /></span>
+        </button>
+      )}
 
       <Notification open={banner} onClose={closeBanner} text={`${sms.manageLink(name).text} ${sms.manageLink(name).link}`} />
       <Notification open={invited !== null} onClose={closeInvited} app="Gather" autoHideMs={0} closeButton text={`Invite sent to ${invited ?? ''}. They'll get a text with the link.`} />
@@ -172,9 +177,23 @@ export function OrgHub() {
         <Button variant="secondary">Choose from contacts</Button>
       </Sheet>
 
+      {/* Share invite: the link to copy, then the quick ways to send it */}
+      <Sheet open={sharing} onClose={() => setSharing(false)} title="Invite people" subtitle="Anyone with the link can join. No account needed.">
+        <div className="card row">
+          <span className="t-body-med ellipsis">{party.inviteLink}</span>
+          <button className="link t-body-med" onClick={copy}>{copied ? 'Copied' : 'Copy'}</button>
+        </div>
+        <div className="share-row">
+          <a className="share-opt" href={`sms:?&body=${body}`}><span className="share-opt__icon"><Message /></span><span className="t-caption">Messages</span></a>
+          <a className="share-opt" href={`https://wa.me/?text=${body}`} target="_blank" rel="noreferrer"><span className="share-opt__icon"><Phone /></span><span className="t-caption">WhatsApp</span></a>
+          <a className="share-opt" href={`mailto:?subject=${encodeURIComponent(name)}&body=${body}`}><span className="share-opt__icon"><Mail /></span><span className="t-caption">Email</span></a>
+          <button className="share-opt" onClick={moreOptions}><span className="share-opt__icon"><Share /></span><span className="t-caption">More</span></button>
+        </div>
+      </Sheet>
+
       {/* ORG 4d */}
       <CoverSheet original={coverOpenedOn} onClose={() => setCoverOpenedOn(null)} />
-      <PreferencesSheet open={prefsOpen} onClose={() => setPrefsOpen(false)} value={state.hostPrefs} onSave={(hostPrefs) => update({ hostPrefs })} />
+      <PreferencesSheet open={prefsOpen} onClose={() => setPrefsOpen(false)} title="Your preferences" subtitle="What matters to you. We weigh it with everyone else's." value={state.hostPrefs} onSave={(hostPrefs) => update({ hostPrefs })} />
     </Screen>
   );
 }

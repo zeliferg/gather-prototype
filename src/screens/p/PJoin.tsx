@@ -11,7 +11,7 @@ export function PJoin() {
   const [, update] = usePrototypeState();
   const from: string = location.state?.from ?? '/p/join';
   return (
-    <Screen back title="Where are you coming from?" subtitle="We use this to find a spot that's fair for everyone. Nobody sees your exact location."
+    <Screen back title="Where are you coming from?" subtitle="We use this to find a spot that works for everyone. Nobody sees your exact location."
       footer={<Button onClick={() => { update({ locationSet: true, flexible: false }); navigate(from, { state: from === '/p/waiting' ? { info: true } : undefined }); }}>Save</Button>}>
       <LocationPicker context="guest" askPermission={false} />
     </Screen>

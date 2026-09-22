@@ -15,7 +15,7 @@ export function OrgLanding() {
     </>}>
       <GatheringCircle seats={guests} live />
       <h1 className="t-display" style={{ textAlign: 'center' }}>Bring everyone <em>together</em></h1>
-      <p className="t-secondary c-secondary" style={{ textAlign: 'center' }}>Tell us where everyone's coming from. We'll find the spot that's fair for all of you.</p>
+      <p className="t-secondary c-secondary" style={{ textAlign: 'center' }}>Tell us where everyone's coming from. We'll find a spot that's easy for all of you to get to.</p>
     </Screen>
   );
 }

@@ -49,7 +49,7 @@ export function OrgCreateParty() {
       </button>
       <PreferencesSheet open={prefsOpen} onClose={() => setPrefsOpen(false)} value={state.hostPrefs} onSave={(hostPrefs) => update({ hostPrefs })} />
       <PermissionDialog open={asking} body={permissionBody.host} onAllow={() => answered('granted')} onDeny={() => answered('denied')} />
-      <Sheet open={open} onClose={() => setOpen(false)} title="Your location" subtitle="Only used to find a fair spot. Guests never see it.">
+      <Sheet open={open} onClose={() => setOpen(false)} title="Your location" subtitle="Only used to find a spot that works for everyone. Guests never see it.">
         <LocationPicker context="host" askPermission={false} />
         <Button onClick={() => { setTouched(true); setOpen(false); }}>Use this location</Button>
       </Sheet>

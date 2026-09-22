@@ -19,11 +19,11 @@ export function PreferenceChips({ value, onToggle }: { value: string[]; onToggle
   );
 }
 
-type SheetProps = { open: boolean; onClose: () => void; value: string[]; onSave: (prefs: string[]) => void; subtitle?: string };
+type SheetProps = { open: boolean; onClose: () => void; value: string[]; onSave: (prefs: string[]) => void; title?: string; subtitle?: string };
 
-export function PreferencesSheet({ open, onClose, value, onSave, subtitle = 'Pick anything that matters to you.' }: SheetProps) {
+export function PreferencesSheet({ open, onClose, value, onSave, title = 'Preferences', subtitle = 'Pick anything that matters to you.' }: SheetProps) {
   return (
-    <Sheet open={open} onClose={onClose} title="Preferences" subtitle={subtitle}>
+    <Sheet open={open} onClose={onClose} title={title} subtitle={subtitle}>
       {/* The Sheet unmounts its children when closed, so the draft starts from `value` on every open. */}
       <Draft value={value} onSave={(prefs) => { onSave(prefs); onClose(); }} />
     </Sheet>
