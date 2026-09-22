@@ -33,7 +33,7 @@ export function OrgParty() {
       <div className="card">
         <div className="row"><Chip variant="success">Booked</Chip><span className="t-caption c-secondary">Table for {size}</span></div>
         <p className="t-heading">{r.name}</p>
-        <p className="t-secondary c-secondary">{r.address}. Close to everyone.</p>
+        <p className="t-secondary c-secondary">{r.address}. {r.hours}.</p>
         <div className="hstack">
           <Button variant="secondary" inline onClick={() => setDirections(true)}>Directions</Button>
           <Button variant="secondary" inline onClick={() => setCalendar(true)}>Add to calendar</Button>

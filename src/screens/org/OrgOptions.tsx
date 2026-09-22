@@ -9,7 +9,7 @@ import { Sheet } from '../../components/Sheet';
 import { MapView } from '../../components/MapView';
 import { RestaurantCard } from '../../components/RestaurantCard';
 import { Calendar, Clock, MapPin } from '../../components/icons';
-import { partner, restaurants, type RestaurantId } from '../../fixtures';
+import { partner, restaurants, spotTag, type RestaurantId } from '../../fixtures';
 import { usePrototypeState } from '../../state';
 
 export function OrgOptions() {
@@ -23,6 +23,7 @@ export function OrgOptions() {
   const [picked, setPicked] = useState<Partial<Record<RestaurantId, string | null>>>({});
   const [time, setTime] = useState<string | null>(null);
   const open = restaurants.find((r) => r.id === openId);
+  const tag = spotTag(restaurants.findIndex((r) => r.id === openId));
 
   const openRestaurant = (id: RestaurantId) => { setTime(picked[id] ?? null); setOpenId(id); };
 
@@ -40,13 +41,13 @@ export function OrgOptions() {
     <Screen back title="3 places that work" subtitle="Each one is close to the middle of where everyone's coming from.">
       <Segmented options={[{ value: 'list', label: 'List' }, { value: 'map', label: 'Map' }]} value={view} onChange={setView} />
       {view === 'list'
-        ? restaurants.map((r) => <RestaurantCard key={r.id} restaurant={r} picked={picked[r.id] ?? null} onPick={(t) => setPicked({ ...picked, [r.id]: t })} onOpen={() => openRestaurant(r.id)} />)
+        ? restaurants.map((r, i) => <RestaurantCard key={r.id} restaurant={r} index={i} picked={picked[r.id] ?? null} onPick={(t) => setPicked({ ...picked, [r.id]: t })} onOpen={() => openRestaurant(r.id)} />)
         : <MapView mode="options" height={620} onSelectPin={openRestaurant} />}
       <Sheet open={!!open} onClose={() => setOpenId(null)} title={open?.name} subtitle={open?.cuisine}>
         {open && (
           <>
             <div className="rcard__photo rcard__photo--tall"><img src={open.photo} alt="" /></div>
-            <Chip variant="success" className="rcard__fair">Close to everyone</Chip>
+            <Chip variant={tag.best ? 'success' : 'neutral'} className="rcard__fair chip--sm">{tag.label}</Chip>
             <div className="list">
               <div className="info-row"><span className="info-row__icon"><MapPin size={20} /></span><div className="stack" style={{ gap: 0 }}><span className="t-caption c-secondary">Address</span><span className="t-body">{open.address}</span></div></div>
               <div className="info-row"><span className="info-row__icon"><Clock size={20} /></span><div className="stack" style={{ gap: 0 }}><span className="t-caption c-secondary">Hours</span><span className="t-body">{open.hours}</span></div></div>

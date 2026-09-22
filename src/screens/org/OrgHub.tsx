@@ -116,7 +116,7 @@ export function OrgHub() {
             <button className="hstack link t-label" onClick={() => navigate('/org/options')}>See all <Chevron size={18} /></button>
           </div>
           <div className="card" style={{ gap: 0, paddingTop: 4, paddingBottom: 4 }}>
-            <p className="t-caption c-secondary" style={{ padding: '8px 0 2px' }}>3 places that work, all close to everyone</p>
+            <p className="t-caption c-secondary" style={{ padding: '8px 0 2px' }}>3 places that work for the whole group</p>
             {restaurants.map((r) => (
               <button key={r.id} className="place-row" onClick={() => navigate('/org/options', { state: { open: r.id } })}>
                 <span className="place-row__thumb"><img src={r.photo} alt="" /></span>

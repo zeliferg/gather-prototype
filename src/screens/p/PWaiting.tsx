@@ -14,6 +14,7 @@ import { GuestRow } from '../../components/GuestRow';
 import { DevHint } from '../../components/DevHint';
 import { PermissionDialog } from '../../components/PermissionDialog';
 import { Chevron } from '../../components/icons';
+import { PickerField } from '../../components/PickerField';
 import { guestsComing as guests, me, party, permissionBody, radiusOptions, restaurants } from '../../fixtures';
 import { usePrototypeState } from '../../state';
 
@@ -86,10 +87,7 @@ export function PWaiting() {
 
       {/* Your info, as a drawer: location goes via the map screen, preferences change here */}
       <Sheet open={info} onClose={() => setInfo(false)} title="Your info" subtitle="Change where you're coming from or what you'd like.">
-        <button className="location-row" onClick={tapLocation}>
-          <span className="t-body-med">My location</span>
-          <span className="hstack c-secondary t-secondary">{locationSummary}<Chevron size={20} /></span>
-        </button>
+        <PickerField label="My location" value={locationSummary} set={state.locationSet || state.flexible} onClick={tapLocation} />
         <PreferenceChips value={prefDraft} onToggle={togglePref} />
         <Button onClick={() => { update({ prefs: prefDraft }); setInfo(false); }}>Save</Button>
       </Sheet>

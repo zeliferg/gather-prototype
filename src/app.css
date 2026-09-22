@@ -73,6 +73,7 @@ button.chip:active { transform: scale(0.95); }
 .chip--info { background: var(--bg-info-tint); color: var(--text-primary); }
 .chip-row { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .chip--lg { min-height: 40px; padding: 10px 16px; font: 500 15px/20px var(--font-sans); }
+.chip--sm { min-height: 24px; padding: 3px 9px; font: 500 12px/18px var(--font-sans); }
 .chip-row--in > .chip { animation: fade-in var(--dur-base) var(--ease-out) both; }
 .chip-row--in > .chip:nth-child(2) { animation-delay: var(--stagger); }
 .chip-row--in > .chip:nth-child(3) { animation-delay: calc(var(--stagger) * 2); }
@@ -190,10 +191,9 @@ button.chip:active { transform: scale(0.95); }
 .cover__edit { position: absolute; top: 12px; right: 12px; }
 .cover--none { background: transparent; border: 1.5px dashed var(--border-hairline); }
 .cover { transition: background var(--dur-slow) var(--ease-out); }
-.location-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); width: 100%; min-height: 52px; padding: 0 var(--space-3) 0 var(--space-4); border: 1px solid var(--border-hairline); border-radius: var(--radius-input); background: var(--bg-surface); text-align: left; transition: transform var(--dur-fast) var(--ease-out), background var(--dur-fast); }
-.location-row:active { transform: scale(0.99); background: var(--bg-subtle); }
-.location-row > :first-child { white-space: nowrap; }
-.location-row > :last-child { flex: 1; min-width: 0; justify-content: flex-end; }
+.picker { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); text-align: left; padding-right: var(--space-3); transition: transform var(--dur-fast) var(--ease-out), background var(--dur-fast), border-color var(--dur-fast); }
+.picker:active { transform: scale(0.99); background: var(--bg-subtle); }
+.picker > :first-child { min-width: 0; }
 .list { display: flex; flex-direction: column; }
 .guest-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border-hairline); }
 .guest-row:last-child { border-bottom: 0; }

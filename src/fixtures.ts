@@ -41,6 +41,11 @@ export const guestsComing = guests.filter((g) => g.status !== 'out');
 // The participant tester plays Priya.
 export const me = guests[1];
 
+/** The small tag on each option: the list is ranked, so only the first is the best spot. */
+export function spotTag(index: number): { label: string; best: boolean } {
+  return index === 0 ? { label: 'Best spot', best: true } : { label: 'Great spot', best: false };
+}
+
 /** The reservations partner the host books through. */
 export const partner = 'OpenTable';
 

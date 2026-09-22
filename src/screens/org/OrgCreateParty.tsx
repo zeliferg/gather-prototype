@@ -8,7 +8,7 @@ import { Sheet } from '../../components/Sheet';
 import { PermissionDialog } from '../../components/PermissionDialog';
 import { LocationPicker } from '../../components/LocationPicker';
 import { PreferencesSheet } from '../../components/Preferences';
-import { Chevron } from '../../components/icons';
+import { PickerField } from '../../components/PickerField';
 import { formatPhone, isCompletePhone } from '../../components/phone';
 import { permissionBody, radiusOptions } from '../../fixtures';
 import { usePrototypeState } from '../../state';
@@ -40,14 +40,8 @@ export function OrgCreateParty() {
       <Input label="Party name" value={state.partyName} onChange={(v) => update({ partyName: v })} placeholder="Taco Tuesday" />
       <Input label="When" type="datetime-local" value={state.when} onChange={(v) => update({ when: v })} />
       <Input label="Your phone" value={state.hostPhone} onChange={(v) => update({ hostPhone: formatPhone(v) })} inputMode="tel" type="tel" placeholder="(111) 111-1111" />
-      <button className="location-row" onClick={tapLocation}>
-        <span className="t-body-med">Your location</span>
-        <span className="hstack c-secondary t-secondary">{summary}<Chevron size={20} /></span>
-      </button>
-      <button className="location-row" onClick={() => setPrefsOpen(true)}>
-        <span className="t-body-med">Preferences (optional)</span>
-        <span className="hstack c-secondary t-secondary" style={{ minWidth: 0 }}><span className="ellipsis">{prefsSummary}</span><Chevron size={20} /></span>
-      </button>
+      <PickerField label="Your location" value={summary} set={touched} onClick={tapLocation} />
+      <PickerField label="Preferences (optional)" value={prefsSummary} set={state.hostPrefs.length > 0} onClick={() => setPrefsOpen(true)} />
       <p className="t-caption c-secondary">Guests add theirs when they join. Preferences shape the list, they don't limit it.</p>
       <PreferencesSheet open={prefsOpen} onClose={() => setPrefsOpen(false)} value={state.hostPrefs} onSave={(hostPrefs) => update({ hostPrefs })} />
       <PermissionDialog open={asking} body={permissionBody.host} onAllow={() => answered('granted')} onDeny={() => answered('denied')} />

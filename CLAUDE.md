@@ -124,8 +124,10 @@ once everyone's in it shows an "Everyone's in" chip plus a Places card whose
 rows open ORG 6 with that place's sheet already up (`location.state.open`);
 See everyone rows (except the host) open an ActionSheet (Send a reminder /
 Remove from the party) and guests who can't make it sit in their own group;
-"Fair for everyone" is now "Close to everyone" and the map's centre is a
-pulsing dot with no label; ORG 6c lists address / hours / booking as icon
+"Fair for everyone" became a small ranked tag (`spotTag`: "Best spot" on the
+first option, "Great spot" on the rest) and the map's centre is a pulsing dot
+with no label; tap-to-pick rows are `PickerField` (label above, field below,
+same anatomy as `Input`); ORG 6c lists address / hours / booking as icon
 rows; ORG 10 ends with a small "Start over" link that resets the tab; the
 host picks preferences on ORG 1 (`hostPrefs`, separate from the guest's). "Share invite link" uses the
 Web Share API where available and falls back to copy.

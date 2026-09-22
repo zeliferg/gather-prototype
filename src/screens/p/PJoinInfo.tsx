@@ -7,7 +7,7 @@ import { Button } from '../../components/Button';
 import { ProgressButton } from '../../components/ProgressButton';
 import { PermissionDialog } from '../../components/PermissionDialog';
 import { PreferencesSheet } from '../../components/Preferences';
-import { Chevron } from '../../components/icons';
+import { PickerField } from '../../components/PickerField';
 import { party, permissionBody, radiusOptions } from '../../fixtures';
 import { usePrototypeState } from '../../state';
 
@@ -40,14 +40,8 @@ export function PJoinInfo() {
             onStart={() => setJoining(true)} onBusyEnd={() => join(false)} onDone={() => navigate('/p/waiting')} />
           <Button variant="ghost" onClick={() => go(true)} disabled={joining}>I'm flexible, skip this</Button>
         </>}>
-      <button className="location-row" onClick={tapLocation}>
-        <span className="t-body-med">My location</span>
-        <span className="hstack c-secondary t-secondary">{locationSummary}<Chevron size={20} /></span>
-      </button>
-      <button className="location-row" onClick={() => setPrefsOpen(true)}>
-        <span className="t-body-med">Preferences (optional)</span>
-        <span className="hstack c-secondary t-secondary" style={{ minWidth: 0 }}><span className="ellipsis">{prefsSummary}</span><Chevron size={20} /></span>
-      </button>
+      <PickerField label="My location" value={locationSummary} set={state.locationSet} onClick={tapLocation} />
+      <PickerField label="Preferences (optional)" value={prefsSummary} set={state.prefs.length > 0} onClick={() => setPrefsOpen(true)} />
       <p className="t-caption c-secondary">Preferences help {party.hostFirst} pick, they don't limit the options.</p>
       <PermissionDialog open={asking} body={permissionBody.guest} onAllow={() => answered('granted')} onDeny={() => answered('denied')} />
       <PreferencesSheet open={prefsOpen} onClose={() => setPrefsOpen(false)} value={state.prefs} onSave={(prefs) => update({ prefs })} />
