@@ -8,7 +8,6 @@ import { Segmented } from '../../components/Segmented';
 import { Sheet } from '../../components/Sheet';
 import { MapView } from '../../components/MapView';
 import { RestaurantCard } from '../../components/RestaurantCard';
-import { Calendar, Clock, MapPin } from '../../components/icons';
 import { partner, restaurants, spotTag, type RestaurantId } from '../../fixtures';
 import { usePrototypeState } from '../../state';
 
@@ -47,14 +46,13 @@ export function OrgOptions() {
         {open && (
           <>
             <div className="rcard__photo rcard__photo--tall"><img src={open.photo} alt="" /></div>
-            <Chip variant={tag.best ? 'success' : 'neutral'} className="rcard__fair chip--sm">{tag.label}</Chip>
-            <div className="list">
-              <div className="info-row"><span className="info-row__icon"><MapPin size={20} /></span><div className="stack" style={{ gap: 0 }}><span className="t-caption c-secondary">Address</span><span className="t-body">{open.address}</span></div></div>
-              <div className="info-row"><span className="info-row__icon"><Clock size={20} /></span><div className="stack" style={{ gap: 0 }}><span className="t-caption c-secondary">Hours</span><span className="t-body">{open.hours}</span></div></div>
-              <div className="info-row"><span className="info-row__icon"><Calendar size={20} /></span><div className="stack" style={{ gap: 0 }}><span className="t-caption c-secondary">Booking</span><span className="t-body">{open.reservations ? `Reserve on ${partner}` : 'Walk-in only'}</span></div></div>
+            <div className="stack" style={{ gap: 6 }}>
+              <Chip variant={tag.best ? 'success' : 'neutral'} className="rcard__fair chip--sm">{tag.label}</Chip>
+              <p className="t-body">{open.address}</p>
+              <p className="t-secondary c-secondary">{open.hours} · {open.reservations ? `Reserve on ${partner}` : 'Walk-in only'}</p>
             </div>
-            <p className="t-caption c-secondary">{open.reservations ? 'Available tonight' : 'Walk-in only'}{time ? '' : ' · pick a time'}</p>
-            <div className="chip-row">{open.times.map((t) => <Chip key={t} className="chip--lg" variant={t === time ? 'selected' : 'neutral'} onClick={() => setTime(t)}>{t}</Chip>)}</div>
+            <p className="t-caption c-secondary">{time ? 'Time' : 'Pick a time'}</p>
+            <div className="chip-row">{open.times.map((t) => <Chip key={t} className="chip--time" variant={t === time ? 'selected' : 'neutral'} onClick={() => setTime(t)}>{t}</Chip>)}</div>
             <Button onClick={book} disabled={!time}>{cta}</Button>
             <Button variant="ghost">See full menu</Button>
           </>

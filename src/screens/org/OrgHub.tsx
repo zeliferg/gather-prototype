@@ -90,46 +90,40 @@ export function OrgHub() {
           <button className="link t-label" onClick={() => { setDraft({ name, when: state.when || party.whenIso }); setEditing(true); }}>Edit details</button>
         </div>
       </div>
-      <div className="card row">
-        <div className="stack" style={{ gap: 2 }}><span className="t-caption c-secondary">Invite link</span><span className="t-body-med">{party.inviteLink}</span></div>
-        <button className="link t-body-med" onClick={copy}>{copied ? 'Copied' : 'Copy'}</button>
-      </div>
+      {state.everyoneIn ? (
+        /* Everyone's in: the places lead, as one card and one tap. Inviting is over, so the link card and + go. */
+        <button className="card places" onClick={() => navigate('/org/options')}>
+          <span className="row"><span className="t-heading">3 places that work</span><span className="c-secondary" style={{ display: 'grid' }}><Chevron size={20} /></span></span>
+          <span className="t-secondary c-secondary">Close to the middle of where everyone's coming from.</span>
+          <span className="stack" style={{ gap: 0, marginTop: 4 }}>
+            {restaurants.map((r) => (
+              <span key={r.id} className="place-row">
+                <span className="place-row__thumb"><img src={r.photo} alt="" /></span>
+                <span className="stack" style={{ gap: 0, minWidth: 0 }}>
+                  <span className="t-body-med ellipsis">{r.name}</span>
+                  <span className="t-caption c-secondary">{r.cuisine} · {r.reservations ? 'Reserve' : 'Walk-in'}</span>
+                </span>
+              </span>
+            ))}
+          </span>
+        </button>
+      ) : (
+        <div className="card row">
+          <div className="stack" style={{ gap: 2 }}><span className="t-caption c-secondary">Invite link</span><span className="t-body-med">{party.inviteLink}</span></div>
+          <button className="link t-body-med" onClick={copy}>{copied ? 'Copied' : 'Copy'}</button>
+        </div>
+      )}
       <div className="row">
         <h2 className="t-heading">Guests</h2>
-        <button className="icon-btn icon-btn--right icon-btn--filled" aria-label="Add a guest" onClick={() => setAdding(true)}><Plus /></button>
+        {!state.everyoneIn && <button className="icon-btn icon-btn--right icon-btn--filled" aria-label="Add a guest" onClick={() => setAdding(true)}><Plus /></button>}
       </div>
       <div className="card">
         <div className="row">
           <AvatarStack guests={coming} />
           <button className="hstack link t-label" onClick={() => setEveryone(true)}>See everyone <Chevron size={18} /></button>
         </div>
-        {state.everyoneIn
-          ? <div className="hstack"><Chip variant="success" className="chip--swap">Everyone's in</Chip>{out.length > 0 && <span className="t-caption c-secondary">{out.length} can't make it</span>}</div>
-          : <p className="t-secondary">{countLine}</p>}
+        <p className="t-secondary">{state.everyoneIn ? `Everyone's in${out.length ? ` · ${out.length} can't make it` : ''}` : countLine}</p>
       </div>
-
-      {/* Once everyone's in, the places are right here: the full list is one tap away. */}
-      {state.everyoneIn && (
-        <>
-          <div className="row">
-            <h2 className="t-heading">Places</h2>
-            <button className="hstack link t-label" onClick={() => navigate('/org/options')}>See all <Chevron size={18} /></button>
-          </div>
-          <div className="card" style={{ gap: 0, paddingTop: 4, paddingBottom: 4 }}>
-            <p className="t-caption c-secondary" style={{ padding: '8px 0 2px' }}>3 places that work for the whole group</p>
-            {restaurants.map((r) => (
-              <button key={r.id} className="place-row" onClick={() => navigate('/org/options', { state: { open: r.id } })}>
-                <span className="place-row__thumb"><img src={r.photo} alt="" /></span>
-                <span className="stack" style={{ gap: 0, flex: 1, minWidth: 0 }}>
-                  <span className="t-body-med ellipsis">{r.name}</span>
-                  <span className="t-caption c-secondary">{r.cuisine} · {r.reservations ? 'Reserve' : 'Walk-in'}</span>
-                </span>
-                <span className="c-secondary" style={{ display: 'grid' }}><Chevron size={20} /></span>
-              </button>
-            ))}
-          </div>
-        </>
-      )}
 
       <Notification open={banner} onClose={closeBanner} text={`${sms.manageLink.text} ${sms.manageLink.link}`} />
       <Notification open={invited !== null} onClose={closeInvited} app="Gather" autoHideMs={0} closeButton text={`Invite sent to ${invited ?? ''}. They'll get a text with the link.`} />

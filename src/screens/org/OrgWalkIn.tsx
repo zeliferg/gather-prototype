@@ -24,7 +24,7 @@ export function OrgWalkIn() {
         <p className="t-secondary c-secondary">We'll tell the group to head over around {state.selectedTime}. Arrive together and you'll usually be seated within 15 minutes.</p>
       </div>
       <p className="t-caption c-secondary">Meet-up time</p>
-      <div className="chip-row">{r.times.map((t) => <Chip key={t} className="chip--lg" variant={t === state.selectedTime ? 'selected' : 'neutral'} onClick={() => update({ selectedTime: t })}>{t}</Chip>)}</div>
+      <div className="chip-row">{r.times.map((t) => <Chip key={t} className="chip--time" variant={t === state.selectedTime ? 'selected' : 'neutral'} onClick={() => update({ selectedTime: t })}>{t}</Chip>)}</div>
     </Screen>
   );
 }

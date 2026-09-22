@@ -54,7 +54,7 @@ export function OrgEditReservation() {
       </div>
       <p className="t-caption c-secondary">Time{fewer ? ` · tables for ${BIG_TABLE_FROM} or more have fewer slots at ${place.name}` : ''}</p>
       <div key={`${placeId}-${times.join()}`} className="chip-row chip-row--in" aria-live="polite">
-        {times.map((t) => <Chip key={t} className="chip--lg" variant={t === time ? 'selected' : 'neutral'} onClick={() => setTime(t)}>{t}</Chip>)}
+        {times.map((t) => <Chip key={t} className="chip--time" variant={t === time ? 'selected' : 'neutral'} onClick={() => setTime(t)}>{t}</Chip>)}
       </div>
       <p className="t-caption c-secondary">{!time ? `${picked} isn't available for ${size}. Pick another time.` : size < state.partySize ? 'Someone dropped out? The table gets smaller.' : size > state.partySize ? 'Bringing a plus-one? We ask for a bigger table.' : 'Everyone gets a text and an updated calendar invite.'}</p>
     </Screen>

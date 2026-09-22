@@ -65,7 +65,7 @@ img { display: block; max-width: 100%; }
 .btn--danger { background: transparent; color: var(--error); }
 
 /* Chip */
-.chip { display: inline-flex; align-items: center; min-height: 30px; padding: 6px 12px; border-radius: var(--radius-pill); font: 500 13px/18px var(--font-sans); white-space: nowrap; transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out); }
+.chip { display: inline-flex; flex: none; width: max-content; align-items: center; min-height: 30px; padding: 6px 12px; border-radius: var(--radius-pill); font: 500 13px/18px var(--font-sans); white-space: nowrap; transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out); }
 button.chip:active { transform: scale(0.95); }
 .chip--neutral { background: var(--bg-subtle); color: var(--text-primary); }
 .chip--selected { background: var(--accent); color: var(--text-on-accent); }
@@ -74,6 +74,9 @@ button.chip:active { transform: scale(0.95); }
 .chip-row { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .chip--lg { min-height: 40px; padding: 10px 16px; font: 500 15px/20px var(--font-sans); }
 .chip--sm { min-height: 24px; padding: 3px 9px; font: 500 12px/18px var(--font-sans); }
+/* Time slots: outlined, quiet until chosen */
+.chip--time { min-height: 36px; padding: 8px 14px; font: 500 14px/20px var(--font-sans); background: transparent; color: var(--text-primary); box-shadow: inset 0 0 0 1px var(--border-hairline); }
+.chip--time.chip--selected { background: var(--accent); color: var(--text-on-accent); box-shadow: none; }
 .chip-row--in > .chip { animation: fade-in var(--dur-base) var(--ease-out) both; }
 .chip-row--in > .chip:nth-child(2) { animation-delay: var(--stagger); }
 .chip-row--in > .chip:nth-child(3) { animation-delay: calc(var(--stagger) * 2); }
@@ -200,16 +203,15 @@ button.chip:active { transform: scale(0.95); }
 .guest-row--tap { width: 100%; text-align: left; transition: background var(--dur-fast), transform var(--dur-fast) var(--ease-out); }
 .guest-row--tap:active { background: var(--bg-subtle); transform: scale(0.99); }
 .action-sheet__option--danger { color: var(--error); }
-/* Hub: the places card once everyone's in */
-.place-row { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 10px 0; border-bottom: 1px solid var(--border-hairline); transition: background var(--dur-fast), transform var(--dur-fast) var(--ease-out); }
-.place-row:last-child { border-bottom: 0; }
-.place-row:active { transform: scale(0.99); }
-.place-row__thumb { flex: none; width: 48px; height: 48px; border-radius: 12px; overflow: hidden; }
+.guest-row__more { flex: none; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; color: var(--text-secondary); }
+/* Hub: once everyone's in, the places card is the one thing to tap */
+.places { width: 100%; text-align: left; transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast); }
+.places:active { transform: scale(0.99); }
+.place-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid var(--border-hairline); }
+.place-row__thumb { flex: none; width: 40px; height: 40px; border-radius: 10px; overflow: hidden; }
 .place-row__thumb img { width: 100%; height: 100%; object-fit: cover; }
-/* Restaurant detail: address, hours and booking as rows with an icon tile each */
-.info-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border-hairline); }
-.info-row:last-child { border-bottom: 0; }
-.info-row__icon { flex: none; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 10px; background: var(--bg-subtle); color: var(--text-secondary); }
+/* Forms: fields sit closer together than sections do */
+.form { display: flex; flex-direction: column; gap: var(--space-3); }
 .chip--swap { animation: fade-in var(--dur-base) var(--ease-out) both; }
 .banner { animation: fade-in var(--dur-slow) var(--ease-out) both; }
 @keyframes fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
@@ -273,8 +275,8 @@ button.chip:active { transform: scale(0.95); }
 /* Edit reservation */
 .radio { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--border-hairline); flex: none; transition: background var(--dur-fast), border-color var(--dur-fast); }
 .radio--on { background: var(--accent); border-color: var(--accent); box-shadow: inset 0 0 0 4px var(--bg-surface); }
-.stepper { display: inline-flex; align-items: center; align-self: flex-start; height: 40px; background: var(--bg-subtle); border-radius: var(--radius-pill); }
-.stepper__btn { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; font: 500 20px/20px var(--font-sans); transition: transform var(--dur-fast) var(--ease-out), background var(--dur-fast); }
+.stepper { display: inline-flex; align-items: center; align-self: flex-start; height: 36px; background: var(--bg-subtle); border-radius: var(--radius-pill); }
+.stepper__btn { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; font: 500 20px/20px var(--font-sans); transition: transform var(--dur-fast) var(--ease-out), background var(--dur-fast); }
 .stepper__btn:active { background: var(--border-hairline); }
 .stepper__btn:active { transform: scale(0.9); }
 .stepper__btn:disabled { opacity: 0.35; }

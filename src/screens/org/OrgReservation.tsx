@@ -28,7 +28,7 @@ export function OrgReservation() {
         <p className="t-secondary c-secondary">Table for {size}. {r.address}.</p>
       </div>
       <p className="t-caption c-secondary">Or pick another time</p>
-      <div className="chip-row">{times.map((t) => <Chip key={t} className="chip--lg" variant={t === state.selectedTime ? 'selected' : 'neutral'} onClick={() => update({ selectedTime: t })}>{t}</Chip>)}</div>
+      <div className="chip-row">{times.map((t) => <Chip key={t} className="chip--time" variant={t === state.selectedTime ? 'selected' : 'neutral'} onClick={() => update({ selectedTime: t })}>{t}</Chip>)}</div>
       <div className="stack" style={{ gap: 4, paddingTop: 'var(--space-2)', borderTop: '1px solid var(--border-hairline)' }}>
         <p className="t-label c-secondary">What happens next</p>
         <p className="t-caption c-secondary">We book the table and text everyone the details. You can change or cancel later from the party page.</p>

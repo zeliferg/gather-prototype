@@ -9,6 +9,7 @@ import { PermissionDialog } from '../../components/PermissionDialog';
 import { LocationPicker } from '../../components/LocationPicker';
 import { PreferencesSheet } from '../../components/Preferences';
 import { PickerField } from '../../components/PickerField';
+import { Plus } from '../../components/icons';
 import { formatPhone, isCompletePhone } from '../../components/phone';
 import { permissionBody, radiusOptions } from '../../fixtures';
 import { usePrototypeState } from '../../state';
@@ -20,7 +21,6 @@ export function OrgCreateParty() {
   const [open, setOpen] = useState(false);
   const [touched, setTouched] = useState(false);
   const [prefsOpen, setPrefsOpen] = useState(false);
-  const prefsSummary = state.hostPrefs.length ? state.hostPrefs.join(', ') : 'Tap to add';
   const radius = radiusOptions.find((o) => o.value === state.radiusMi)!.label;
   const summary = touched ? `${state.locationMode === 'pin' ? 'RiNo' : 'Downtown'} · within ${radius}` : 'Tap to set';
   const complete = state.hostName.trim() !== '' && state.partyName.trim() !== '' && state.when !== '' && isCompletePhone(state.hostPhone) && touched;
@@ -36,13 +36,17 @@ export function OrgCreateParty() {
   return (
     <Screen back title="Start a party" subtitle="Everyone else just adds where they're coming from."
       footer={<Button onClick={() => navigate('/org/verify')} disabled={!complete}>Create party</Button>}>
-      <Input label="Your name" value={state.hostName} onChange={(v) => update({ hostName: v })} placeholder="Your name" />
-      <Input label="Party name" value={state.partyName} onChange={(v) => update({ partyName: v })} placeholder="Taco Tuesday" />
-      <Input label="When" type="datetime-local" value={state.when} onChange={(v) => update({ when: v })} />
-      <Input label="Your phone" value={state.hostPhone} onChange={(v) => update({ hostPhone: formatPhone(v) })} inputMode="tel" type="tel" placeholder="(111) 111-1111" />
-      <PickerField label="Your location" value={summary} set={touched} onClick={tapLocation} />
-      <PickerField label="Preferences (optional)" value={prefsSummary} set={state.hostPrefs.length > 0} onClick={() => setPrefsOpen(true)} />
-      <p className="t-caption c-secondary">Guests add theirs when they join. Preferences shape the list, they don't limit it.</p>
+      <div className="form">
+        <Input label="Your name" value={state.hostName} onChange={(v) => update({ hostName: v })} placeholder="Your name" />
+        <Input label="Party name" value={state.partyName} onChange={(v) => update({ partyName: v })} placeholder="Taco Tuesday" />
+        <Input label="When" type="datetime-local" value={state.when} onChange={(v) => update({ when: v })} />
+        <Input label="Your phone" value={state.hostPhone} onChange={(v) => update({ hostPhone: formatPhone(v) })} inputMode="tel" type="tel" placeholder="(111) 111-1111" />
+        <PickerField label="Your location" value={summary} set={touched} onClick={tapLocation} />
+      </div>
+      {/* Optional, so it stays a quiet link rather than another field */}
+      <button className="hstack link t-label" style={{ alignSelf: 'flex-start' }} onClick={() => setPrefsOpen(true)}>
+        <Plus size={16} />{state.hostPrefs.length ? `Preferences: ${state.hostPrefs.join(', ')}` : 'Add preferences (optional)'}
+      </button>
       <PreferencesSheet open={prefsOpen} onClose={() => setPrefsOpen(false)} value={state.hostPrefs} onSave={(hostPrefs) => update({ hostPrefs })} />
       <PermissionDialog open={asking} body={permissionBody.host} onAllow={() => answered('granted')} onDeny={() => answered('denied')} />
       <Sheet open={open} onClose={() => setOpen(false)} title="Your location" subtitle="Only used to find a fair spot. Guests never see it.">

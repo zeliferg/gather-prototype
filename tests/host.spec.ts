@@ -94,8 +94,9 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await expect(page.getByRole('heading', { name: "Jordan's Dinner" })).toBeVisible();
   await expect(page.getByText("Everyone's in")).toBeVisible();
   await expect(page.getByRole('button', { name: 'Share invite link' })).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: 'Places' })).toBeVisible();
-  await expect(page.getByRole('button', { name: /Noodle Bar Riverside/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /3 places that work/ })).toBeVisible(); // the places card leads, as one tap
+  await expect(page.getByText('Noodle Bar Riverside')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Add a guest' })).toHaveCount(0);
   await page.getByRole('button', { name: 'Browse places' }).click();
 
   // ORG 6c from a pin, with no slot tapped first: nothing is selected and the CTA waits for a time.
