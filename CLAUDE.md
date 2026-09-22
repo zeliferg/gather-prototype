@@ -26,7 +26,7 @@ Vite 6 + React 19 + TypeScript (strict), react-router-dom 6, plain CSS.
   Priya; Leo replied "can't make it" and is `status: 'out'`), three Denver
   restaurants, the `partner` (OpenTable), all SMS copy. `guestsComing` is
   the guest-side list; the host side goes through `useParty().coming/out`.
-  Memoji-style avatars are hand-drawn SVGs in `public/avatars/<id>.svg`
+  Avatars are 240px photo crops in `public/avatars/<id>.jpg`
   (`Avatar` falls back to the initial when there is no photo).
 - `src/state.tsx` — `usePrototypeState()` → `[state, update, reset]`, backed
   by `sessionStorage`. Only tester choices go here. `reset()` is wired to the

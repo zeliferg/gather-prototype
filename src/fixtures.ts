@@ -25,14 +25,14 @@ export const party = {
   size: 5,
 };
 
-// Memoji-style avatars in public/avatars; a real Memoji export dropped there as <id>.png replaces one.
+// Photo avatars in public/avatars (240px square crops); swap a file to recast a guest.
 export const guests: Guest[] = [
-  { id: 'jordan', name: 'Jordan Reyes', initial: 'J', status: 'host', avatar: '/avatars/jordan.svg' },
-  { id: 'priya', name: 'Priya Nair', initial: 'P', status: 'responded', avatar: '/avatars/priya.svg' },
-  { id: 'marcus', name: 'Marcus Webb', initial: 'M', status: 'responded', avatar: '/avatars/marcus.svg' },
-  { id: 'alex', name: 'Alex Chen', initial: 'A', status: 'waiting', avatar: '/avatars/alex.svg' },
-  { id: 'sam', name: 'Sam Okafor', initial: 'S', status: 'waiting', avatar: '/avatars/sam.svg' },
-  { id: 'leo', name: 'Leo Martins', initial: 'L', status: 'out', avatar: '/avatars/leo.svg', note: 'Away that weekend' },
+  { id: 'jordan', name: 'Jordan Reyes', initial: 'J', status: 'host', avatar: '/avatars/jordan.jpg' },
+  { id: 'priya', name: 'Priya Nair', initial: 'P', status: 'responded', avatar: '/avatars/priya.jpg' },
+  { id: 'marcus', name: 'Marcus Webb', initial: 'M', status: 'responded', avatar: '/avatars/marcus.jpg' },
+  { id: 'alex', name: 'Alex Chen', initial: 'A', status: 'waiting', avatar: '/avatars/alex.jpg' },
+  { id: 'sam', name: 'Sam Okafor', initial: 'S', status: 'waiting', avatar: '/avatars/sam.jpg' },
+  { id: 'leo', name: 'Leo Martins', initial: 'L', status: 'out', avatar: '/avatars/leo.jpg', note: 'Away that weekend' },
 ];
 
 /** Everyone who might still show up: what the guest side calls "who's coming" and what the table is sized for. */
