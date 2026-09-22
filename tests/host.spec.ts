@@ -67,6 +67,13 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await page.getByRole('button', { name: 'Dismiss notification' }).click();
   await expect(page.getByText('3 of 6 responded')).toBeVisible(); // Leo, who replied he's out, only shows in the sheet
 
+  // The host's own preferences are always a row under Guests, empty or not, and open the sheet to change.
+  await expect(page.getByRole('button', { name: 'Your preferences' })).toContainText('Tap to add');
+  await page.getByRole('button', { name: 'Your preferences' }).click();
+  await page.getByRole('dialog', { name: 'Your preferences' }).getByRole('button', { name: 'Vegetarian' }).click();
+  await page.getByRole('button', { name: 'Save preferences' }).click();
+  await expect(page.getByRole('button', { name: 'Your preferences' })).toContainText('Vegetarian');
+
   // Share invite: the link card opens one drawer with Copy and quick ways to send; Remind is the page's only CTA.
   await page.getByRole('button', { name: 'Share invite link' }).click();
   const share = page.getByRole('dialog', { name: 'Invite people' });

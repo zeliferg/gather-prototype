@@ -130,13 +130,14 @@ export function OrgHub() {
         <span className="t-secondary" style={{ flex: 1, minWidth: 0 }}>{state.everyoneIn ? "Everyone's in" : countLine}</span>
         <span className="c-secondary" style={{ display: 'grid' }}><Chevron size={20} /></span>
       </button>
-      {/* The host is one of the guests: their own picks from Create Party sit with the guests, labelled as theirs */}
-      {state.hostPrefs.length > 0 && (
-        <button className="card row card--tap" aria-label="Your preferences" onClick={() => setPrefsOpen(true)}>
-          <span className="stack" style={{ gap: 2, minWidth: 0 }}><span className="t-caption c-secondary">Your preferences</span><span className="t-body-med ellipsis">{state.hostPrefs.join(' · ')}</span></span>
-          <span className="c-secondary" style={{ display: 'grid' }}><Chevron size={20} /></span>
-        </button>
-      )}
+      {/* The host is one of the guests: their own picks sit with the guests, labelled as theirs, always there to add or change */}
+      <button className="card row card--tap" aria-label="Your preferences" onClick={() => setPrefsOpen(true)}>
+        <span className="stack" style={{ gap: 2, minWidth: 0 }}>
+          <span className="t-caption c-secondary">Your preferences</span>
+          <span className={`t-body-med ellipsis ${state.hostPrefs.length ? '' : 'c-secondary'}`}>{state.hostPrefs.length ? state.hostPrefs.join(' · ') : 'Tap to add (optional)'}</span>
+        </span>
+        <span className="c-secondary" style={{ display: 'grid' }}><Chevron size={20} /></span>
+      </button>
 
       <Notification open={banner} onClose={closeBanner} text={`${sms.manageLink(name).text} ${sms.manageLink(name).link}`} />
       <Notification open={invited !== null} onClose={closeInvited} app="Gather" autoHideMs={0} closeButton text={`Invite sent to ${invited ?? ''}. They'll get a text with the link.`} />
