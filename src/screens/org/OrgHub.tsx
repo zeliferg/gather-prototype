@@ -117,13 +117,12 @@ export function OrgHub() {
         <h2 className="t-heading">Guests</h2>
         {!state.everyoneIn && <button className="icon-btn icon-btn--right icon-btn--filled" aria-label="Add a guest" onClick={() => setAdding(true)}><Plus /></button>}
       </div>
-      <div className="card">
-        <div className="row">
-          <AvatarStack guests={coming} />
-          <button className="hstack link t-label" onClick={() => setEveryone(true)}>See everyone <Chevron size={18} /></button>
-        </div>
-        <p className="t-secondary">{state.everyoneIn ? `Everyone's in${out.length ? ` · ${out.length} can't make it` : ''}` : countLine}</p>
-      </div>
+      {/* One row, one tap: three faces, the count, a chevron into See everyone */}
+      <button className="card guests" aria-label="See everyone" onClick={() => setEveryone(true)}>
+        <AvatarStack guests={coming} max={3} size={32} />
+        <span className="t-secondary" style={{ flex: 1, minWidth: 0 }}>{state.everyoneIn ? `Everyone's in${out.length ? ` · ${out.length} can't make it` : ''}` : countLine}</span>
+        <span className="c-secondary" style={{ display: 'grid' }}><Chevron size={20} /></span>
+      </button>
 
       <Notification open={banner} onClose={closeBanner} text={`${sms.manageLink.text} ${sms.manageLink.link}`} />
       <Notification open={invited !== null} onClose={closeInvited} app="Gather" autoHideMs={0} closeButton text={`Invite sent to ${invited ?? ''}. They'll get a text with the link.`} />

@@ -119,7 +119,8 @@ and ORG 11 (`slotsFor`, `bigTableTimes` from 7 guests). Inert-by-design
 controls: Choose from contacts, Choose from
 photos / Take a photo (both just restore the photo cover),
 Edit info, See full menu, Cancel reservation. Since 22 Sep 2026: the hub's
-Guests card is faces + "3 of 5 responded · 1 can't make it" (no bar), and
+Guests card is one tappable row: three 32px faces then "+N", the count line
+("3 of 5 responded · 1 can't make it"), a chevron into See everyone, and
 once everyone's in the invite-link card and the + go, "Everyone's in" is a
 text line, and a single tappable Places card (`.places`) leads the page into
 ORG 6 (`location.state.open` still preopens a sheet if a caller passes it);

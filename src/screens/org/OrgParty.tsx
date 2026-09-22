@@ -39,7 +39,7 @@ export function OrgParty() {
           <Button variant="secondary" inline onClick={() => setCalendar(true)}>Add to calendar</Button>
         </div>
       </div>
-      <div className="row"><h2 className="t-heading">Guests</h2><AvatarStack guests={coming} size={32} /></div>
+      <div className="row"><h2 className="t-heading">Guests</h2><AvatarStack guests={coming} max={3} size={32} /></div>
       <div className="card" style={{ gap: 0, padding: '0 16px' }}>
         <button className="row menu-row t-body" onClick={() => navigate('/org/edit')}>Change time or place<Chevron size={20} /></button>
         <button className="row menu-row t-body" onClick={() => navigate('/org/edit', { state: { focus: 'size' } })}>Change party size<Chevron size={20} /></button>
