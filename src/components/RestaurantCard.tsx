@@ -26,7 +26,7 @@ export function RestaurantCard({ restaurant: r, index, picked, onPick, onOpen }:
       </button>
       {r.reservations && (
         <div className="chip-row" style={{ padding: '0 4px 4px' }} role="group" aria-label={`${r.name} times`}>
-          {r.times.map((t) => <Chip key={t} className="chip--time" variant={t === picked ? 'selected' : 'neutral'} onClick={() => onPick(t)}>{t.replace(' PM', '')}</Chip>)}
+          {r.times.map((t) => <Chip key={t} className="chip--time" variant={t === picked ? 'selected' : 'neutral'} onClick={() => onPick(t)}>{t}</Chip>)}
         </div>
       )}
     </div>

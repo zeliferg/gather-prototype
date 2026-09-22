@@ -111,7 +111,7 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await page.getByRole('button', { name: 'Close' }).click({ position: { x: 10, y: 10 } }); // scrim centre is under the sheet panel
   // ORG 6: tapping a slot on the card opens the sheet with it selected.
   await page.getByRole('tab', { name: 'List' }).click();
-  await page.getByRole('group', { name: 'Tavola Verde times' }).getByRole('button', { name: '7:00', exact: true }).click();
+  await page.getByRole('group', { name: 'Tavola Verde times' }).getByRole('button', { name: '7:00 PM', exact: true }).click();
   await expect(page.getByRole('dialog', { name: 'Tavola Verde' }).getByRole('button', { name: '7:00 PM', pressed: true })).toBeVisible();
   await page.getByRole('button', { name: 'Book 7:00 PM with OpenTable' }).click();
 
