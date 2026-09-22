@@ -132,7 +132,9 @@ same anatomy as `Input`); ORG 6c stacks tag / address / hours · booking by type
 weight, no icons; time slots everywhere are outlined `chip--time` (36px, the
 stepper matches); ORG 10 ends with a small "Start over" link that resets the tab; the
 host picks preferences on ORG 1 from an "Add preferences (optional)" link
-(`hostPrefs`, separate from the guest's); ORG 1 fields sit in a `.form` (12px gap). "Share invite link" uses the
+(`hostPrefs`, separate from the guest's); ORG 1 fields sit in a `.form` (12px gap). The When picker
+(`Input type="datetime-local"`) steps by 15 minutes and rounds typed values to
+the grid (`snapMinutes`, tested); the same Input serves Edit details on ORG 4. "Share invite link" uses the
 Web Share API where available and falls back to copy.
 Deferred polish: `Segmented` uses `role=tab` (should be radiogroup), sheets
 lack focus trapping/Escape/swipe-to-dismiss, type scale is px not rem, the
