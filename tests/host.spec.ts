@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('organizer spine: landing to the morning after', async ({ page }) => {
+  test.setTimeout(60_000); // ~25s locally; CI's two-worker runner sat right on the 30s default (run #75, 23 Sep 2026)
   await page.goto('/org');
   await page.getByRole('button', { name: 'Start a party' }).click();
 
