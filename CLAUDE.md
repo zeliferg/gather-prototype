@@ -42,7 +42,7 @@ Vite 6 + React 19 + TypeScript (strict), react-router-dom 6, plain CSS.
   in CSS, draggable; ring and pins are React overlays re-projected on move;
   needs the "© OpenStreetMap contributors" attribution it renders),
   `LocationPicker`, `Cover`, `DevHint`, `ProgressButton` (spinner → check →
-  navigate; Verify, Join, Book, Set time), `phone.ts` (`formatPhone` as typed),
+  navigate; both Verifys, Join, Book, Set time), `phone.ts` (`formatPhone` as typed),
   `Preferences` (`PreferencesSheet` = P 2b, used by the guest join screen and
   the host's Create Party; `PreferenceChips` inline in the guest's Your info
   drawer), `AvatarStack` (up to 5 faces then "+N").

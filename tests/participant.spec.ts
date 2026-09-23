@@ -13,6 +13,7 @@ test('participant spine: invite to the morning after, including dropping out and
   await expect(page.getByRole('button', { name: 'Continue' })).toBeDisabled(); // until the code is in
   await page.getByLabel('6-digit code').click();
   await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(page.getByRole('button', { name: /Verifying|Verified/ })).toBeVisible(); // spinner → check, like the host's Verify
 
   // The join screen: location first (permission dialog, then the map screen with Save), preferences optional.
   await expect(page.getByRole('heading', { name: "Join Jordan's Dinner" })).toBeVisible();
@@ -102,6 +103,7 @@ test('participant spine: invite to the morning after, including dropping out and
   await expect(page.getByText('We texted a 6-digit code to (555) 204-1187.')).toBeVisible();
   await page.getByLabel('6-digit code').click();
   await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(page.getByRole('button', { name: /Verifying|Verified/ })).toBeVisible(); // spinner → check, like the host's Verify
   await expect(page.getByRole('heading', { name: "Join Jordan's Dinner" })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Join the party' })).toBeDisabled(); // the reset cleared the location
 });
