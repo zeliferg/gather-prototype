@@ -156,8 +156,12 @@ the invite-link card opens an "Invite people" drawer (link + Copy, then
 Messages / WhatsApp / Email as real `sms:`/`wa.me`/`mailto:` links, and More =
 Web Share API, falling back to copy). Copy avoids the word "fair" (22 Sep
 2026): say "a spot that works for everyone".
-Deferred polish: `Segmented` uses `role=tab` (should be radiogroup), sheets
-lack focus trapping/Escape/swipe-to-dismiss, type scale is px not rem, the
+Sheets swipe to dismiss since 23 Sep 2026 (`useSwipeToDismiss`: a downward
+drag from scrolled-to-top content follows the finger, past a quarter of the
+panel or a flick it closes through `onClose`, else springs back; drags on the
+map are left alone; ActionSheets stay tap-only; Playwright drives it with
+WebKit's `createTouch`). Deferred polish: `Segmented` uses `role=tab` (should
+be radiogroup), sheets lack focus trapping/Escape, type scale is px not rem, the
 first screen slides in from the left on initial load, SMS routes slide rather
 than fade, landscape safe-area sides unused. Cross-device realism: location permission
 and other state persist per tab across host → participant walk-throughs; use

@@ -112,3 +112,45 @@ test('the guest morning-after text is reachable by URL', async ({ page }) => {
   await page.goto('/p/sms-after');
   await expect(page.getByText('It was a blast!')).toBeVisible();
 });
+
+// Synthetic one-finger drag on the open drawer: touchstart near its top edge, a few touchmoves, touchend.
+async function swipeDown(page: import('@playwright/test').Page, dy: number, stepMs = 16) {
+  await page.evaluate(async ({ dy, stepMs }) => {
+    const el = document.querySelector('.overlay--in .sheet') as HTMLElement;
+    const r = el.getBoundingClientRect();
+    const x = r.left + r.width / 2;
+    const y0 = r.top + 24;
+    // WebKit has no Touch constructor; its legacy factory still builds one.
+    const doc = document as Document & {
+      createTouch: (w: Window, t: EventTarget, id: number, px: number, py: number, sx: number, sy: number) => Touch;
+      createTouchList: (...t: Touch[]) => TouchList;
+    };
+    const fire = (type: string, y: number) => {
+      const t = doc.createTouch(window, el, 1, x, y, x, y);
+      const list = type === 'touchend' ? doc.createTouchList() : doc.createTouchList(t);
+      el.dispatchEvent(new TouchEvent(type, { touches: list, targetTouches: list, changedTouches: doc.createTouchList(t), bubbles: true, cancelable: true }));
+    };
+    fire('touchstart', y0);
+    for (let i = 1; i <= 6; i++) { fire('touchmove', y0 + (dy * i) / 6); await new Promise((res) => setTimeout(res, stepMs)); }
+    fire('touchend', y0 + dy);
+  }, { dy, stepMs });
+}
+
+test('a drawer closes on a long downward swipe', async ({ page }) => {
+  await page.goto('/p/waiting');
+  await page.getByRole('button', { name: "Can't make it? Let Jordan know" }).click();
+  const sheet = page.getByRole('dialog', { name: "Can't make it?" });
+  await expect(sheet).toBeVisible();
+  await swipeDown(page, 240);
+  await expect(sheet).toHaveCount(0);
+});
+
+test('a drawer springs back from a short downward swipe', async ({ page }) => {
+  await page.goto('/p/waiting');
+  await page.getByRole('button', { name: "Can't make it? Let Jordan know" }).click();
+  const sheet = page.getByRole('dialog', { name: "Can't make it?" });
+  await expect(sheet).toBeVisible();
+  await swipeDown(page, 30, 60);
+  await page.waitForTimeout(700); // longer than the sheet's exit, so a wrongly closing drawer would be gone by now
+  await expect(sheet).toBeVisible();
+});
