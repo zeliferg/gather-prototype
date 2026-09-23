@@ -9,7 +9,7 @@ const DISMISS_FRACTION = 0.25; // of the panel's height
  * Pull-down-to-dismiss for a bottom sheet. The panel follows the finger 1:1 (scrim fading in step) once a
  * downward drag starts with the content scrolled to the top; released past a quarter of its height, or
  * flicked, it slides the rest of the way and `onClose` fires. Otherwise it springs back on the sheet's own
- * transition. Drags that begin on the map are left to the map; upward or scrolled drags just scroll.
+ * transition. Drags that begin on the map or a time wheel are left to them; upward or scrolled drags just scroll.
  */
 export function useSwipeToDismiss(panel: RefObject<HTMLElement | null>, scrim: RefObject<HTMLElement | null>, onClose: () => void, active: boolean) {
   useEffect(() => {
@@ -23,7 +23,7 @@ export function useSwipeToDismiss(panel: RefObject<HTMLElement | null>, scrim: R
       if (scrim.current) { scrim.current.style.transition = ''; scrim.current.style.opacity = ''; }
     };
     const onStart = (e: TouchEvent) => {
-      if (e.touches.length !== 1 || (e.target as Element).closest('.leaflet-container')) { mode = 'scroll'; return; }
+      if (e.touches.length !== 1 || (e.target as Element).closest('.leaflet-container, .wheel__col')) { mode = 'scroll'; return; }
       startX = e.touches[0].clientX; startY = lastY = e.touches[0].clientY; lastT = e.timeStamp; velocity = 0; offset = 0;
       mode = 'undecided';
     };

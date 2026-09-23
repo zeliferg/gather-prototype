@@ -9,6 +9,8 @@ import { PermissionDialog } from '../../components/PermissionDialog';
 import { LocationPicker } from '../../components/LocationPicker';
 import { PreferencesSheet } from '../../components/Preferences';
 import { PickerField } from '../../components/PickerField';
+import { WhenSheet } from '../../components/WhenSheet';
+import { whenLabel } from '../../components/when';
 import { Plus } from '../../components/icons';
 import { formatPhone, isCompletePhone } from '../../components/phone';
 import { permissionBody, radiusOptions } from '../../fixtures';
@@ -21,6 +23,7 @@ export function OrgCreateParty() {
   const [open, setOpen] = useState(false);
   const [touched, setTouched] = useState(false);
   const [prefsOpen, setPrefsOpen] = useState(false);
+  const [whenOpen, setWhenOpen] = useState(false);
   const radius = radiusOptions.find((o) => o.value === state.radiusMi)!.label;
   const summary = touched ? `${state.locationMode === 'pin' ? 'RiNo' : 'Downtown'} · within ${radius}` : 'Tap to set';
   const complete = state.hostName.trim() !== '' && state.partyName.trim() !== '' && state.when !== '' && isCompletePhone(state.hostPhone) && touched;
@@ -39,7 +42,7 @@ export function OrgCreateParty() {
       <div className="form">
         <Input label="Your name" value={state.hostName} onChange={(v) => update({ hostName: v })} placeholder="Your name" />
         <Input label="Party name" value={state.partyName} onChange={(v) => update({ partyName: v })} placeholder="Taco Tuesday" />
-        <Input label="When" type="datetime-local" value={state.when} onChange={(v) => update({ when: v })} />
+        <PickerField label="When" value={whenLabel(state.when) || 'Tap to set'} set={state.when !== ''} onClick={() => setWhenOpen(true)} />
         <Input label="Your phone" value={state.hostPhone} onChange={(v) => update({ hostPhone: formatPhone(v) })} inputMode="tel" type="tel" placeholder="(111) 111-1111" />
         <PickerField label="Your location" value={summary} set={touched} onClick={tapLocation} />
       </div>
@@ -47,6 +50,7 @@ export function OrgCreateParty() {
       <button className="hstack link t-label" style={{ alignSelf: 'flex-start' }} onClick={() => setPrefsOpen(true)}>
         <Plus size={16} />{state.hostPrefs.length ? `Preferences: ${state.hostPrefs.join(', ')}` : 'Add preferences (optional)'}
       </button>
+      <WhenSheet open={whenOpen} onClose={() => setWhenOpen(false)} value={state.when} onSave={(when) => update({ when })} />
       <PreferencesSheet open={prefsOpen} onClose={() => setPrefsOpen(false)} value={state.hostPrefs} onSave={(hostPrefs) => update({ hostPrefs })} />
       <PermissionDialog open={asking} body={permissionBody.host} onAllow={() => answered('granted')} onDeny={() => answered('denied')} />
       <Sheet open={open} onClose={() => setOpen(false)} title="Your location" subtitle="Only used to find a spot that works for everyone. Guests never see it.">

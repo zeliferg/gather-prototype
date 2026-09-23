@@ -45,7 +45,13 @@ Vite 6 + React 19 + TypeScript (strict), react-router-dom 6, plain CSS.
   navigate; both Verifys, Join, Book, Set time), `phone.ts` (`formatPhone` as typed),
   `Preferences` (`PreferencesSheet` = P 2b, used by the guest join screen and
   the host's Create Party; `PreferenceChips` inline in the guest's Your info
-  drawer), `AvatarStack` (up to 5 faces then "+N").
+  drawer), `AvatarStack` (up to 5 faces then "+N"), `WhenSheet` (the When
+  picker since 23 Sep 2026: iOS-style month calendar + a three-column
+  scroll-snap time wheel, minutes in steps of 5; `when.ts` holds the pure
+  helpers, tested; value stays the datetime-local string), `EditDetails` (the
+  host's Edit details drawer on ORG 4 and ORG 10: party name, When, Your
+  location; the drawer swaps to the When / location sheet and back),
+  `Popup` (a centred, closeable message; only used by the ORG 4 alternatives).
 - `src/party.ts` — `useParty()` layers what the tester typed on Create Party
   (name, party name, When), manually added guests and removed guests over the
   fixtures (`deriveGuests` is the pure, tested part).
@@ -93,6 +99,14 @@ of 16 Sep 2026 — the tests prove the taps land, not that it feels right.
 - Commit trailer: `Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>`.
 
 ## Known gaps (deliberate, for a later pass)
+
+ORG 4 "what happens next" alternatives (23 Sep 2026, awaiting the user's
+pick, also in Figma section 486:675 "Alternatives"): `/org/hub?alt=popup`
+(centred pop-up), `?alt=steps` (three-step card), `?alt=placeholder` (dashed
+card where Places will land), `?alt=banner` (Gather banner). Once one is
+chosen, keep it and delete the others. ORG 8's confirm step is photo, date and
+time, table and address, **Confirm**, and a "Pick another time" link back to
+the slots (no slot row there any more).
 
 Second-pass screens not built: reminder SMS variants. Join with a code
 (ORG 0b, `PJoinCode` at `/p/join-code`) is live since 23 Sep 2026: Landing's

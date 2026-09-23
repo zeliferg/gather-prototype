@@ -10,8 +10,22 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Create party' })).toBeDisabled();
   await page.getByLabel('Your name').fill('Jordan Reyes');
   await page.getByLabel('Party name').fill("Jordan's Dinner");
-  await page.getByLabel('When').fill('2025-09-12T19:00'); // a Friday, matching the fixture copy
-  await expect(page.getByLabel('When')).toHaveValue('2025-09-12T19:00');
+  // When is a calendar sheet: pick Friday 12 Sep 2025 (the fixture date), then the minute wheel.
+  await page.getByRole('button', { name: 'When, Tap to set' }).click();
+  const whenDialog = page.getByRole('dialog', { name: 'When', exact: true });
+  await expect(whenDialog).toBeVisible();
+  const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1); // the picker opens on tomorrow at 7:00 PM
+  for (let i = (tomorrow.getFullYear() - 2025) * 12 + tomorrow.getMonth() - 8; i > 0; i--) await whenDialog.getByRole('button', { name: 'Previous month' }).click();
+  await expect(whenDialog.getByRole('grid', { name: 'September 2025' })).toBeVisible();
+  await whenDialog.getByRole('button', { name: 'Friday, September 12' }).click();
+  await expect(whenDialog.getByRole('option', { name: '7', exact: true })).toHaveAttribute('aria-selected', 'true');
+  await whenDialog.getByRole('option', { name: '05', exact: true }).click();
+  await whenDialog.getByRole('button', { name: 'Done' }).click();
+  await expect(page.getByRole('button', { name: 'When, Fri, Sep 12 · 7:05 PM' })).toBeVisible();
+  await page.getByRole('button', { name: 'When, Fri, Sep 12 · 7:05 PM' }).click();
+  await whenDialog.getByRole('option', { name: '00', exact: true }).click();
+  await whenDialog.getByRole('button', { name: 'Done' }).click();
+  await expect(page.getByRole('button', { name: 'When, Fri, Sep 12 · 7:00 PM' })).toBeVisible();
   await page.getByLabel('Your phone').fill('5550192244');
   await expect(page.getByLabel('Your phone')).toHaveValue('(555) 019-2244'); // formatted as typed
   await expect(page.getByRole('button', { name: 'Create party' })).toBeDisabled(); // location still unset
@@ -54,8 +68,20 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   const editDialog = page.getByRole('dialog', { name: 'Edit details' });
   await expect(editDialog).toBeVisible();
   await expect(editDialog.getByLabel('Party name')).toHaveValue("Jordan's Dinner");
-  await expect(editDialog.getByLabel('When')).toHaveValue('2025-09-12T19:00');
+  await expect(editDialog.getByRole('button', { name: 'When, Fri, Sep 12 · 7:00 PM' })).toBeVisible();
+  await expect(editDialog.getByRole('button', { name: 'Save', exact: true })).toBeDisabled(); // nothing changed yet
+  // Tapping When swaps the drawer for the calendar and comes back.
+  await editDialog.getByRole('button', { name: 'When, Fri, Sep 12 · 7:00 PM' }).click();
+  await expect(page.getByRole('dialog', { name: 'When', exact: true })).toBeVisible();
+  await page.getByRole('dialog', { name: 'When', exact: true }).getByRole('button', { name: 'Done' }).click();
+  await expect(editDialog).toBeVisible();
+  await editDialog.getByLabel('Party name').fill("Jordan's Dinner!");
   await page.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(page.getByRole('heading', { name: "Jordan's Dinner!" })).toBeVisible();
+  await page.getByRole('button', { name: 'Edit details' }).click();
+  await editDialog.getByLabel('Party name').fill("Jordan's Dinner");
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(page.getByRole('heading', { name: "Jordan's Dinner" })).toBeVisible();
 
   // ORG 4b: add a guest manually; Send invite waits for both fields, then confirms and the count grows.
   await page.getByRole('button', { name: 'Add a guest' }).click();
@@ -132,12 +158,17 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await expect(page.getByRole('dialog', { name: 'Tavola Verde' }).getByRole('button', { name: '7:00 PM', pressed: true })).toBeVisible();
   await page.getByRole('button', { name: 'Book 7:00 PM with OpenTable' }).click();
 
-  // ORG 8 is the same sheet's confirm step: the photo stays, the time carries, and it books with progress on the button.
+  // ORG 8 is the same sheet's confirm step: photo, date and time, table and address, one Confirm; "Pick another time" goes back to the slots.
   const confirm = page.getByRole('dialog', { name: 'Confirm your booking' });
   await expect(confirm).toContainText('Tavola Verde');
-  await expect(confirm.getByRole('button', { name: '7:00 PM', pressed: true })).toBeVisible();
+  await expect(confirm).toContainText('Friday, Sep 12 at 7:00 PM');
+  await expect(confirm).toContainText('Table for 5');
+  await expect(confirm.getByRole('button', { pressed: true })).toHaveCount(0); // no slot row here any more
   await expect(confirm.locator('.rcard__photo img')).toBeVisible();
-  await confirm.getByRole('button', { name: 'Book 7:00 PM', exact: true }).click();
+  await confirm.getByRole('button', { name: 'Pick another time' }).click();
+  await expect(page.getByRole('dialog', { name: 'Tavola Verde' }).getByRole('button', { name: '7:00 PM', pressed: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Book 7:00 PM with OpenTable' }).click();
+  await confirm.getByRole('button', { name: 'Confirm', exact: true }).click();
   await expect(confirm.getByRole('button', { name: /Booking your table|Booked/ })).toBeVisible();
   await expect(page.getByRole('heading', { name: "You're all set" })).toBeVisible({ timeout: 5000 });
   await page.getByRole('button', { name: 'Back to the party' }).click();
@@ -150,6 +181,14 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await page.getByRole('dialog', { name: 'Edit cover' }).getByRole('button', { name: 'Cancel', exact: true }).click();
   await expect(page.getByRole('dialog', { name: 'Edit cover' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Edit cover' })).toBeVisible();
+  // ORG 10: Edit details is back; Your location swaps the drawer for the location sheet and returns.
+  await page.getByRole('button', { name: 'Edit details' }).click();
+  await page.getByRole('dialog', { name: 'Edit details' }).getByRole('button', { name: /^Your location, / }).click();
+  await expect(page.getByRole('dialog', { name: 'Your location' })).toBeVisible();
+  await page.getByRole('button', { name: 'Use this location' }).click();
+  await expect(page.getByRole('dialog', { name: 'Edit details' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Save', exact: true })).toBeDisabled();
+  await page.getByRole('button', { name: 'Close' }).click({ position: { x: 10, y: 10 } });
   // ORG 11 changes the reservation and the party page reflects it.
   await page.getByRole('button', { name: 'Change time or place' }).click();
   await expect(page.getByRole('heading', { name: 'Change the reservation' })).toBeVisible();

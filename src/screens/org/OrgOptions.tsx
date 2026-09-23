@@ -53,7 +53,6 @@ export function OrgOptions() {
   const finish = () => { close(); setTimeout(() => navigate('/org/confirmed'), sheetMs()); };
   const commit = () => { if (open && time) update({ selectedRestaurant: open.id, selectedTime: time, booked: true }); };
   const cta = open ? (open.reservations ? (time ? `Book ${time} with ${partner}` : `Book with ${partner}`) : 'Choose this spot') : '';
-  const confirmTimes = open ? slotsFor(open, size) : [];
 
   const title = !open ? undefined : step === 'confirm' && open.reservations ? 'Confirm your booking' : open.name;
   const subtitle = !open ? undefined : step === 'detail' ? open.cuisine : open.reservations ? open.name : 'Walk-in only';
@@ -85,13 +84,10 @@ export function OrgOptions() {
         {open && step === 'confirm' && open.reservations && [
           <div key="c-info" className="stack" style={{ gap: 4 }}>
             <p className="t-body-med">{dateLong} at {time}</p>
-            <p className="t-secondary c-secondary">Table for {size}. {open.address}.</p>
+            <p className="t-secondary c-secondary">Table for {size} · {open.address}</p>
           </div>,
-          <p key="c-label" className="t-caption c-secondary">Or pick another time</p>,
-          <div key="c-times" className="chip-row">{confirmTimes.map((t) => <Chip key={t} className="chip--time" variant={t === time ? 'selected' : 'neutral'} onClick={() => setTime(t)}>{t}</Chip>)}</div>,
-          <p key="c-next" className="t-caption c-secondary">We book the table and text everyone the details. You can change or cancel later from the party page.</p>,
-          <ProgressButton key="c-cta" idle={`Book ${time}`} busy="Booking your table…" done="Booked" busyMs={1300} onBusyEnd={commit} onDone={finish} />,
-          <Button key="c-back" variant="ghost" onClick={() => setStep('detail')}>Back</Button>,
+          <ProgressButton key="c-cta" idle="Confirm" busy="Booking your table…" done="Booked" busyMs={1300} onBusyEnd={commit} onDone={finish} />,
+          <Button key="c-back" variant="ghost" onClick={() => setStep('detail')}>Pick another time</Button>,
         ]}
         {open && step === 'confirm' && !open.reservations && [
           <div key="w-info" className="stack" style={{ gap: 4 }}>

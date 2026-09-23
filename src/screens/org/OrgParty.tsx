@@ -9,6 +9,7 @@ import { Cover } from '../../components/Cover';
 import { CoverSheet } from '../../components/CoverSheet';
 import { ActionSheet } from '../../components/ActionSheet';
 import { Notification } from '../../components/Notification';
+import { EditDetails } from '../../components/EditDetails';
 import { Chevron } from '../../components/icons';
 import { restaurants, sms } from '../../fixtures';
 import { usePrototypeState, type CoverChoice } from '../../state';
@@ -17,11 +18,12 @@ import { useParty } from '../../party';
 export function OrgParty() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [state, , reset] = usePrototypeState();
+  const [state, update, reset] = usePrototypeState();
   const { name, dateShort, bookedTime, coming, size } = useParty();
   const r = restaurants.find((x) => x.id === state.selectedRestaurant)!;
   const [banner, setBanner] = useState<boolean>(location.state?.banner === 'reservationChanged');
   const [directions, setDirections] = useState(false);
+  const [editing, setEditing] = useState(false);
   const [coverOpenedOn, setCoverOpenedOn] = useState<CoverChoice | null>(null);
   const [calendar, setCalendar] = useState(false);
   const closeBanner = useCallback(() => setBanner(false), []);
@@ -30,7 +32,10 @@ export function OrgParty() {
       <Cover choice={state.cover}><Chip className="cover__edit" onClick={() => setCoverOpenedOn(state.cover)}>{state.cover === 'none' ? 'Add cover' : 'Edit cover'}</Chip></Cover>
       <div className="screen__title">
         <h1 className="t-title">{name}</h1>
-        <p className="t-secondary c-secondary">{bookedTime}</p>
+        <div className="row">
+          <p className="t-secondary c-secondary">{bookedTime}</p>
+          <button className="link t-label" onClick={() => setEditing(true)}>Edit details</button>
+        </div>
       </div>
       <div className="card">
         <div className="row"><Chip variant="success">Booked</Chip><span className="t-caption c-secondary">Table for {size}</span></div>
@@ -51,6 +56,8 @@ export function OrgParty() {
       {/* The end of the flow: a small way back to the start, which also clears everything this tab chose. */}
       <button className="link t-label" style={{ alignSelf: 'center', padding: '4px 12px', marginBottom: 8 }} onClick={() => { reset(); navigate('/org'); }}>Start over</button>
       <Notification open={banner} onClose={closeBanner} text={`${sms.reservationChanged(name).text} ${r.name}, ${dateShort} at ${state.selectedTime}. Details: ${sms.reservationChanged(name).link}`} />
+      <EditDetails open={editing} onClose={() => setEditing(false)} subtitle="Everyone gets a text if the date changes."
+        onSave={(patch) => { const moved = patch.when !== state.when; update(patch); if (moved) setBanner(true); }} />
       <CoverSheet original={coverOpenedOn} onClose={() => setCoverOpenedOn(null)} />
       <ActionSheet open={directions} onClose={() => setDirections(false)} title={`Open ${r.name} in`}
         options={[{ label: 'Apple Maps' }, { label: 'Google Maps' }, { label: 'Waze' }, { label: 'Copy address' }]} />
