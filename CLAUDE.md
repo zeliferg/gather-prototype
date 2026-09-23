@@ -29,11 +29,10 @@ Vite 6 + React 19 + TypeScript (strict), react-router-dom 6, plain CSS.
   Avatars are 240px photo crops in `public/avatars/<id>.jpg`
   (`Avatar` falls back to the initial when there is no photo).
 - `src/state.tsx` — `usePrototypeState()` → `[state, update, reset]`, backed
-  by `sessionStorage`. Only tester choices go here. `reset()` is wired to the
-  "Prototype: start over" link on P 1, to "Start over" at the foot of
-  ORG 10 (the host landing lost its link on 21 Sep 2026), and to
-  "Prototype: start over" at the foot of P 3b once booked, which lands on
-  ORG 0 Landing (23 Sep 2026).
+  by `sessionStorage`. Only tester choices go here. `reset()` is wired to
+  "Start over" at the foot of ORG 10 (the host landing lost its link on
+  21 Sep 2026) and to "Prototype: start over" at the foot of P 3b once
+  booked, which lands on ORG 0 Landing (P 1 lost its link on 23 Sep 2026).
 - `src/components/` — primitives (`Screen`, `Button`, `Chip`, `Input`,
   `Avatar`, `Segmented`, `CodeInput`), overlays (`Sheet`, `ActionSheet`,
   `PermissionDialog`, `Notification` — all portal to `document.body`,
