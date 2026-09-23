@@ -10,7 +10,7 @@ export function OrgLanding() {
   return (
     <Screen className="landing" brand="Gather" footer={<>
       <Button onClick={() => navigate('/org/create')}>Start a party</Button>
-      <Button variant="secondary" onClick={() => navigate('/org/join-code')}>Join with a code</Button>
+      <Button variant="secondary" onClick={() => navigate('/p/join-code')}>Join with a code</Button>
       <p className="t-caption c-secondary" style={{ textAlign: 'center' }}>Got a text invite? Tap the link. No account needed.</p>
     </>}>
       <GatheringCircle seats={guests} live />

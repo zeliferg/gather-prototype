@@ -84,6 +84,29 @@ test('participant spine: invite to the morning after, including dropping out and
   await page.getByRole('button', { name: 'Close', exact: true }).click({ position: { x: 10, y: 10 } });
   await page.getByRole('button', { name: 'Changed your mind? Rejoin' }).click();
   await expect(page.getByText('Tavola Verde')).toBeVisible();
-  await page.getByRole('link', { name: /morning after/ }).click();
+
+  // The booked page ends the walk-through: "start over" clears the tab and lands on Landing (ORG 0),
+  // where "Join with a code" (ORG 0b) leads into the lobby, then Verify, then the join screen.
+  await page.getByRole('button', { name: 'Prototype: start over' }).click();
+  await expect(page.getByRole('button', { name: 'Join with a code' })).toBeVisible();
+  await page.getByRole('button', { name: 'Join with a code' }).click();
+  await expect(page.getByRole('heading', { name: 'Join with a code' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeDisabled();
+  await page.getByLabel('Party code').fill('7k3m9');
+  await expect(page.getByLabel('Party code')).toHaveValue('7K3M9');
+  await page.getByLabel('Your phone').fill('5552041187');
+  await expect(page.getByLabel('Your phone')).toHaveValue('(555) 204-1187');
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(page.getByText('Names show once you join')).toBeVisible();
+  await page.getByRole('button', { name: 'Verify and join' }).click();
+  await expect(page.getByText('We texted a 6-digit code to (555) 204-1187.')).toBeVisible();
+  await page.getByLabel('6-digit code').click();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(page.getByRole('heading', { name: "Join Jordan's Dinner" })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Join the party' })).toBeDisabled(); // the reset cleared the location
+});
+
+test('the guest morning-after text is reachable by URL', async ({ page }) => {
+  await page.goto('/p/sms-after');
   await expect(page.getByText('It was a blast!')).toBeVisible();
 });

@@ -11,6 +11,7 @@ import { OrgParty } from './screens/org/OrgParty';
 import { OrgEditReservation } from './screens/org/OrgEditReservation';
 import { OrgSmsAfter } from './screens/org/OrgSmsAfter';
 import { PSmsInvite } from './screens/p/PSmsInvite';
+import { PJoinCode } from './screens/p/PJoinCode';
 import { PVerify } from './screens/p/PVerify';
 import { PLobby } from './screens/p/PLobby';
 import { PJoin } from './screens/p/PJoin';
@@ -37,8 +38,11 @@ export function RouteShell() {
   );
 }
 
+// ORG 0 is the app's front door for both tracks: the participant build reaches it from "start over" on P 3b.
+const landingRoute: RouteObject = { path: '/org', element: <OrgLanding /> };
+
 export const orgRoutes: RouteObject[] = [
-  { path: '/org', element: <OrgLanding /> },
+  landingRoute,
   { path: '/org/create', element: <OrgCreateParty /> },
   { path: '/org/verify', element: <OrgVerify /> },
   { path: '/org/hub', element: <OrgHub /> },
@@ -52,6 +56,7 @@ export const orgRoutes: RouteObject[] = [
 
 export const pRoutes: RouteObject[] = [
   { path: '/p', element: <PSmsInvite /> },
+  { path: '/p/join-code', element: <PJoinCode /> },
   { path: '/p/verify', element: <PVerify /> },
   { path: '/p/lobby', element: <PLobby /> },
   { path: '/p/join', element: <PJoinInfo /> },
@@ -71,6 +76,7 @@ export const router = createBrowserRouter([
       { path: '/', element: <Navigate to={entry} replace /> },
       ...(FLOW !== 'participant' ? orgRoutes : []),
       ...(FLOW !== 'host' ? pRoutes : []),
+      ...(FLOW === 'participant' ? [landingRoute] : []),
       { path: '*', element: <NotFound /> },
     ],
   },

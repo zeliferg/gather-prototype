@@ -11,7 +11,6 @@ import { Input } from '../../components/Input';
 import { Sheet } from '../../components/Sheet';
 import { ActionSheet } from '../../components/ActionSheet';
 import { GuestRow } from '../../components/GuestRow';
-import { DevHint } from '../../components/DevHint';
 import { PermissionDialog } from '../../components/PermissionDialog';
 import { Chevron } from '../../components/icons';
 import { PickerField } from '../../components/PickerField';
@@ -21,7 +20,7 @@ import { usePrototypeState } from '../../state';
 export function PWaiting() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [state, update] = usePrototypeState();
+  const [state, update, reset] = usePrototypeState();
   const [leaving, setLeaving] = useState(false);
   const [details, setDetails] = useState(false);
   const [who, setWho] = useState(false);
@@ -83,7 +82,8 @@ export function PWaiting() {
         <p className="t-secondary c-secondary">{state.flexible && !state.locationSet ? "You're flexible." : `${state.locationMode === 'pin' ? 'RiNo' : 'Downtown'}, within ${radius}.`}{state.prefs.length ? ` ${state.prefs.join(', ')}.` : ''}</p>
       </div>
       {!booked && <p className="t-caption c-secondary" style={{ textAlign: 'center' }}>Only the host sees who has responded.</p>}
-      {booked && <DevHint to="/p/sms-after">the morning after</DevHint>}
+      {/* The walk-through ends here: clear the tab and land on ORG 0, where Join with a code starts the other way in */}
+      {booked && <button className="devhint t-caption" onClick={() => { reset(); navigate('/org'); }}>Prototype: start over</button>}
 
       {/* Your info, as a drawer: location goes via the map screen, preferences change here */}
       <Sheet open={info} onClose={() => setInfo(false)} title="Your info" subtitle="Change where you're coming from or what you'd like.">

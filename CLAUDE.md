@@ -30,8 +30,10 @@ Vite 6 + React 19 + TypeScript (strict), react-router-dom 6, plain CSS.
   (`Avatar` falls back to the initial when there is no photo).
 - `src/state.tsx` — `usePrototypeState()` → `[state, update, reset]`, backed
   by `sessionStorage`. Only tester choices go here. `reset()` is wired to the
-  "Prototype: start over" link on P 1 and to "Start over" at the foot of
-  ORG 10 (the host landing lost its link on 21 Sep 2026).
+  "Prototype: start over" link on P 1, to "Start over" at the foot of
+  ORG 10 (the host landing lost its link on 21 Sep 2026), and to
+  "Prototype: start over" at the foot of P 3b once booked, which lands on
+  ORG 0 Landing (23 Sep 2026).
 - `src/components/` — primitives (`Screen`, `Button`, `Chip`, `Input`,
   `Avatar`, `Segmented`, `CodeInput`), overlays (`Sheet`, `ActionSheet`,
   `PermissionDialog`, `Notification` — all portal to `document.body`,
@@ -93,8 +95,14 @@ of 16 Sep 2026 — the tests prove the taps land, not that it feels right.
 
 ## Known gaps (deliberate, for a later pass)
 
-Second-pass screens not built: Join with a code (Landing's button hits
-NotFound), reminder SMS variants. ORG 2 (management-link SMS) is not a
+Second-pass screens not built: reminder SMS variants. Join with a code
+(ORG 0b, `PJoinCode` at `/p/join-code`) is live since 23 Sep 2026: Landing's
+button leads there, Party code (5 chars, uppercased) and Your phone
+(`guestPhone`, formatted like the host's) enable Continue, which goes to the
+P 3 lobby, then Verify (subtitle names the typed phone), then `PJoinInfo`.
+Landing (ORG 0) is registered in the participant build too, so "Start a
+party" hits NotFound there. P 8 (guest morning-after SMS) has no in-app link
+since 23 Sep 2026: reach it by `/p/sms-after`. ORG 2 (management-link SMS) is not a
 route any more: it shows as a `Notification` banner on the hub after Verify,
 and "Reservation changed" does the same on ORG 10 after ORG 11. ORG 8
 (Reservation) and ORG 8b (Walk-in notice) are not routes either since 22 Sep
