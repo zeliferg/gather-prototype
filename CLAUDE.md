@@ -69,7 +69,7 @@ Vite 6 + React 19 + TypeScript (strict), react-router-dom 6, plain CSS.
 - `src/guest.ts` — `useGuestList()` / `guestList(guestName, byCode)` (tested):
   the guest-side list and which row is "you". Invited by text → Priya; joined
   with a code (`guestPhone` set) → the name typed on `PJoinInfo` (`guestName`,
-  required there) is appended as a new row, since the host never added them.
+  required there) is a new row right after the host, since the host never added them.
 - `src/screens/org/*` and `src/screens/p/*` — one file per Figma frame.
 - `src/flow.ts` — `FLOW` from `VITE_FLOW` (`host|participant|all`), validated,
   falls back to `all`. `src/router.tsx` registers only that track's routes.

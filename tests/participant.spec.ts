@@ -123,7 +123,9 @@ test('participant spine: invite to the morning after, including dropping out and
   await page.getByRole('button', { name: 'See everyone' }).click();
   const who = page.getByRole('dialog', { name: "Who's coming" });
   await expect(who).toContainText('6 people, including you');
-  await expect(who.locator('.guest-row').filter({ hasText: 'Maya Lin' })).toContainText('You');
+  await expect(who.locator('.guest-row').nth(0)).toContainText('Host');
+  await expect(who.locator('.guest-row').nth(1)).toContainText('Maya Lin'); // "You" sits right after the host
+  await expect(who.locator('.guest-row').nth(1)).toContainText('You');
   await expect(who).toContainText('Priya Nair');
 });
 

@@ -9,10 +9,12 @@ describe('guestList', () => {
     expect(meId).toBe(me.id);
   });
 
-  it('appends the typed name as a new guest when joining with a code', () => {
+  it('adds the typed name as a new guest right after the host when joining with a code', () => {
     const { guests, meId } = guestList('Maya Lin', true);
     expect(guests).toHaveLength(guestsComing.length + 1);
-    expect(guests[guests.length - 1]).toMatchObject({ id: 'me', name: 'Maya Lin', initial: 'M', status: 'responded' });
+    expect(guests[0].status).toBe('host');
+    expect(guests[1]).toMatchObject({ id: 'me', name: 'Maya Lin', initial: 'M', status: 'responded' });
+    expect(guests[2].id).toBe('priya');
     expect(meId).toBe('me');
   });
 
