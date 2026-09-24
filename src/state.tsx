@@ -27,6 +27,8 @@ export type PrototypeState = {
   hostPrefs: string[]; // the host's own preferences, set on Create Party
   removedIds: string[]; // guests the host removed from See everyone
   joinedAt: number | null; // ms epoch; the host "books" BOOKING_DELAY_MS after this
+  nudgeAt: number | null; // ms epoch of landing on the hub; the waiting nudge arrives NUDGE_DELAY_MS later
+  nudgeDismissed: boolean; // the host closed the waiting nudge; it stays closed
 };
 
 export type CoverChoice = 'photo' | 'none' | 'blue' | 'sage' | 'matcha' | 'oat' | 'kale' | 'ink';
@@ -58,6 +60,8 @@ export const defaultState: PrototypeState = {
   hostPrefs: [],
   removedIds: [],
   joinedAt: null,
+  nudgeAt: null,
+  nudgeDismissed: false,
 };
 
 export const STORAGE_KEY = 'gather-prototype';

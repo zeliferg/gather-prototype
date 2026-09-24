@@ -94,6 +94,14 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await page.getByRole('button', { name: 'Dismiss notification' }).click();
   await expect(page.getByText('3 of 6 responded')).toBeVisible(); // Leo, who replied he's out, only shows in the sheet
 
+  // ORG 4h: a beat after the Messages banner has gone, Gather nudges the host about who's missing; tapping it opens Guests.
+  const nudge = page.getByRole('status').filter({ hasText: 'Waiting on 3 people' });
+  await expect(nudge).toBeVisible({ timeout: 15_000 });
+  await nudge.click();
+  await expect(page.getByRole('dialog', { name: 'Guests' })).toBeVisible();
+  await expect(nudge).toHaveCount(0);
+  await page.getByRole('button', { name: 'Close' }).click({ position: { x: 10, y: 10 } });
+
   // The host's own preferences are always a row under Guests, empty or not, and open the sheet to change.
   await expect(page.getByRole('button', { name: 'Your preferences' })).toContainText('Tap to add');
   await page.getByRole('button', { name: 'Your preferences' }).click();
@@ -216,4 +224,34 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   // ORG 12 has no in-app link any more; it is reached by its route.
   await page.goto('/org/sms-after');
   await expect(page.getByText('Thanks for hosting')).toBeVisible();
+});
+
+test('a banner swipes up to dismiss', async ({ page }) => {
+  await page.goto('/org/hub');
+  await page.getByRole('button', { name: 'Add a guest' }).click();
+  const add = page.getByRole('dialog', { name: 'Add a guest' });
+  await expect(add).toBeVisible();
+  await add.getByLabel('Name', { exact: true }).fill('Lena Park');
+  await add.getByLabel('Phone').fill('5553108842');
+  await expect(add.getByLabel('Phone')).toHaveValue('(555) 310-8842');
+  await expect(add.getByLabel('Name', { exact: true })).toHaveValue('Lena Park');
+  await add.getByRole('button', { name: 'Send invite' }).click();
+  const banner = page.getByRole('status').filter({ hasText: 'Invite sent' });
+  await expect(banner).toBeVisible();
+  await page.waitForTimeout(700); // let it finish sliding in
+  await page.evaluate(async () => {
+    const el = document.querySelector('.banner-wrap--in .notif') as HTMLElement;
+    const r = el.getBoundingClientRect();
+    const x = r.left + r.width / 2, y0 = r.top + r.height / 2;
+    const doc = document as Document & { createTouch: (w: Window, t: EventTarget, id: number, px: number, py: number, sx: number, sy: number) => Touch; createTouchList: (...t: Touch[]) => TouchList };
+    const fire = (type: string, y: number) => {
+      const t = doc.createTouch(window, el, 1, x, y, x, y);
+      const list = type === 'touchend' ? doc.createTouchList() : doc.createTouchList(t);
+      el.dispatchEvent(new TouchEvent(type, { touches: list, targetTouches: list, changedTouches: doc.createTouchList(t), bubbles: true, cancelable: true }));
+    };
+    fire('touchstart', y0);
+    for (let i = 1; i <= 6; i++) { fire('touchmove', y0 - (80 * i) / 6); await new Promise((res) => setTimeout(res, 16)); }
+    fire('touchend', y0 - 80);
+  });
+  await expect(banner).toHaveCount(0);
 });

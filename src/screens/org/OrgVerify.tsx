@@ -9,7 +9,7 @@ import { usePrototypeState } from '../../state';
 
 export function OrgVerify() {
   const navigate = useNavigate();
-  const [state] = usePrototypeState();
+  const [state, update] = usePrototypeState();
   const [code, setCode] = useState('');
   const [autofill, setAutofill] = useState(FIRST_CODE);
   const [fillNonce, setFillNonce] = useState(0);
@@ -19,7 +19,7 @@ export function OrgVerify() {
     <Screen back title="Verify it's you" subtitle={`We texted a 6-digit code to ${phone}.`}
       footer={
         <ProgressButton idle="Continue" busy="Verifying…" done="Verified" disabled={code.length < 6}
-          onDone={() => navigate('/org/hub', { state: { banner: 'manageLink' } })} />
+          onDone={() => { update({ nudgeAt: Date.now() }); navigate('/org/hub', { state: { banner: 'manageLink' } }); }} />
       }>
       <CodeInput value={code} onChange={setCode} autofill={autofill} fillNonce={fillNonce} />
       <ResendCode onResent={(c) => { setAutofill(c); setFillNonce((n) => n + 1); }} />

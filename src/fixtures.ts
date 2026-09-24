@@ -108,6 +108,7 @@ export const restaurantCoords: Record<RestaurantId, { lat: number; lng: number }
 export const fairCoords = { lat: 39.7515, lng: -104.9990 };
 
 export const BOOKING_DELAY_MS = 15_000; // how long after joining the host "books a spot"
+export const NUDGE_DELAY_MS = 9_000; // hub landing → waiting nudge: the 6 s Messages banner, then a 3 s beat
 
 export const prefGroups: { label: string; options: string[] }[] = [
   { label: 'Dietary', options: ['Vegetarian', 'Vegan', 'Gluten-free', 'Halal'] },

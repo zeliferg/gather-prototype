@@ -152,20 +152,6 @@ button.chip:active { transform: scale(0.95); }
 .permission__btn:first-child { grid-column: 1; }
 .permission__btn:last-child { grid-column: 3; }
 
-.popup { position: relative; width: calc(100% - 2 * var(--space-6)); max-width: 340px; padding: var(--space-6) var(--space-5) var(--space-3); background: var(--bg-surface); border-radius: var(--radius-card); box-shadow: var(--shadow-lg); display: flex; flex-direction: column; gap: var(--space-4); transform: scale(0.92) translateY(8px); opacity: 0; transition: transform var(--dur-slow) var(--ease-spring), opacity var(--dur-base); }
-.overlay--in .popup { transform: scale(1) translateY(0); opacity: 1; }
-.popup__close { position: absolute; top: 8px; right: 8px; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; color: var(--text-secondary); }
-.popup__close:active { background: var(--bg-subtle); }
-.popup .btn--ghost { min-height: 44px; }
-/* ORG 4 alternatives B and C: a what-happens-next list, and a dashed slot where the places card will land */
-.steps { display: flex; flex-direction: column; gap: var(--space-2); }
-.step { display: flex; align-items: center; gap: var(--space-3); color: var(--text-secondary); }
-.step__dot { flex: none; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font: 500 12px/1 var(--font-sans); border: 1.5px solid var(--border-hairline); }
-.step--done .step__dot { background: var(--bg-accent-tint); border-color: var(--bg-accent-tint); color: var(--text-accent); }
-.step--now { color: var(--text-primary); }
-.step--now .step__dot { background: var(--accent); border-color: var(--accent); color: var(--text-on-accent); }
-.card--dashed { border-style: dashed; background: transparent; }
-
 /* SMS mockup */
 .sms { min-height: 100dvh; height: 100%; overflow-y: auto; padding: calc(var(--space-8) + env(safe-area-inset-top, 0px)) var(--space-4) var(--space-8); background: var(--bg-surface); display: flex; flex-direction: column; align-items: center; gap: var(--space-3); }
 .sms__contact { display: flex; flex-direction: column; align-items: center; gap: 6px; }

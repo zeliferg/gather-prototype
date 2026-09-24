@@ -50,8 +50,8 @@ Vite 6 + React 19 + TypeScript (strict), react-router-dom 6, plain CSS.
   scroll-snap time wheel, minutes in steps of 5; `when.ts` holds the pure
   helpers, tested; value stays the datetime-local string), `EditDetails` (the
   host's Edit details drawer on ORG 4 and ORG 10: party name, When, Your
-  location; the drawer swaps to the When / location sheet and back),
-  `Popup` (a centred, closeable message; only used by the ORG 4 alternatives).
+  location; the drawer swaps to the When / location sheet and back).
+  Banners swipe up to dismiss (`useSwipeUpToDismiss`, since 23 Sep 2026).
 - `src/party.ts` — `useParty()` layers what the tester typed on Create Party
   (name, party name, When), manually added guests and removed guests over the
   fixtures (`deriveGuests` is the pure, tested part).
@@ -100,11 +100,13 @@ of 16 Sep 2026 — the tests prove the taps land, not that it feels right.
 
 ## Known gaps (deliberate, for a later pass)
 
-ORG 4 "what happens next" alternatives (23 Sep 2026, awaiting the user's
-pick, also in Figma section 486:675 "Alternatives"): `/org/hub?alt=popup`
-(centred pop-up), `?alt=steps` (three-step card), `?alt=placeholder` (dashed
-card where Places will land), `?alt=banner` (Gather banner). Once one is
-chosen, keep it and delete the others. ORG 8's confirm step is photo, date and
+ORG 4h Waiting nudge (23 Sep 2026, the user picked it from four alternatives,
+"more consistent"): `NudgeWatcher`, mounted by `RouteShell` on host routes,
+drops a Gather banner `NUDGE_DELAY_MS` (9 s) after Verify stamps `nudgeAt`,
+i.e. a beat after the Messages banner has left, on whatever host screen is
+open; X or a swipe up sets `nudgeDismissed` for good, tapping it opens the
+hub's Guests sheet (`location.state.everyone`), and it never shows once
+everyone's in. ORG 8's confirm step is photo, date and
 time, table and address, **Confirm**, and a "Pick another time" link back to
 the slots (no slot row there any more).
 

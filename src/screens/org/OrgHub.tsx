@@ -13,9 +13,8 @@ import { Cover } from '../../components/Cover';
 import { CoverSheet } from '../../components/CoverSheet';
 import { PreferencesSheet } from '../../components/Preferences';
 import { Notification } from '../../components/Notification';
-import { Popup } from '../../components/Popup';
 import { GuestRow } from '../../components/GuestRow';
-import { Check, Chevron, Mail, Message, Phone, Plus, Share } from '../../components/icons';
+import { Chevron, Mail, Message, Phone, Plus, Share } from '../../components/icons';
 import { formatPhone, isCompletePhone } from '../../components/phone';
 import { party, restaurants, sms, type Guest } from '../../fixtures';
 import { usePrototypeState, type CoverChoice } from '../../state';
@@ -26,12 +25,9 @@ export function OrgHub() {
   const location = useLocation();
   const [state, update] = usePrototypeState();
   const { name, roughTime, coming, out } = useParty();
-  // ORG 4 "what next" alternatives for the 23 Sep 2026 review: /org/hub?alt=popup|steps|placeholder|banner
-  const alt = new URLSearchParams(location.search).get('alt');
-  const [banner, setBanner] = useState<boolean>(location.state?.banner === 'manageLink' && !alt);
-  const [nudge, setNudge] = useState<boolean>(alt === 'popup');
-  const [hint, setHint] = useState<boolean>(alt === 'banner');
-  const [everyone, setEveryone] = useState(false);
+  const [banner, setBanner] = useState<boolean>(location.state?.banner === 'manageLink');
+  // The waiting nudge (ORG 4h) lands here with the Guests sheet open.
+  const [everyone, setEveryone] = useState<boolean>(location.state?.everyone === true);
   const [editing, setEditing] = useState(false);
   const [adding, setAdding] = useState(false);
   const [coverOpenedOn, setCoverOpenedOn] = useState<CoverChoice | null>(null);
@@ -46,10 +42,11 @@ export function OrgHub() {
   const waiting = coming.length - coming.filter((g) => g.status !== 'waiting').length;
   const closeBanner = useCallback(() => setBanner(false), []);
   const closeInvited = useCallback(() => setInvited(null), []);
-  const closeHint = useCallback(() => setHint(false), []);
   const guestReady = newGuest.name.trim() !== '' && isCompletePhone(newGuest.phone);
   const countLine = `${respondedCount} of ${coming.length} responded`;
   const sheetLine = `${countLine}${out.length ? ` · ${out.length} can't make it` : ''}`;
+
+  useEffect(() => { if (location.state?.everyone) setEveryone(true); }, [location.state]);
 
   useEffect(() => {
     if (!sending) return;
@@ -102,13 +99,6 @@ export function OrgHub() {
           <button className="link t-label" onClick={() => setEditing(true)}>Edit details</button>
         </div>
       </div>
-      {alt === 'steps' && !state.everyoneIn && (
-        <div className="card steps" aria-label="What happens next">
-          <span className="step step--done"><span className="step__dot"><Check size={12} /></span><span className="t-secondary">Party's set up</span></span>
-          <span className="step step--now"><span className="step__dot">2</span><span className="t-secondary" style={{ flex: 1 }}>Everyone adds where they're coming from</span><span className="t-caption c-secondary">{countLine}</span></span>
-          <span className="step"><span className="step__dot">3</span><span className="t-secondary">You pick from places that work for everyone</span></span>
-        </div>
-      )}
       {state.everyoneIn ? (
         /* Everyone's in: the places lead, as one card and one tap. Inviting is over, so the link card and + go. */
         <button className="card places" onClick={() => navigate('/org/options')}>
@@ -133,12 +123,6 @@ export function OrgHub() {
           <span className="icon-btn icon-btn--right icon-btn--filled c-accent"><Share size={20} /></span>
         </button>
       )}
-      {alt === 'placeholder' && !state.everyoneIn && (
-        <div className="card card--dashed" style={{ gap: 2 }}>
-          <span className="t-body-med">Places show up here once everyone's in</span>
-          <span className="t-secondary c-secondary">Waiting on {waiting} to add where they're coming from. Remind them if they're slow.</span>
-        </div>
-      )}
       <div className="row">
         <h2 className="t-heading">Guests</h2>
         {!state.everyoneIn && <button className="icon-btn icon-btn--right icon-btn--filled" aria-label="Add a guest" onClick={() => setAdding(true)}><Plus /></button>}
@@ -159,9 +143,6 @@ export function OrgHub() {
       </button>
 
       <Notification open={banner} onClose={closeBanner} text={`${sms.manageLink(name).text} ${sms.manageLink(name).link}`} />
-      <Popup open={nudge} onClose={() => setNudge(false)} title="Almost there" cta={`Remind the ${waiting} who haven't`} onCta={() => setSending(true)}
-        body={`${waiting} people still need to add where they're coming from. Once they're in, you'll pick from places that work for everyone.`} />
-      <Notification open={hint} onClose={closeHint} app="Gather" autoHideMs={0} closeButton text={`Waiting on ${waiting} people to add where they're coming from. Once they're in, you'll see places that work for everyone.`} />
       <Notification open={invited !== null} onClose={closeInvited} app="Gather" autoHideMs={0} closeButton text={`Invite sent to ${invited ?? ''}. They'll get a text with the link.`} />
 
       {/* ORG 4c: tap a guest for their actions; anyone who can't make it sits in their own group */}
