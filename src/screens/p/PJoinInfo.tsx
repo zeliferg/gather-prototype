@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Screen } from '../../components/Screen';
 import { Button } from '../../components/Button';
+import { Input } from '../../components/Input';
 import { ProgressButton } from '../../components/ProgressButton';
 import { PermissionDialog } from '../../components/PermissionDialog';
 import { PreferencesSheet } from '../../components/Preferences';
@@ -20,6 +21,9 @@ export function PJoinInfo() {
   const radius = radiusOptions.find((o) => o.value === state.radiusMi)!.label;
   const locationSummary = state.locationSet ? `${state.locationMode === 'pin' ? 'RiNo' : 'Downtown'} · within ${radius}` : 'Tap to set';
   const prefsSummary = state.prefs.length ? state.prefs.join(', ') : 'Tap to add';
+  // Joined with a code: the host never added this person, so they say who they are here.
+  const byCode = state.guestPhone !== '';
+  const ready = state.locationSet && (!byCode || state.guestName.trim() !== '');
 
   // Like the host's Create Party: the browser's permission prompt comes first, then the map screen.
   const tapLocation = () => { if (state.permission === 'unknown') setAsking(true); else navigate('/p/location', { state: { from: '/p/join' } }); };
@@ -36,10 +40,11 @@ export function PJoinInfo() {
       subtitle="Add where you're coming from so we can find a spot that works for everyone. Nobody sees your exact location."
       footer={<>
           {/* Join the party: spinner while "joining", a check, then the party page (same beat as Verify). */}
-          <ProgressButton idle="Join the party" busy="Joining…" done="You're in" busyMs={900} disabled={!state.locationSet}
+          <ProgressButton idle="Join the party" busy="Joining…" done="You're in" busyMs={900} disabled={!ready}
             onStart={() => setJoining(true)} onBusyEnd={() => join(false)} onDone={() => navigate('/p/waiting')} />
           <Button variant="ghost" onClick={() => go(true)} disabled={joining}>I'm flexible, skip this</Button>
         </>}>
+      {byCode && <Input label="Your name" value={state.guestName} onChange={(v) => update({ guestName: v })} placeholder="Your name" />}
       <PickerField label="My location" value={locationSummary} set={state.locationSet} onClick={tapLocation} />
       <PickerField label="Preferences (optional)" value={prefsSummary} set={state.prefs.length > 0} onClick={() => setPrefsOpen(true)} />
       <p className="t-caption c-secondary">Preferences help {party.hostFirst} pick, they don't limit the options.</p>

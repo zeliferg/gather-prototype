@@ -27,7 +27,7 @@ export function PJoinCode() {
         <Input label="Party code" value={code} onChange={(v) => setCode(formatCode(v))} placeholder={party.code} autoFocus />
         <Input label="Your phone" value={state.guestPhone} onChange={(v) => update({ guestPhone: formatPhone(v) })} inputMode="tel" type="tel" placeholder={party.guestPhone} />
       </div>
-      <p className="t-secondary c-secondary">We'll text you a code to confirm it's you. If the host added this number, you'll join as that guest; otherwise you're added as a new guest and the host is told.</p>
+      <p className="t-secondary c-secondary">We'll text you a code to confirm it's you. You're not on the list yet, so you'll add your name on the next step and the host is told.</p>
     </Screen>
   );
 }

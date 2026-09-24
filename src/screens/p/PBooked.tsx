@@ -6,12 +6,14 @@ import { Button } from '../../components/Button';
 import { GatheringCircle } from '../../components/GatheringCircle';
 import { Notification } from '../../components/Notification';
 import { Close } from '../../components/icons';
-import { guestsComing as guests, party, restaurants, sms } from '../../fixtures';
+import { party, restaurants, sms } from '../../fixtures';
+import { useGuestList } from '../../guest';
 import { usePrototypeState } from '../../state';
 
 export function PBooked() {
   const navigate = useNavigate();
   const [state, update] = usePrototypeState();
+  const { guests } = useGuestList();
   const r = restaurants.find((x) => x.id === state.selectedRestaurant)!;
   const [banner, setBanner] = useState(true);
   const closeBanner = useCallback(() => setBanner(false), []);

@@ -109,6 +109,22 @@ test('participant spine: invite to the morning after, including dropping out and
   await expect(page.getByRole('button', { name: /Verifying|Verified/ })).toBeVisible(); // spinner → check, like the host's Verify
   await expect(page.getByRole('heading', { name: "Join Jordan's Dinner" })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Join the party' })).toBeDisabled(); // the reset cleared the location
+  // Joined with a code, so the host never added this person: they type their name here, and "you" in
+  // Who's coming is that name, appended to the list (the text-invite flow has no name field: it is Priya).
+  await expect(page.getByLabel('Your name')).toHaveValue('');
+  await page.getByLabel('Your name').fill('Maya Lin');
+  await expect(page.getByRole('button', { name: 'Join the party' })).toBeDisabled(); // still no location
+  await page.getByRole('button', { name: 'My location' }).click();
+  await page.getByRole('button', { name: 'Allow', exact: true }).click();
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(page.getByRole('heading', { name: "Join Jordan's Dinner" })).toBeVisible();
+  await page.getByRole('button', { name: 'Join the party' }).click();
+  await expect(page.getByRole('heading', { name: "Jordan's Dinner" })).toBeVisible({ timeout: 5000 });
+  await page.getByRole('button', { name: 'See everyone' }).click();
+  const who = page.getByRole('dialog', { name: "Who's coming" });
+  await expect(who).toContainText('6 people, including you');
+  await expect(who.locator('.guest-row').filter({ hasText: 'Maya Lin' })).toContainText('You');
+  await expect(who).toContainText('Priya Nair');
 });
 
 test('the guest morning-after text is reachable by URL', async ({ page }) => {

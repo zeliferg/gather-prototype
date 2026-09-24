@@ -14,13 +14,15 @@ import { GuestRow } from '../../components/GuestRow';
 import { PermissionDialog } from '../../components/PermissionDialog';
 import { Chevron } from '../../components/icons';
 import { PickerField } from '../../components/PickerField';
-import { guestsComing as guests, me, party, permissionBody, radiusOptions, restaurants } from '../../fixtures';
+import { party, permissionBody, radiusOptions, restaurants } from '../../fixtures';
+import { useGuestList } from '../../guest';
 import { usePrototypeState } from '../../state';
 
 export function PWaiting() {
   const navigate = useNavigate();
   const location = useLocation();
   const [state, update, reset] = usePrototypeState();
+  const { guests, meId } = useGuestList();
   const [leaving, setLeaving] = useState(false);
   const [details, setDetails] = useState(false);
   const [who, setWho] = useState(false);
@@ -112,7 +114,7 @@ export function PWaiting() {
       {/* P 9b */}
       <Sheet open={who} onClose={() => setWho(false)} title="Who's coming" subtitle={`${guests.length} people, including you`}>
         <div className="list">
-          {guests.map((g) => <GuestRow key={g.id} guest={g} right={g.status === 'host' ? <Chip variant="info">Host</Chip> : g.id === me.id ? <Chip>You</Chip> : null} />)}
+          {guests.map((g) => <GuestRow key={g.id} guest={g} right={g.status === 'host' ? <Chip variant="info">Host</Chip> : g.id === meId ? <Chip>You</Chip> : null} />)}
         </div>
       </Sheet>
 

@@ -19,6 +19,7 @@ export type PrototypeState = {
   hostName: string;
   hostPhone: string; // formatted as typed on Create Party, shown again on Verify
   guestPhone: string; // formatted as typed on Join with a code, shown again on the guest's Verify
+  guestName: string; // typed on the join screen when joining with a code (the host never added them)
   partyName: string;
   when: string; // datetime-local value, '' until the host picks one
   locationSet: boolean; // the guest saved a location on the map screen
@@ -51,6 +52,7 @@ export const defaultState: PrototypeState = {
   hostName: '',
   hostPhone: '',
   guestPhone: '',
+  guestName: '',
   partyName: '',
   when: '',
   locationSet: false,

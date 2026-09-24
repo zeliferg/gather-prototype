@@ -8,14 +8,16 @@ import { AvatarStack } from '../../components/Avatar';
 import { Sheet } from '../../components/Sheet';
 import { GuestRow } from '../../components/GuestRow';
 import { Chevron } from '../../components/icons';
-import { guestsComing as guests, me, party } from '../../fixtures';
+import { party } from '../../fixtures';
+import { useGuestList } from '../../guest';
 import { usePrototypeState } from '../../state';
 
 export function PDropped() {
   const navigate = useNavigate();
   const [, update] = usePrototypeState();
   const [who, setWho] = useState(false);
-  const others = guests.filter((g) => g.id !== me.id);
+  const { guests, meId } = useGuestList();
+  const others = guests.filter((g) => g.id !== meId);
   return (
     <Screen footer={<Button variant="ghost" onClick={() => { update({ droppedOut: false }); navigate('/p/waiting'); }}>Changed your mind? Rejoin</Button>}>
       <div className="cover"><img src="/photos/cover.jpg" alt="" /></div>

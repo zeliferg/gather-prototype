@@ -50,11 +50,26 @@ Vite 6 + React 19 + TypeScript (strict), react-router-dom 6, plain CSS.
   scroll-snap time wheel, minutes in steps of 5; `when.ts` holds the pure
   helpers, tested; value stays the datetime-local string), `EditDetails` (the
   host's Edit details drawer on ORG 4 and ORG 10: party name, When, Your
-  location; the drawer swaps to the When / location sheet and back).
+  location; the drawer swaps to the When / location sheet and back),
+  `ChangeReservationSheet` (ORG 11 as a drawer on ORG 10 since 24 Sep 2026:
+  place radios + time chips, no stepper), `PartySizeSheet` (ORG 10's Guests
+  drawer: the list with remove/Undo and "Add someone", "Table for N" follows
+  the list, Continue → "Are you sure?" → `ProgressButton` checks
+  `tableFits`; the list is saved either way, and if the booked time can't
+  seat the new size the change drawer opens with the reason), `CodeTexts`
+  (in `CodeInput.tsx`: the code arrives as a Messages banner a beat after
+  Verify opens on both tracks, tapping it fills the boxes, Resend replaces it
+  with the second code).
   Banners swipe up to dismiss (`useSwipeUpToDismiss`, since 23 Sep 2026).
 - `src/party.ts` — `useParty()` layers what the tester typed on Create Party
   (name, party name, When), manually added guests and removed guests over the
-  fixtures (`deriveGuests` is the pure, tested part).
+  fixtures (`deriveGuests` is the pure, tested part). `size` is
+  `coming.length`: the table follows the guest list, there is no separate
+  party-size number any more (24 Sep 2026).
+- `src/guest.ts` — `useGuestList()` / `guestList(guestName, byCode)` (tested):
+  the guest-side list and which row is "you". Invited by text → Priya; joined
+  with a code (`guestPhone` set) → the name typed on `PJoinInfo` (`guestName`,
+  required there) is appended as a new row, since the host never added them.
 - `src/screens/org/*` and `src/screens/p/*` — one file per Figma frame.
 - `src/flow.ts` — `FLOW` from `VITE_FLOW` (`host|participant|all`), validated,
   falls back to `all`. `src/router.tsx` registers only that track's routes.
@@ -141,7 +156,7 @@ it by `/org/sms-after`. Resend code is live: the link reports progress, a
 Messages banner brings a second code, the boxes refill. ORG 6 card time chips
 are tappable and carry into ORG 6c; opening a card without one shows no slot
 selected and the CTA waits for a time. Party size changes the slots on ORG 8
-and ORG 11 (`slotsFor`, `bigTableTimes` from 7 guests). Inert-by-design
+and the change drawer (`slotsFor`, `bigTableTimes` from 7 guests). Inert-by-design
 controls: Choose from contacts, Choose from
 photos / Take a photo (both just restore the photo cover),
 Edit info, See full menu, Cancel reservation. Since 22 Sep 2026: the hub's
@@ -172,6 +187,15 @@ the invite-link card opens an "Invite people" drawer (link + Copy, then
 Messages / WhatsApp / Email as real `sms:`/`wa.me`/`mailto:` links, and More =
 Web Share API, falling back to copy). Copy avoids the word "fair" (22 Sep
 2026): say "a spot that works for everyone".
+Card anatomy (24 Sep 2026, the user: headers were "some separate, some in the
+container" and right-side buttons didn't line up): every section on ORG 4 and
+ORG 10 is one `.card` with its title inside as a `.card__head` row (heading
+left, one optional action right) and every right-side affordance (+, share,
+chevron, remove) is a 32px `.card__action` so they share one edge; `.card--menu`
+holds menu rows under a head, `.split` is the two equal buttons on the Booked
+card. ORG 10 has a Guests card (faces, "N coming", chevron → the Guests
+drawer) and a Reservation card (Change time or place / Change party size /
+Cancel reservation); `/org/edit` is gone.
 Sheets swipe to dismiss since 23 Sep 2026 (`useSwipeToDismiss`: a downward
 drag from scrolled-to-top content follows the finger, past a quarter of the
 panel or a flick it closes through `onClose`, else springs back; drags on the
