@@ -8,7 +8,6 @@ import { OrgListReady } from './screens/org/OrgListReady';
 import { OrgOptions } from './screens/org/OrgOptions';
 import { OrgConfirmed } from './screens/org/OrgConfirmed';
 import { OrgParty } from './screens/org/OrgParty';
-import { OrgEditReservation } from './screens/org/OrgEditReservation';
 import { OrgSmsAfter } from './screens/org/OrgSmsAfter';
 import { PSmsInvite } from './screens/p/PSmsInvite';
 import { PJoinCode } from './screens/p/PJoinCode';
@@ -52,7 +51,6 @@ export const orgRoutes: RouteObject[] = [
   { path: '/org/options', element: <OrgOptions /> },
   { path: '/org/confirmed', element: <OrgConfirmed /> },
   { path: '/org/party', element: <OrgParty /> },
-  { path: '/org/edit', element: <OrgEditReservation /> },
   { path: '/org/sms-after', element: <OrgSmsAfter /> },
 ];
 

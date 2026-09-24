@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { deriveGuests } from './party';
-import { guests } from './fixtures';
+import { guests, restaurants, tableFits } from './fixtures';
 
 describe('deriveGuests', () => {
   it('splits fixture guests into coming and out, keeping the host first', () => {
@@ -30,5 +30,14 @@ describe('deriveGuests', () => {
     const lena = coming[coming.length - 1];
     expect(lena).toMatchObject({ name: 'Lena Park', status: 'waiting' });
     expect(lena.avatar).toBeUndefined();
+  });
+});
+
+describe('tableFits', () => {
+  it('keeps the booked time while the party stays under the big-table threshold', () => {
+    const tavola = restaurants.find((r) => r.id === 'tavola')!;
+    expect(tableFits(tavola, 6, '7:30 PM')).toBe(true);
+    expect(tableFits(tavola, 7, '7:30 PM')).toBe(false); // 7 or more only get 6:30 and 8:00 there
+    expect(tableFits(tavola, 7, '8:00 PM')).toBe(true);
   });
 });

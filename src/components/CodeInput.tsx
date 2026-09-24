@@ -42,19 +42,27 @@ export function CodeInput({ value, onChange, autofill = FIRST_CODE, fillNonce = 
   );
 }
 
+const ARRIVE_MS = 700;
 const SEND_MS = 900;
 const SENT_MS = 2400;
 
-/** "Didn't get it? Resend code": sends, a Messages banner brings the new code, and the boxes refill with it. */
-export function ResendCode({ onResent }: { onResent: (code: string) => void }) {
+/** The code arrives as a Messages banner a beat after Verify opens (tapping it fills the boxes, the way iOS
+ *  offers a code from Messages); "Didn't get it? Resend code" sends again, the banner brings the new code,
+ *  and the boxes refill with it. One banner: a resend replaces the first text. */
+export function CodeTexts({ onCode }: { onCode: (code: string) => void }) {
   const [state, setState] = useState<'idle' | 'sending' | 'sent'>('idle');
-  const [banner, setBanner] = useState(false);
-  const closeBanner = useCallback(() => setBanner(false), []);
+  const [banner, setBanner] = useState<string | null>(null);
+  const closeBanner = useCallback(() => setBanner(null), []);
+
+  useEffect(() => {
+    const t = setTimeout(() => setBanner(FIRST_CODE), ARRIVE_MS);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     if (state === 'idle') return;
     const t = setTimeout(() => {
-      if (state === 'sending') { setState('sent'); setBanner(true); onResent(RESENT_CODE); } else setState('idle');
+      if (state === 'sending') { setState('sent'); setBanner(RESENT_CODE); onCode(RESENT_CODE); } else setState('idle');
     }, state === 'sending' ? SEND_MS : SENT_MS);
     return () => clearTimeout(t);
   }, [state]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -66,7 +74,7 @@ export function ResendCode({ onResent }: { onResent: (code: string) => void }) {
         {state === 'sending' && 'Sending a new code…'}
         {state === 'sent' && 'New code sent'}
       </button>
-      <Notification open={banner} onClose={closeBanner} text={`Your Gather code is ${RESENT_CODE}. It expires in 10 minutes.`} />
+      <Notification open={banner !== null} onClose={closeBanner} onTap={() => banner && onCode(banner)} text={`Your Gather code is ${banner ?? ''}. It expires in 10 minutes.`} />
     </>
   );
 }

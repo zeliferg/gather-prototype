@@ -39,6 +39,7 @@ export function useParty() {
     guests: all,
     coming,
     out,
-    size: state.partySize,
+    /** the table follows the list: everyone coming, host included */
+    size: coming.length,
   };
 }

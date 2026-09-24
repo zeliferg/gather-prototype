@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Screen } from '../../components/Screen';
 import { ProgressButton } from '../../components/ProgressButton';
-import { CodeInput, ResendCode, FIRST_CODE } from '../../components/CodeInput';
+import { CodeInput, CodeTexts, FIRST_CODE } from '../../components/CodeInput';
 import { party } from '../../fixtures';
 import { usePrototypeState } from '../../state';
 
@@ -22,7 +22,7 @@ export function OrgVerify() {
           onDone={() => { update({ nudgeAt: Date.now() }); navigate('/org/hub', { state: { banner: 'manageLink' } }); }} />
       }>
       <CodeInput value={code} onChange={setCode} autofill={autofill} fillNonce={fillNonce} />
-      <ResendCode onResent={(c) => { setAutofill(c); setFillNonce((n) => n + 1); }} />
+      <CodeTexts onCode={(c) => { setAutofill(c); setFillNonce((n) => n + 1); }} />
     </Screen>
   );
 }

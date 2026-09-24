@@ -10,6 +10,8 @@ import { CoverSheet } from '../../components/CoverSheet';
 import { ActionSheet } from '../../components/ActionSheet';
 import { Notification } from '../../components/Notification';
 import { EditDetails } from '../../components/EditDetails';
+import { ChangeReservationSheet } from '../../components/ChangeReservationSheet';
+import { PartySizeSheet } from '../../components/PartySizeSheet';
 import { Chevron } from '../../components/icons';
 import { restaurants, sms } from '../../fixtures';
 import { usePrototypeState, type CoverChoice } from '../../state';
@@ -24,6 +26,8 @@ export function OrgParty() {
   const [banner, setBanner] = useState<boolean>(location.state?.banner === 'reservationChanged');
   const [directions, setDirections] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [changing, setChanging] = useState(false); // ORG 11: Change time or place
+  const [sizing, setSizing] = useState(false); // Guests: change party size
   const [coverOpenedOn, setCoverOpenedOn] = useState<CoverChoice | null>(null);
   const [calendar, setCalendar] = useState(false);
   const closeBanner = useCallback(() => setBanner(false), []);
@@ -38,26 +42,40 @@ export function OrgParty() {
         </div>
       </div>
       <div className="card">
-        <div className="row"><Chip variant="success">Booked</Chip><span className="t-caption c-secondary">Table for {size}</span></div>
-        <p className="t-heading">{r.name}</p>
-        <p className="t-secondary c-secondary">{r.address}. {r.hours}.</p>
-        <div className="hstack">
-          <Button variant="secondary" inline onClick={() => setDirections(true)}>Directions</Button>
-          <Button variant="secondary" inline onClick={() => setCalendar(true)}>Add to calendar</Button>
+        <div className="card__head"><Chip variant="success">Booked</Chip><span className="t-caption c-secondary">Table for {size}</span></div>
+        <div className="stack" style={{ gap: 2 }}>
+          <p className="t-heading">{r.name}</p>
+          <p className="t-secondary c-secondary">{r.address}. {r.hours}.</p>
+        </div>
+        <div className="split">
+          <Button variant="secondary" onClick={() => setDirections(true)}>Directions</Button>
+          <Button variant="secondary" onClick={() => setCalendar(true)}>Add to calendar</Button>
         </div>
       </div>
-      <div className="row"><h2 className="t-heading">Guests</h2><AvatarStack guests={coming} max={3} size={32} /></div>
-      <div className="card" style={{ gap: 0, padding: '0 16px' }}>
-        <button className="row menu-row t-body" onClick={() => navigate('/org/edit')}>Change time or place<Chevron size={20} /></button>
-        <button className="row menu-row t-body" onClick={() => navigate('/org/edit', { state: { focus: 'size' } })}>Change party size<Chevron size={20} /></button>
-        <button className="row menu-row t-body" style={{ color: 'var(--error)' }}>Cancel reservation<Chevron size={20} /></button>
+      {/* Same anatomy as the hub's Guests card: a header row inside the card, then one tappable row into the list */}
+      <div className="card">
+        <div className="card__head"><h2 className="t-heading">Guests</h2></div>
+        <button className="guests-row" aria-label="See everyone" onClick={() => setSizing(true)}>
+          <AvatarStack guests={coming} max={3} size={32} />
+          <span className="t-secondary" style={{ flex: 1, minWidth: 0 }}>{coming.length} coming</span>
+          <span className="card__action"><Chevron size={20} /></span>
+        </button>
+      </div>
+      <div className="card card--menu">
+        <div className="card__head"><h2 className="t-heading">Reservation</h2></div>
+        <button className="row menu-row t-body" onClick={() => setChanging(true)}>Change time or place<span className="card__action"><Chevron size={20} /></span></button>
+        <button className="row menu-row t-body" onClick={() => setSizing(true)}>Change party size<span className="card__action"><Chevron size={20} /></span></button>
+        <button className="row menu-row t-body" style={{ color: 'var(--error)' }}>Cancel reservation<span className="card__action" style={{ color: 'inherit' }}><Chevron size={20} /></span></button>
       </div>
       <p className="t-caption c-secondary" style={{ textAlign: 'center' }}>Any change texts everyone and updates their calendar invite.</p>
       {/* The end of the flow: a small way back to the start, which also clears everything this tab chose. */}
       <button className="link t-label" style={{ alignSelf: 'center', padding: '4px 12px', marginBottom: 8 }} onClick={() => { reset(); navigate('/org'); }}>Start over</button>
-      <Notification open={banner} onClose={closeBanner} text={`${sms.reservationChanged(name).text} ${r.name}, ${dateShort} at ${state.selectedTime}. Details: ${sms.reservationChanged(name).link}`} />
+      <Notification open={banner} onClose={closeBanner} text={`${sms.reservationChanged(name).text} ${r.name}, ${dateShort} at ${state.selectedTime}, table for ${size}. Details: ${sms.reservationChanged(name).link}`} />
       <EditDetails open={editing} onClose={() => setEditing(false)} subtitle="Everyone gets a text if the date changes."
         onSave={(patch) => { const moved = patch.when !== state.when; update(patch); if (moved) setBanner(true); }} />
+      <ChangeReservationSheet open={changing} onClose={() => setChanging(false)} onSaved={() => { setChanging(false); setBanner(true); }} />
+      {/* The list is saved either way; if the booked time can't seat the new size, the change drawer takes over. */}
+      <PartySizeSheet open={sizing} onClose={() => setSizing(false)} onConfirmed={(fits) => { setSizing(false); if (fits) setBanner(true); else setChanging(true); }} />
       <CoverSheet original={coverOpenedOn} onClose={() => setCoverOpenedOn(null)} />
       <ActionSheet open={directions} onClose={() => setDirections(false)} title={`Open ${r.name} in`}
         options={[{ label: 'Apple Maps' }, { label: 'Google Maps' }, { label: 'Waze' }, { label: 'Copy address' }]} />

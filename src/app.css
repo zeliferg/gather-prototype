@@ -224,8 +224,20 @@ button.chip:active { transform: scale(0.95); }
 /* Hub: once everyone's in, the places card is the one thing to tap */
 .places { width: 100%; text-align: left; transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast); }
 .places:active { transform: scale(0.99); }
-.guests { flex-direction: row; align-items: center; gap: var(--space-3); width: 100%; text-align: left; transition: transform var(--dur-fast) var(--ease-out); }
-.guests:active { transform: scale(0.99); }
+/* Card anatomy: a header row inside the card (title left, one 32px action right), then the content.
+   Every right-side affordance (+, share, chevron) sits in the same 32px box so they share one edge. */
+.card__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-height: 32px; }
+.card__action { flex: none; width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; color: var(--text-secondary); }
+.card__action--filled { background: var(--bg-subtle); color: var(--text-primary); }
+button.card__action { transition: background var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out); }
+button.card__action:active { background: var(--border-hairline); transform: scale(0.92); }
+.card--menu { gap: 0; padding-bottom: var(--space-1); }
+.card--menu .card__head { margin-bottom: var(--space-1); }
+.card--list { gap: 0; padding: 0 var(--space-4); }
+.guests-row { display: flex; align-items: center; gap: var(--space-3); width: 100%; text-align: left; transition: transform var(--dur-fast) var(--ease-out); }
+.guests-row:active { transform: scale(0.99); }
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); }
+.split .btn { min-height: 44px; padding: 0 var(--space-3); }
 /* A whole card that is one tap (invite link, your preferences) */
 .card--tap { width: 100%; text-align: left; transition: transform var(--dur-fast) var(--ease-out); }
 .card--tap:active { transform: scale(0.99); }
@@ -258,7 +270,7 @@ button.chip:active { transform: scale(0.95); }
 .rcard__photo img { width: 100%; height: 100%; object-fit: cover; }
 .rcard__tag { position: absolute; top: 10px; left: 10px; }
 .rcard__fair { align-self: flex-start; }
-.menu-row { width: 100%; min-height: 52px; border-bottom: 1px solid var(--border-hairline); }
+.menu-row { width: 100%; min-height: 52px; text-align: left; border-bottom: 1px solid var(--border-hairline); }
 .menu-row:last-child { border-bottom: 0; }
 .success-badge { width: 72px; height: 72px; margin: var(--space-6) auto 0; border-radius: 50%; background: var(--accent); color: var(--text-on-accent); display: grid; place-items: center; animation: badge-in var(--dur-slow) var(--ease-spring) both; }
 @keyframes badge-in { from { transform: scale(0); } to { transform: scale(1); } }

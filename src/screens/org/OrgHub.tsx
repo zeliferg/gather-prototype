@@ -102,7 +102,7 @@ export function OrgHub() {
       {state.everyoneIn ? (
         /* Everyone's in: the places lead, as one card and one tap. Inviting is over, so the link card and + go. */
         <button className="card places" onClick={() => navigate('/org/options')}>
-          <span className="row"><span className="t-heading">3 places that work</span><span className="c-secondary" style={{ display: 'grid' }}><Chevron size={20} /></span></span>
+          <span className="card__head"><span className="t-heading">3 places that work</span><span className="card__action"><Chevron size={20} /></span></span>
           <span className="t-secondary c-secondary">Close to the middle of where everyone's coming from.</span>
           <span className="stack" style={{ gap: 0, marginTop: 4 }}>
             {restaurants.map((r) => (
@@ -120,26 +120,29 @@ export function OrgHub() {
         /* One way in to inviting: the card opens the share drawer (copy, text, email, more). */
         <button className="card row card--tap" aria-label="Share invite link" onClick={() => setSharing(true)}>
           <span className="stack" style={{ gap: 2, minWidth: 0 }}><span className="t-caption c-secondary">Invite link</span><span className="t-body-med ellipsis">{party.inviteLink}</span></span>
-          <span className="icon-btn icon-btn--right icon-btn--filled c-accent"><Share size={20} /></span>
+          <span className="card__action card__action--filled c-accent"><Share size={18} /></span>
         </button>
       )}
-      <div className="row">
-        <h2 className="t-heading">Guests</h2>
-        {!state.everyoneIn && <button className="icon-btn icon-btn--right icon-btn--filled" aria-label="Add a guest" onClick={() => setAdding(true)}><Plus /></button>}
+      {/* Every section is one card with its title inside: a header row (title left, one 32px action right), then the content */}
+      <div className="card">
+        <div className="card__head">
+          <h2 className="t-heading">Guests</h2>
+          {!state.everyoneIn && <button className="card__action card__action--filled" aria-label="Add a guest" onClick={() => setAdding(true)}><Plus size={18} /></button>}
+        </div>
+        {/* One row, one tap: three faces, the count, a chevron into See everyone */}
+        <button className="guests-row" aria-label="See everyone" onClick={() => setEveryone(true)}>
+          <AvatarStack guests={coming} max={3} size={32} />
+          <span className="t-secondary" style={{ flex: 1, minWidth: 0 }}>{state.everyoneIn ? "Everyone's in" : countLine}</span>
+          <span className="card__action"><Chevron size={20} /></span>
+        </button>
       </div>
-      {/* One row, one tap: three faces, the count, a chevron into See everyone */}
-      <button className="card guests" aria-label="See everyone" onClick={() => setEveryone(true)}>
-        <AvatarStack guests={coming} max={3} size={32} />
-        <span className="t-secondary" style={{ flex: 1, minWidth: 0 }}>{state.everyoneIn ? "Everyone's in" : countLine}</span>
-        <span className="c-secondary" style={{ display: 'grid' }}><Chevron size={20} /></span>
-      </button>
       {/* The host is one of the guests: their own picks sit with the guests, labelled as theirs, always there to add or change */}
       <button className="card row card--tap" aria-label="Your preferences" onClick={() => setPrefsOpen(true)}>
         <span className="stack" style={{ gap: 2, minWidth: 0 }}>
           <span className="t-caption c-secondary">Your preferences</span>
           <span className={`t-body-med ellipsis ${state.hostPrefs.length ? '' : 'c-secondary'}`}>{state.hostPrefs.length ? state.hostPrefs.join(' · ') : 'Tap to add (optional)'}</span>
         </span>
-        <span className="c-secondary" style={{ display: 'grid' }}><Chevron size={20} /></span>
+        <span className="card__action"><Chevron size={20} /></span>
       </button>
 
       <Notification open={banner} onClose={closeBanner} text={`${sms.manageLink(name).text} ${sms.manageLink(name).link}`} />

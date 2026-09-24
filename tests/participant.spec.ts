@@ -101,7 +101,10 @@ test('participant spine: invite to the morning after, including dropping out and
   await expect(page.getByText('Names show once you join')).toBeVisible();
   await page.getByRole('button', { name: 'Verify and join' }).click();
   await expect(page.getByText('We texted a 6-digit code to (555) 204-1187.')).toBeVisible();
-  await page.getByLabel('6-digit code').click();
+  // The guest gets the same Messages banner with the code as the host; tapping it fills the boxes.
+  await expect(page.getByRole('status')).toContainText('Your Gather code is 428913', { timeout: 5000 });
+  await page.getByRole('status').click();
+  await expect(page.getByLabel('6-digit code')).toHaveValue('428913');
   await page.getByRole('button', { name: 'Continue' }).click();
   await expect(page.getByRole('button', { name: /Verifying|Verified/ })).toBeVisible(); // spinner → check, like the host's Verify
   await expect(page.getByRole('heading', { name: "Join Jordan's Dinner" })).toBeVisible();

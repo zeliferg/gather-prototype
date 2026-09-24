@@ -49,7 +49,9 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   // ORG 3: boxes start empty and fill when the field is tapped; Continue shows progress then lands on the hub.
   await expect(page.getByLabel('6-digit code')).toHaveValue('');
   await expect(page.getByRole('button', { name: 'Continue' })).toBeDisabled();
-  await page.getByLabel('6-digit code').click();
+  // The code arrives as a Messages banner a beat after the screen opens; tapping it fills the boxes.
+  await expect(page.getByRole('status')).toContainText('Your Gather code is 428913', { timeout: 5000 });
+  await page.getByRole('status').click();
   await expect(page.getByLabel('6-digit code')).toHaveValue('428913');
   // Resend: the link reports progress, a Messages banner brings a new code, and the boxes refill with it.
   await page.getByRole('button', { name: "Didn't get it? Resend code" }).click();
@@ -170,7 +172,7 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   const confirm = page.getByRole('dialog', { name: 'Confirm your booking' });
   await expect(confirm).toContainText('Tavola Verde');
   await expect(confirm).toContainText('Friday, Sep 12 at 7:00 PM');
-  await expect(confirm).toContainText('Table for 5');
+  await expect(confirm).toContainText('Table for 6'); // the table follows the list: Lena joined, Leo left
   await expect(confirm.getByRole('button', { pressed: true })).toHaveCount(0); // no slot row here any more
   await expect(confirm.locator('.rcard__photo img')).toBeVisible();
   await confirm.getByRole('button', { name: 'Pick another time' }).click();
@@ -197,23 +199,51 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await expect(page.getByRole('dialog', { name: 'Edit details' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Save', exact: true })).toBeDisabled();
   await page.getByRole('button', { name: 'Close' }).click({ position: { x: 10, y: 10 } });
-  // ORG 11 changes the reservation and the party page reflects it.
+  // ORG 11 is a drawer: Change time or place; Save waits for a change, then the party page reflects it.
   await page.getByRole('button', { name: 'Change time or place' }).click();
-  await expect(page.getByRole('heading', { name: 'Change the reservation' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Save and notify everyone' })).toBeDisabled(); // nothing changed yet
-  await page.getByRole('button', { name: '7:30 PM' }).click();
-  // A table for 7 can't have 7:30 at Tavola Verde: the slots change and Save waits for a new pick.
-  await page.getByRole('button', { name: 'Increase party size' }).click();
-  await page.getByRole('button', { name: 'Increase party size' }).click();
-  await expect(page.getByText("7:30 PM isn't available for 7")).toBeVisible();
-  await expect(page.getByRole('button', { name: '7:30 PM' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: 'Save and notify everyone' })).toBeDisabled();
-  await page.getByRole('button', { name: 'Decrease party size' }).click();
-  await expect(page.getByRole('button', { name: '7:30 PM', pressed: true })).toBeVisible(); // back to 6, the pick returns
-  await page.getByRole('button', { name: 'Save and notify everyone' }).click();
+  const change = page.getByRole('dialog', { name: 'Change time or place' });
+  await expect(change).toBeVisible();
+  await expect(change.getByRole('button', { name: 'Save and notify everyone' })).toBeDisabled(); // nothing changed yet
+  await change.getByRole('button', { name: '7:30 PM' }).click();
+  await change.getByRole('button', { name: 'Save and notify everyone' }).click();
+  await expect(change).toHaveCount(0);
   await expect(page.getByText('Friday, Sep 12 at 7:30 PM')).toBeVisible();
-  await expect(page.getByText('Table for 6')).toBeVisible();
   await expect(page.getByRole('status')).toContainText('Reservation changed');
+  await page.getByRole('status').click(); // dismiss, so the next change's banner is the one we read
+  // Party size is the guest list: remove (with Undo) and add in a drawer, Continue waits for a change,
+  // then "Are you sure?" checks the table. A table for 7 can't have 7:30 at Tavola Verde, so the
+  // change drawer takes over with the reason and the host picks another time.
+  await page.getByRole('button', { name: 'Change party size' }).click();
+  const guestsDrawer = page.getByRole('dialog', { name: 'Guests' });
+  await expect(guestsDrawer).toContainText('Table for 6');
+  await expect(guestsDrawer.getByRole('button', { name: 'Continue' })).toBeDisabled();
+  await guestsDrawer.getByRole('button', { name: 'Remove Sam Okafor' }).click();
+  await expect(guestsDrawer).toContainText('Table for 5');
+  await guestsDrawer.getByRole('button', { name: 'Undo' }).click();
+  await expect(guestsDrawer).toContainText('Table for 6');
+  await guestsDrawer.getByRole('button', { name: 'Add someone' }).click();
+  const addSomeone = page.getByRole('dialog', { name: 'Add someone' });
+  await expect(addSomeone.getByRole('button', { name: 'Add to the list' })).toBeDisabled();
+  await addSomeone.getByLabel('Name', { exact: true }).fill('Noor Haddad');
+  await addSomeone.getByLabel('Phone').fill('5553100001');
+  await addSomeone.getByRole('button', { name: 'Add to the list' }).click();
+  await expect(guestsDrawer).toContainText('Noor Haddad');
+  await expect(guestsDrawer).toContainText('Table for 7');
+  await guestsDrawer.getByRole('button', { name: 'Continue' }).click();
+  const sure = page.getByRole('dialog', { name: 'Are you sure?' });
+  await expect(sure).toContainText('a table for 7 at Tavola Verde');
+  await sure.getByRole('button', { name: 'Yes, update the table' }).click();
+  await expect(sure.getByRole('button', { name: /Checking availability|Needs a new time/ })).toBeVisible();
+  await expect(change).toBeVisible({ timeout: 5000 });
+  await expect(change).toContainText("7:30 PM isn't available for 7 at Tavola Verde");
+  await expect(change.getByRole('button', { name: '7:30 PM' })).toHaveCount(0);
+  await expect(change.getByRole('button', { name: 'Save and notify everyone' })).toBeDisabled();
+  await change.getByRole('button', { name: '8:00 PM' }).click();
+  await change.getByRole('button', { name: 'Save and notify everyone' }).click();
+  await expect(page.getByText('Friday, Sep 12 at 8:00 PM')).toBeVisible();
+  await expect(page.getByText('Table for 7', { exact: true })).toBeVisible(); // the card's caption; the banner says it in lower case
+  await expect(page.getByText('7 coming')).toBeVisible();
+  await expect(page.getByRole('status')).toContainText('table for 7');
 
   // ORG 10: Start over clears the tab and returns to the landing.
   await page.getByRole('button', { name: 'Start over' }).click();

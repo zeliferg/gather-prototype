@@ -14,7 +14,6 @@ export type PrototypeState = {
   selectedTime: string;
   booked: boolean;
   guestBooked: boolean;
-  partySize: number;
   cover: CoverChoice;
   addedGuests: AddedGuest[];
   hostName: string;
@@ -47,7 +46,6 @@ export const defaultState: PrototypeState = {
   selectedTime: '7:00 PM',
   booked: false,
   guestBooked: false,
-  partySize: 5,
   cover: 'photo',
   addedGuests: [],
   hostName: '',

@@ -66,6 +66,11 @@ export function slotsFor(r: Restaurant, size: number): string[] {
   return r.reservations ? [...r.times, '8:30 PM'] : r.times;
 }
 
+/** Whether a booked time survives a change of party size at the same place. */
+export function tableFits(r: Restaurant, size: number, time: string): boolean {
+  return slotsFor(r, size).includes(time);
+}
+
 export const radiusOptions: { value: RadiusMi; label: string }[] = [
   { value: 0.5, label: '½ mi' }, { value: 1, label: '1 mi' }, { value: 2, label: '2 mi' }, { value: 5, label: '5 mi' },
 ];
