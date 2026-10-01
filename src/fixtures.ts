@@ -93,13 +93,14 @@ export const permissionBody = {
   guest: "Only used to find a spot that works for everyone. Nobody sees your exact location.",
 };
 
-export const coverColours: { id: 'blue' | 'sage' | 'matcha' | 'oat' | 'kale' | 'ink'; label: string; token: string }[] = [
-  { id: 'blue', label: 'Blue', token: 'var(--bg-info-tint)' },
-  { id: 'sage', label: 'Sage', token: 'var(--bg-accent-tint)' },
-  { id: 'matcha', label: 'Matcha', token: 'var(--accent-matcha)' },
-  { id: 'oat', label: 'Oat', token: 'var(--bg-subtle)' },
-  { id: 'kale', label: 'Kale', token: 'var(--accent)' },
-  { id: 'ink', label: 'Ink', token: 'var(--text-primary)' },
+// `tone` is what sits on top of the cover: the Edit cover pill goes white-on-dark for the two dark colours.
+export const coverColours: { id: 'blue' | 'sage' | 'matcha' | 'oat' | 'kale' | 'ink'; label: string; token: string; tone: 'light' | 'dark' }[] = [
+  { id: 'blue', label: 'Blue', token: 'var(--bg-info-tint)', tone: 'light' },
+  { id: 'sage', label: 'Sage', token: 'var(--bg-accent-tint)', tone: 'light' },
+  { id: 'matcha', label: 'Matcha', token: 'var(--accent-matcha)', tone: 'light' },
+  { id: 'oat', label: 'Oat', token: 'var(--bg-subtle)', tone: 'light' },
+  { id: 'kale', label: 'Kale', token: 'var(--accent)', tone: 'dark' },
+  { id: 'ink', label: 'Ink', token: 'var(--text-primary)', tone: 'dark' },
 ];
 
 // Downtown Denver; the map centres here for "Around me" and every pin is placed relative to it.

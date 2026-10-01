@@ -26,6 +26,8 @@
   --ring-pulse: rgba(63,74,63,0.35);
   --ring-pulse-end: rgba(63,74,63,0);
   --map-wash: rgba(247,245,242,0.22);
+  --cover-pill-dark: rgba(255,255,255,0.22);
+  --cover-pill-dark-pressed: rgba(255,255,255,0.32);
 
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-serif: 'Fraunces', Georgia, serif;
