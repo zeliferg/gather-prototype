@@ -76,20 +76,29 @@ Vite 6 + React 19 + TypeScript (strict), react-router-dom 6, plain CSS.
 
 ## Flows, branches, deploys
 
-| Branch | `VITE_FLOW` | Live |
-|---|---|---|
-| `main` | all | https://gather-prototype-rho.vercel.app/org |
-| `host-flow` | host | https://gather-host-prototype.vercel.app/org |
-| `participant-flow` | participant | https://gather-participant-prototype.vercel.app/p |
+Since 1 Oct 2026 there are two versions side by side. **v1** is what the
+first interview round tested: tag `v1` on `main` (= `c89e318`), and the
+`host-flow` / `participant-flow` branches are **frozen** there and never
+rebased again. **v2** is `main` going forward, deployed through the `-v2`
+flow branches.
 
-Each flow branch is exactly one commit ahead of `main` (its
+| Version | Branch | `VITE_FLOW` | Live |
+|---|---|---|---|
+| v2 (dev, both tracks) | `main` | all | https://gather-prototype-rho.vercel.app/org |
+| v1 host (frozen) | `host-flow` | host | https://gather-host-prototype.vercel.app/org |
+| v1 guest (frozen) | `participant-flow` | participant | https://gather-participant-prototype.vercel.app/p |
+| v2 host | `host-flow-v2` | host | https://gather-host-prototype-v2.vercel.app/org |
+| v2 guest | `participant-flow-v2` | participant | https://gather-participant-prototype-v2.vercel.app/p |
+
+Each flow branch is exactly one commit ahead of its base (its
 `.env.production`). Flow branches never edit shared files directly.
 
 **To ship any change:** commit on `main`, push, then
-`git checkout host-flow && git rebase main && git push --force-with-lease origin host-flow`
-and the same for `participant-flow`. Vercel redeploys all three. Never merge a
-flow branch into `main`; GitHub's "Compare & pull request" banners for them
-are noise.
+`git checkout host-flow-v2 && git rebase main && git push --force-with-lease origin host-flow-v2`
+and the same for `participant-flow-v2`. Vercel redeploys the three v2
+projects. Never merge a flow branch into `main`; GitHub's "Compare & pull
+request" banners for them are noise. A v1 fix (rare) is a cherry-pick onto
+`host-flow` / `participant-flow`, not a rebase.
 
 ## Verify before claiming done
 
