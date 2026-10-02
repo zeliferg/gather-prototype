@@ -19,7 +19,7 @@ export function OrgVerify() {
     <Screen back title="Verify it's you" subtitle={`We texted a 6-digit code to ${phone}.`}
       footer={
         <ProgressButton idle="Continue" busy="Verifying…" done="Verified" disabled={code.length < 6}
-          onDone={() => { update({ nudgeAt: Date.now() }); navigate('/org/hub', { state: { banner: 'manageLink' } }); }} />
+          onDone={() => { update({ nudgeAt: Date.now() }); navigate('/org/hub'); }} />
       }>
       <CodeInput value={code} onChange={setCode} autofill={autofill} fillNonce={fillNonce} />
       <CodeTexts onCode={(c) => { setAutofill(c); setFillNonce((n) => n + 1); }} />

@@ -6,6 +6,9 @@ export type Restaurant = {
   reservations: boolean; times: string[]; /** slots a table for 7 or more can still get */ bigTableTimes: string[]; photo: string; pin: { x: number; y: number };
 };
 export type RadiusMi = 0.5 | 1 | 2 | 5;
+/** How the spot gets picked: the whole group votes (the host still has the last say) or the host alone. */
+export type DecideMode = 'vote' | 'host';
+export type Vote = { guestId: string; restaurant: RestaurantId };
 
 export const party = {
   name: "Jordan's Dinner",
@@ -37,6 +40,20 @@ export const guests: Guest[] = [
 
 /** Everyone who might still show up: what the guest side calls "who's coming" and what the table is sized for. */
 export const guestsComing = guests.filter((g) => g.status !== 'out');
+
+/** Everyone's favourite once the vote opens, in the order the votes arrive on the host's side. The three
+ *  guests other than Priya split one each, so on the guest side the tester's own vote always decides. */
+export const votes: Vote[] = [
+  { guestId: 'priya', restaurant: 'tavola' },
+  { guestId: 'marcus', restaurant: 'corner' },
+  { guestId: 'alex', restaurant: 'tavola' },
+  { guestId: 'sam', restaurant: 'noodle' },
+];
+
+export const decideOptions: { value: DecideMode; label: string }[] = [
+  { value: 'vote', label: 'Everyone votes' },
+  { value: 'host', label: "I'll pick" },
+];
 
 // The participant tester plays Priya.
 export const me = guests[1];
@@ -79,7 +96,8 @@ export const sms = {
   manageLink: (partyName: string) => ({ time: 'Today 2:14 PM', text: `Your party "${partyName}" is live. Manage it anytime here:`, link: party.manageLink }),
   reminder: { time: 'Today 4:02 PM', text: "Reminder from Jordan: still need your location for Jordan's Dinner. Or just tell us you're in:", link: party.inviteLink },
   invite: { time: 'Today 2:10 PM', text: "Jordan invited you to Jordan's Dinner. Add where you're coming from so we can find a spot that works for everyone:", link: party.inviteLink },
-  spotConfirmed: { time: 'Today 5:15 PM', text: "You're all set. Jordan's Dinner is at Tavola Verde, Fri Sep 12 at 7:00 PM. Details and directions:", link: party.inviteLink },
+  voteOpen: { time: 'Today 4:40 PM', text: "Everyone's in! Time to vote on a spot for Jordan's Dinner. Pick your favourite:", link: party.inviteLink },
+  spotConfirmed: (place: string) => ({ time: 'Today 5:15 PM', text: `Jordan picked a spot. Jordan's Dinner is at ${place}, Fri Sep 12 at 7:00 PM. Details and directions:`, link: party.inviteLink }),
   reminderTomorrow: { time: 'Yesterday 6:00 PM', text: "Reminder: Jordan's Dinner is tomorrow at 7:00 PM at Tavola Verde. See you there.", link: party.inviteLink },
   reminder2h: { time: 'Today 5:00 PM', text: "Jordan's Dinner starts in 2 hours at Tavola Verde, 214 Elm Street.", link: party.inviteLink },
   afterGuest: { time: 'Today 10:00 AM', text: 'It was a blast! Thanks for joining Jordan at Tavola Verde. Want to plan your own? Start a party at', link: 'gather.app' },
@@ -113,7 +131,10 @@ export const restaurantCoords: Record<RestaurantId, { lat: number; lng: number }
 };
 export const fairCoords = { lat: 39.7515, lng: -104.9990 };
 
-export const BOOKING_DELAY_MS = 15_000; // how long after joining the host "books a spot"
+export const VOTE_OPEN_DELAY_MS = 8_000; // joining → "Everyone's in! Time to vote" text
+export const BOOKING_DELAY_MS = 15_000; // how long after the guest votes the host "books a spot"
+export const NO_VOTE_GRACE_MS = 20_000; // a guest who never votes: the host books this long after the vote opened
+export const VOTE_TICK_MS = 2_500; // host side: one fixture vote arrives per tick once everyone's in
 export const NUDGE_DELAY_MS = 9_000; // hub landing → waiting nudge: the 6 s Messages banner, then a 3 s beat
 
 export const prefGroups: { label: string; options: string[] }[] = [

@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
-import type { RadiusMi, RestaurantId } from './fixtures';
+import type { DecideMode, RadiusMi, RestaurantId } from './fixtures';
 
 export type PrototypeState = {
   permission: 'unknown' | 'granted' | 'denied';
@@ -29,6 +29,13 @@ export type PrototypeState = {
   joinedAt: number | null; // ms epoch; the host "books" BOOKING_DELAY_MS after this
   nudgeAt: number | null; // ms epoch of landing on the hub; the waiting nudge arrives NUDGE_DELAY_MS later
   nudgeDismissed: boolean; // the host closed the waiting nudge; it stays closed
+  decide: DecideMode; // chosen on Create Party: the group votes, or the host picks
+  vote: RestaurantId | null; // the guest's favourite, once cast
+  votedAt: number | null; // ms epoch; the host "books" BOOKING_DELAY_MS after this
+  voteOpenAt: number | null; // ms epoch; guest side: when the "time to vote" text arrived
+  hostVotesIn: number; // host side: how many fixture votes have arrived since everyone got in
+  votesInSeen: boolean; // the host closed the "Votes are in!" banner
+  bookedTold: boolean; // the host saw the "everyone got a text" banner on the party page after booking
 };
 
 export type CoverChoice = 'photo' | 'none' | 'blue' | 'sage' | 'matcha' | 'oat' | 'kale' | 'ink';
@@ -62,6 +69,13 @@ export const defaultState: PrototypeState = {
   joinedAt: null,
   nudgeAt: null,
   nudgeDismissed: false,
+  decide: 'vote',
+  vote: null,
+  votedAt: null,
+  voteOpenAt: null,
+  hostVotesIn: 0,
+  votesInSeen: false,
+  bookedTold: false,
 };
 
 export const STORAGE_KEY = 'gather-prototype';

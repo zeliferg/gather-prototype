@@ -12,6 +12,7 @@ import { ProgressButton } from '../../components/ProgressButton';
 import { partner, restaurants, slotsFor, spotTag, type RestaurantId } from '../../fixtures';
 import { usePrototypeState } from '../../state';
 import { useParty } from '../../party';
+import { useHostVote } from '../../useVote';
 
 // How long the sheet takes to slide away, read from tokens.css so reduced motion (0ms) navigates at once.
 const sheetMs = () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--dur-sheet')) || 0;
@@ -21,6 +22,7 @@ export function OrgOptions() {
   const location = useLocation();
   const [, update] = usePrototypeState();
   const { targetTime, dateLong, size } = useParty();
+  const vote = useHostVote();
   const [view, setView] = useState<'list' | 'map'>('list');
   // The hub's Places card lands here with that place already open.
   const [openId, setOpenId] = useState<RestaurantId | null>(location.state?.open ?? null);
@@ -32,7 +34,11 @@ export function OrgOptions() {
   const [picked, setPicked] = useState<Partial<Record<RestaurantId, string | null>>>({});
   const [time, setTime] = useState<string | null>(null);
   const open = restaurants.find((r) => r.id === openId);
-  const tag = spotTag(restaurants.findIndex((r) => r.id === openId));
+  const tag = vote.on && open ? (vote.leader === open.id ? { label: 'Most votes', best: true } : { label: 'Great spot', best: false }) : spotTag(restaurants.findIndex((r) => r.id === openId));
+  const lead = restaurants.find((r) => r.id === vote.leader);
+  // v2: the host has the last say; confirming a place that isn't leading says so.
+  const overriding = vote.on && open && lead && lead.id !== open.id;
+  const list = vote.on ? vote.ranked : restaurants;
 
   const openRestaurant = (id: RestaurantId, slot?: string) => { setTime(slot ?? picked[id] ?? null); setOpenId(id); setStep('detail'); setSheetOpen(true); };
   // A slot tapped on a card opens the sheet with it selected.
@@ -58,10 +64,12 @@ export function OrgOptions() {
   const subtitle = !open ? undefined : step === 'detail' ? open.cuisine : open.reservations ? open.name : 'Walk-in only';
 
   return (
-    <Screen back title="3 places that work" subtitle="Each one is close to the middle of where everyone's coming from.">
+    <Screen back title={vote.on ? (vote.allIn ? 'Votes are in' : 'The vote so far') : '3 places that work'}
+      subtitle={vote.on ? `${vote.arrived} of ${vote.voters} picked a favourite. Each place is close to the middle of where everyone's coming from, and you have the last say.` : "Each one is close to the middle of where everyone's coming from."}>
       <Segmented options={[{ value: 'list', label: 'List' }, { value: 'map', label: 'Map' }]} value={view} onChange={setView} />
       {view === 'list'
-        ? restaurants.map((r, i) => <RestaurantCard key={r.id} restaurant={r} index={i} picked={picked[r.id] ?? null} onPick={(t) => pickSlot(r.id, t)} onOpen={() => openRestaurant(r.id)} />)
+        ? list.map((r, i) => <RestaurantCard key={r.id} restaurant={r} index={i} picked={picked[r.id] ?? null} onPick={(t) => pickSlot(r.id, t)} onOpen={() => openRestaurant(r.id)}
+            vote={vote.on ? { voters: vote.votersOf(r.id), total: vote.voters, leading: vote.leader === r.id } : undefined} />)
         : <MapView mode="options" height={620} onSelectPin={openRestaurant} />}
       <Sheet open={sheetOpen} onClose={close} title={title} subtitle={subtitle}>
         {/* The photo stays across both steps; everything after it is keyed by step so it fades in fresh. */}
@@ -71,6 +79,7 @@ export function OrgOptions() {
             <Chip variant={tag.best ? 'success' : 'neutral'} className="rcard__fair chip--sm">{tag.label}</Chip>
             <p className="t-body">{open.address}</p>
             <p className="t-secondary c-secondary">{open.hours} · {open.reservations ? `Reserve on ${partner}` : 'Walk-in only'}</p>
+            {vote.on && <p className="t-secondary c-secondary">{vote.tally[open.id].length} of {vote.voters} voted for this.</p>}
           </div>,
           ...(open.reservations ? [
             <p key="d-label" className="t-caption c-secondary">{time ? 'Time' : 'Pick a time'}</p>,
@@ -85,6 +94,7 @@ export function OrgOptions() {
           <div key="c-info" className="stack" style={{ gap: 4 }}>
             <p className="t-body-med">{dateLong} at {time}</p>
             <p className="t-secondary c-secondary">Table for {size} · {open.address}</p>
+            {overriding && <p className="t-secondary c-secondary">Most votes went to {lead.name}. Everyone gets a text with your pick.</p>}
           </div>,
           <ProgressButton key="c-cta" idle="Confirm" busy="Booking your table…" done="Booked" busyMs={1300} onBusyEnd={commit} onDone={finish} />,
           <Button key="c-back" variant="ghost" onClick={() => setStep('detail')}>Pick another time</Button>,
@@ -93,6 +103,7 @@ export function OrgOptions() {
           <div key="w-info" className="stack" style={{ gap: 4 }}>
             <p className="t-body-med">{dateLong} at {targetTime}</p>
             <p className="t-secondary c-secondary">We'll tell the {size} of you to head over then. Arrive together and you'll usually be seated within 15 minutes.</p>
+            {overriding && <p className="t-secondary c-secondary">Most votes went to {lead.name}. Everyone gets a text with your pick.</p>}
           </div>,
           <ProgressButton key="w-cta" idle="Notify everyone" busy="Texting everyone…" done="Everyone's told" busyMs={1300} onBusyEnd={commit} onDone={finish} />,
           <Button key="w-back" variant="ghost" onClick={() => setStep('detail')}>Back</Button>,

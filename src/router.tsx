@@ -17,6 +17,7 @@ import { PJoin } from './screens/p/PJoin';
 import { PJoinInfo } from './screens/p/PJoinInfo';
 import { BookingWatcher } from './screens/p/BookingWatcher';
 import { NudgeWatcher } from './screens/org/NudgeWatcher';
+import { VoteWatcher } from './screens/org/VoteWatcher';
 import { PWaiting } from './screens/p/PWaiting';
 import { PDropped } from './screens/p/PDropped';
 import { PBooked } from './screens/p/PBooked';
@@ -35,6 +36,7 @@ export function RouteShell() {
       </div>
       {location.pathname.startsWith('/p') && <BookingWatcher />}
       {location.pathname.startsWith('/org') && <NudgeWatcher />}
+      {location.pathname.startsWith('/org') && <VoteWatcher />}
     </div>
   );
 }

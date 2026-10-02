@@ -11,27 +11,26 @@ import { Input } from '../../components/Input';
 import { EditDetails } from '../../components/EditDetails';
 import { Cover } from '../../components/Cover';
 import { CoverSheet } from '../../components/CoverSheet';
-import { PreferencesSheet } from '../../components/Preferences';
 import { Notification } from '../../components/Notification';
 import { GuestRow } from '../../components/GuestRow';
 import { Chevron, Mail, Message, Phone, Plus, Share } from '../../components/icons';
 import { formatPhone, isCompletePhone } from '../../components/phone';
-import { party, restaurants, sms, type Guest } from '../../fixtures';
+import { party, restaurants, type Guest } from '../../fixtures';
 import { usePrototypeState, type CoverChoice } from '../../state';
 import { useParty } from '../../party';
+import { useHostVote } from '../../useVote';
 
 export function OrgHub() {
   const navigate = useNavigate();
   const location = useLocation();
   const [state, update] = usePrototypeState();
   const { name, roughTime, coming, out } = useParty();
-  const [banner, setBanner] = useState<boolean>(location.state?.banner === 'manageLink');
+  const vote = useHostVote();
   // The waiting nudge (ORG 4h) lands here with the Guests sheet open.
   const [everyone, setEveryone] = useState<boolean>(location.state?.everyone === true);
   const [editing, setEditing] = useState(false);
   const [adding, setAdding] = useState(false);
   const [coverOpenedOn, setCoverOpenedOn] = useState<CoverChoice | null>(null);
-  const [prefsOpen, setPrefsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [sharing, setSharing] = useState(false);
   const [sending, setSending] = useState(false);
@@ -40,7 +39,6 @@ export function OrgHub() {
   const [newGuest, setNewGuest] = useState({ name: '', phone: '' });
   const respondedCount = sending || state.everyoneIn ? coming.length : coming.filter((g) => g.status !== 'waiting').length;
   const waiting = coming.length - coming.filter((g) => g.status !== 'waiting').length;
-  const closeBanner = useCallback(() => setBanner(false), []);
   const closeInvited = useCallback(() => setInvited(null), []);
   const guestReady = newGuest.name.trim() !== '' && isCompletePhone(newGuest.phone);
   const countLine = `${respondedCount} of ${coming.length} responded`;
@@ -76,7 +74,6 @@ export function OrgHub() {
     update({ addedGuests: [...state.addedGuests, { id: `added-${Date.now()}`, name: n, initial: n[0].toUpperCase() }] });
     setNewGuest({ name: '', phone: '' });
     setAdding(false);
-    setBanner(false); // one banner at a time
     setInvited(n);
   };
   const statusChip = (g: Guest) =>
@@ -89,7 +86,7 @@ export function OrgHub() {
 
   return (
     <Screen footer={state.everyoneIn
-      ? <Button onClick={() => navigate('/org/options')}>Browse places</Button>
+      ? <Button onClick={() => navigate('/org/options')}>{vote.on ? 'See the votes' : 'Browse places'}</Button>
       : <Button onClick={() => setSending(true)} disabled={sending || waiting === 0}>Remind the {waiting} who haven't</Button>}>
       <Cover choice={state.cover}><Chip className="cover__edit" onClick={() => setCoverOpenedOn(state.cover)}>{state.cover === 'none' ? 'Add cover' : 'Edit cover'}</Chip></Cover>
       <div className="screen__title">
@@ -102,16 +99,18 @@ export function OrgHub() {
       {state.everyoneIn ? (
         /* Everyone's in: the places lead, as one card and one tap. Inviting is over, so the link card and + go. */
         <button className="card places" onClick={() => navigate('/org/options')}>
-          <span className="card__head"><span className="t-heading">3 places that work</span><span className="card__action"><Chevron size={20} /></span></span>
-          <span className="t-secondary c-secondary">Close to the middle of where everyone's coming from.</span>
+          <span className="card__head"><span className="t-heading">{vote.on ? (vote.allIn ? 'Votes are in' : 'The vote so far') : '3 places that work'}</span><span className="card__action"><Chevron size={20} /></span></span>
+          <span className="t-secondary c-secondary">{vote.on ? `${vote.arrived} of ${vote.voters} picked a favourite. You have the last say.` : "Close to the middle of where everyone's coming from."}</span>
           <span className="stack" style={{ gap: 0, marginTop: 4 }}>
-            {restaurants.map((r) => (
+            {(vote.on ? vote.ranked : restaurants).map((r) => (
               <span key={r.id} className="place-row">
                 <span className="place-row__thumb"><img src={r.photo} alt="" /></span>
-                <span className="stack" style={{ gap: 0, minWidth: 0 }}>
+                <span className="stack" style={{ gap: 0, minWidth: 0, flex: 1 }}>
                   <span className="t-body-med ellipsis">{r.name}</span>
                   <span className="t-caption c-secondary">{r.cuisine} · {r.reservations ? 'Reserve' : 'Walk-in'}</span>
                 </span>
+                {/* v2: the count ticks up as votes arrive; the leader sits first */}
+                {vote.on && <span key={vote.tally[r.id].length} className={`t-label vote-count ${vote.tally[r.id].length ? '' : 'c-secondary'}`}>{vote.tally[r.id].length ? `${vote.tally[r.id].length} ${vote.tally[r.id].length === 1 ? 'vote' : 'votes'}` : '—'}</span>}
               </span>
             ))}
           </span>
@@ -124,7 +123,7 @@ export function OrgHub() {
         </button>
       )}
       {/* Every section is one card with its title inside: a header row (title left, one 32px action right), then the content */}
-      <div className="card">
+      <div className="card card--compact">
         <div className="card__head">
           <h2 className="t-heading">Guests</h2>
           {!state.everyoneIn && <button className="card__action card__action--filled" aria-label="Add a guest" onClick={() => setAdding(true)}><Plus size={18} /></button>}
@@ -136,16 +135,7 @@ export function OrgHub() {
           <span className="card__action"><Chevron size={20} /></span>
         </button>
       </div>
-      {/* The host is one of the guests: their own picks sit with the guests, labelled as theirs, always there to add or change */}
-      <button className="card row card--tap" aria-label="Your preferences" onClick={() => setPrefsOpen(true)}>
-        <span className="stack" style={{ gap: 2, minWidth: 0 }}>
-          <span className="t-caption c-secondary">Your preferences</span>
-          <span className={`t-body-med ellipsis ${state.hostPrefs.length ? '' : 'c-secondary'}`}>{state.hostPrefs.length ? state.hostPrefs.join(' · ') : 'Tap to add (optional)'}</span>
-        </span>
-        <span className="card__action"><Chevron size={20} /></span>
-      </button>
-
-      <Notification open={banner} onClose={closeBanner} text={`${sms.manageLink(name).text} ${sms.manageLink(name).link}`} />
+      {/* The host's own preferences and who picks the spot (v2) live in Edit details, with their location: no cards for them */}
       <Notification open={invited !== null} onClose={closeInvited} app="Gather" autoHideMs={0} closeButton text={`Invite sent to ${invited ?? ''}. They'll get a text with the link.`} />
 
       {/* ORG 4c: tap a guest for their actions; anyone who can't make it sits in their own group */}
@@ -170,7 +160,7 @@ export function OrgHub() {
           { label: 'Remove from the party', danger: true, onSelect: () => acting && removeOne(acting.id) },
         ]} />
 
-      <EditDetails open={editing} onClose={() => setEditing(false)} subtitle="Everyone gets a text if the time changes." onSave={(patch) => update(patch)} />
+      <EditDetails open={editing} onClose={() => setEditing(false)} subtitle="Everyone gets a text if the time changes." onSave={(patch) => update(patch)} decide />
 
       {/* ORG 4b */}
       <Sheet open={adding} onClose={() => setAdding(false)} title="Add a guest" subtitle="They'll get a text with the invite link.">
@@ -196,7 +186,6 @@ export function OrgHub() {
 
       {/* ORG 4d */}
       <CoverSheet original={coverOpenedOn} onClose={() => setCoverOpenedOn(null)} />
-      <PreferencesSheet open={prefsOpen} onClose={() => setPrefsOpen(false)} title="Your preferences" subtitle="What matters to you. We weigh it with everyone else's." value={state.hostPrefs} onSave={(hostPrefs) => update({ hostPrefs })} />
     </Screen>
   );
 }

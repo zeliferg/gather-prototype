@@ -9,11 +9,13 @@ import { Close } from '../../components/icons';
 import { party, restaurants, sms } from '../../fixtures';
 import { useGuestList } from '../../guest';
 import { usePrototypeState } from '../../state';
+import { useGuestVote } from '../../useVote';
 
 export function PBooked() {
   const navigate = useNavigate();
   const [state, update] = usePrototypeState();
   const { guests } = useGuestList();
+  const { leader } = useGuestVote();
   const r = restaurants.find((x) => x.id === state.selectedRestaurant)!;
   const [banner, setBanner] = useState(true);
   const closeBanner = useCallback(() => setBanner(false), []);
@@ -24,8 +26,8 @@ export function PBooked() {
       footer={<Button onClick={() => navigate('/p/waiting', { state: { details: true } })}>View the details</Button>}>
       <GatheringCircle seats={guests} centerCheck />
       <h1 className="t-display" style={{ textAlign: 'center' }}>{party.hostFirst} booked a spot</h1>
-      <p className="t-secondary c-secondary" style={{ textAlign: 'center' }}>{r.name}, {party.dateLong} at {state.selectedTime}. Table for {party.size}.</p>
-      <Notification open={banner} onClose={closeBanner} text={`${sms.spotConfirmed.text} ${sms.spotConfirmed.link}`} />
+      <p className="t-secondary c-secondary" style={{ textAlign: 'center' }}>{r.name}, {party.dateLong} at {state.selectedTime}. Table for {party.size}. {leader === r.id ? 'It won the vote.' : `${party.hostFirst}'s pick.`}</p>
+      <Notification open={banner} onClose={closeBanner} text={`${sms.spotConfirmed(r.name).text} ${sms.spotConfirmed(r.name).link}`} />
     </Screen>
   );
 }

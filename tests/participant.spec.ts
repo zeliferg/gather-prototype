@@ -34,6 +34,7 @@ test('participant spine: invite to the morning after, including dropping out and
   await expect(page.getByRole('button', { name: /Joining|You're in/ })).toBeVisible();
   await expect(page.getByRole('heading', { name: "Jordan's Dinner" })).toBeVisible({ timeout: 5000 });
   await expect(page.getByText("You're in")).toBeVisible();
+  await expect(page.getByText('Then we all vote on a spot')).toBeVisible(); // v2: the vote opens once everyone's in
   await expect(page.getByText('RiNo, within 1 mi. Vegetarian.')).toBeVisible();
   await expect(page.getByRole('heading', { name: "Who's coming" })).toBeVisible();
 
@@ -52,15 +53,32 @@ test('participant spine: invite to the morning after, including dropping out and
   await expect(page.getByRole('dialog', { name: 'Your info' })).toHaveCount(0);
   await expect(page.getByText('RiNo, within 2 mi. Vegetarian, Vegan.')).toBeVisible();
 
-  // The host books on its own ~15s after joining: banner on whatever screen, page flips to Booked.
-  await expect(page.getByRole('status')).toContainText("You're all set", { timeout: 25_000 });
+  // v2: ~8s after joining everyone's in and a text opens the vote; the card becomes the three places.
+  await expect(page.getByRole('status')).toContainText('Time to vote', { timeout: 15_000 });
+  await page.getByRole('status').click();
+  await expect(page.getByRole('heading', { name: 'Pick your favourite' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Corner Table' })).toHaveAttribute('aria-pressed', 'false');
+  await page.getByRole('button', { name: 'Corner Table' }).click();
+  await expect(page.getByRole('heading', { name: 'Your vote is in' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Corner Table' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('button', { name: 'Corner Table' })).toContainText('2 of 4 votes · yours'); // the others split 1/1/1
+  await expect(page.getByText('4 of 4 have voted')).toBeVisible();
+  await page.getByRole('button', { name: 'Noodle Bar Riverside' }).click(); // changing your mind moves the vote
+  await expect(page.getByRole('button', { name: 'Noodle Bar Riverside' })).toContainText('2 of 4 votes · yours');
+  await page.getByRole('button', { name: 'Corner Table' }).click();
+
+  // The host books on its own ~15s after the vote: the winner, with a banner on whatever screen; the page flips to Booked.
+  await expect(page.getByRole('status')).toContainText('Jordan picked a spot', { timeout: 25_000 });
+  await expect(page.getByRole('status')).toContainText('Corner Table');
   await expect(page.getByText('Booked')).toBeVisible();
+  await expect(page.getByText('Won the vote')).toBeVisible();
   await page.getByRole('status').click();
   await expect(page.getByRole('heading', { name: 'Jordan booked a spot' })).toBeVisible();
+  await expect(page.getByText('It won the vote.')).toBeVisible();
   await page.getByRole('button', { name: 'View the details' }).click();
 
   // P 3b with the restaurant drawer open (P 9's content lives in this drawer now).
-  const details = page.getByRole('dialog', { name: 'Tavola Verde' });
+  const details = page.getByRole('dialog', { name: 'Corner Table' });
   await expect(details).toBeVisible();
   await expect(details.getByText('Booked under Jordan')).toBeVisible();
   // The sheet's scrim spans the viewport but the sheet panel visually covers its centre; click a corner so the scrim (not the panel) receives the click.
@@ -84,7 +102,7 @@ test('participant spine: invite to the morning after, including dropping out and
   await expect(page.getByText('4 people, without you')).toBeVisible();
   await page.getByRole('button', { name: 'Close', exact: true }).click({ position: { x: 10, y: 10 } });
   await page.getByRole('button', { name: 'Changed your mind? Rejoin' }).click();
-  await expect(page.getByText('Tavola Verde')).toBeVisible();
+  await expect(page.getByText('Corner Table')).toBeVisible();
 
   // The booked page ends the walk-through: "start over" clears the tab and lands on Landing (ORG 0),
   // where "Join with a code" (ORG 0b) leads into the lobby, then Verify, then the join screen.

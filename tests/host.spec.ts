@@ -29,6 +29,9 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await page.getByLabel('Your phone').fill('5550192244');
   await expect(page.getByLabel('Your phone')).toHaveValue('(555) 019-2244'); // formatted as typed
   await expect(page.getByRole('button', { name: 'Create party' })).toBeDisabled(); // location still unset
+  // v2: who picks the spot defaults to the group vote; the host keeps the last say either way.
+  await expect(page.getByRole('tab', { name: 'Everyone votes' })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByRole('tab', { name: "I'll pick" })).toHaveAttribute('aria-selected', 'false');
 
   // ORG 1a: the permission dialog comes first, alone; the drawer only opens after Allow.
   await page.getByRole('button', { name: 'Your location' }).click();
@@ -62,8 +65,8 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await expect(page.getByRole('button', { name: /Verifying|Verified/ })).toBeVisible();
   await expect(page.getByRole('heading', { name: "Jordan's Dinner" })).toBeVisible({ timeout: 5000 });
 
-  // The management-link text arrives as a banner on the hub.
-  await expect(page.getByRole('status')).toContainText('is live');
+  // v2: no "your party is live" text here; the first Gather banner is the waiting nudge below.
+  await expect(page.getByRole('status')).toHaveCount(0);
 
   // ORG 4: Edit details opens prefilled with what the host entered.
   await page.getByRole('button', { name: 'Edit details' }).click();
@@ -104,12 +107,20 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await expect(nudge).toHaveCount(0);
   await page.getByRole('button', { name: 'Close' }).click({ position: { x: 10, y: 10 } });
 
-  // The host's own preferences are always a row under Guests, empty or not, and open the sheet to change.
-  await expect(page.getByRole('button', { name: 'Your preferences' })).toContainText('Tap to add');
-  await page.getByRole('button', { name: 'Your preferences' }).click();
+  // v2: who picks the spot and the host's own preferences live in Edit details with their location, not as cards.
+  await expect(page.getByRole('button', { name: "How we'll decide" })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Your preferences' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Edit details' }).click();
+  await expect(editDialog.getByRole('tab', { name: 'Everyone votes' })).toHaveAttribute('aria-selected', 'true');
+  await editDialog.getByRole('button', { name: 'Your preferences, Tap to add (optional)' }).click();
   await page.getByRole('dialog', { name: 'Your preferences' }).getByRole('button', { name: 'Vegetarian' }).click();
   await page.getByRole('button', { name: 'Save preferences' }).click();
-  await expect(page.getByRole('button', { name: 'Your preferences' })).toContainText('Vegetarian');
+  await expect(editDialog.getByRole('button', { name: 'Your preferences, Vegetarian' })).toBeVisible();
+  await editDialog.getByRole('button', { name: 'Save', exact: true }).click();
+  await expect(editDialog).toHaveCount(0);
+  await page.getByRole('button', { name: 'Edit details' }).click();
+  await expect(editDialog.getByRole('button', { name: 'Your preferences, Vegetarian' })).toBeVisible();
+  await page.getByRole('button', { name: 'Close' }).click({ position: { x: 10, y: 10 } });
 
   // Share invite: the link card opens one drawer with Copy and quick ways to send; Remind is the page's only CTA.
   await page.getByRole('button', { name: 'Share invite link' }).click();
@@ -144,15 +155,25 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await page.getByRole('button', { name: "Remind the 3 who haven't" }).click();
   await expect(page.getByRole('heading', { name: "Everyone's in" })).toBeVisible({ timeout: 5000 });
 
-  // ORG 5 → X → hub: the stepper is gone, the places are listed on the page, Browse places is the primary CTA.
+  // ORG 5 → X → hub. v2: everyone's in opens the vote; the places card is the tally, with See the votes as the CTA.
+  await expect(page.getByText("Everyone's voting on their favourite now.")).toBeVisible();
   await page.getByRole('button', { name: 'Close' }).click();
   await expect(page.getByRole('heading', { name: "Jordan's Dinner" })).toBeVisible();
   await expect(page.getByText("Everyone's in")).toBeVisible();
   await expect(page.getByRole('button', { name: 'Share invite link' })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: /3 places that work/ })).toBeVisible(); // the places card leads, as one tap
+  await expect(page.getByRole('button', { name: /The vote so far|Votes are in/ })).toBeVisible(); // the places card leads, as one tap
   await expect(page.getByText('Noodle Bar Riverside')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Add a guest' })).toHaveCount(0);
-  await page.getByRole('button', { name: 'Browse places' }).click();
+  await expect(page.getByRole('button', { name: 'See the votes' })).toBeVisible();
+  // The four fixture votes arrive one per tick (Lena, added by hand, never votes); the last one brings a Gather banner.
+  const votesIn = page.getByRole('status').filter({ hasText: 'Votes are in!' });
+  await expect(votesIn).toBeVisible({ timeout: 20_000 });
+  await expect(votesIn).toContainText('4 of 5 picked a favourite, and Tavola Verde leads');
+  await expect(page.getByRole('button', { name: /^Votes are in/ })).toContainText('2 votes');
+  await votesIn.click(); // tapping it opens the vote
+  await expect(page.getByRole('heading', { name: 'Votes are in' })).toBeVisible();
+  await expect(page.getByText('Most votes')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Tavola Verde', exact: true })).toContainText('2 of 5 votes');
 
   // ORG 6c from a pin, with no slot tapped first: nothing is selected and the CTA waits for a time.
   await page.getByRole('tab', { name: 'Map' }).click();
@@ -174,6 +195,7 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await expect(confirm).toContainText('Friday, Sep 12 at 7:00 PM');
   await expect(confirm).toContainText('Table for 6'); // the table follows the list: Lena joined, Leo left
   await expect(confirm.getByRole('button', { pressed: true })).toHaveCount(0); // no slot row here any more
+  await expect(confirm).not.toContainText('Most votes went to'); // Tavola Verde leads, so booking it is no override
   await expect(confirm.locator('.rcard__photo img')).toBeVisible();
   await confirm.getByRole('button', { name: 'Pick another time' }).click();
   await expect(page.getByRole('dialog', { name: 'Tavola Verde' }).getByRole('button', { name: '7:00 PM', pressed: true })).toBeVisible();
@@ -183,8 +205,22 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await expect(page.getByRole('heading', { name: "You're all set" })).toBeVisible({ timeout: 5000 });
   await page.getByRole('button', { name: 'Back to the party' }).click();
 
-  // ORG 10 keeps the cover and can still edit it: choices preview at once, Cancel puts the old one back.
+  // ORG 10 (v2): the booked place shows as its photo with the Booked tag; a Gather banner says everyone got the text,
+  // and the (i) opens the rest of the booking.
   await expect(page.locator('.cover')).toBeVisible();
+  const told = page.getByRole('status').filter({ hasText: 'Everyone got a text' });
+  await expect(told).toBeVisible({ timeout: 5000 });
+  await expect(told).toContainText("Jordan's Dinner is on: Tavola Verde");
+  await page.getByRole('button', { name: 'Dismiss', exact: true }).click();
+  await expect(told).toHaveCount(0);
+  await expect(page.locator('.booked__photo img')).toBeVisible();
+  await expect(page.locator('.booked__photo')).toContainText('Booked');
+  await page.getByRole('button', { name: 'Reservation details' }).click();
+  const booking = page.getByRole('dialog', { name: 'Tavola Verde' });
+  await expect(booking).toContainText('Table for 6');
+  await expect(booking).toContainText('Booked on OpenTable');
+  await page.getByRole('button', { name: 'Close' }).click({ position: { x: 10, y: 10 } });
+  // The cover can still be edited: choices preview at once, Cancel puts the old one back.
   await page.getByRole('button', { name: 'Edit cover' }).click();
   await page.getByRole('button', { name: 'Blue' }).click();
   await expect(page.getByRole('button', { name: 'Blue', pressed: true })).toBeVisible();
@@ -241,7 +277,7 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await change.getByRole('button', { name: '8:00 PM' }).click();
   await change.getByRole('button', { name: 'Save and notify everyone' }).click();
   await expect(page.getByText('Friday, Sep 12 at 8:00 PM')).toBeVisible();
-  await expect(page.getByText('Table for 7', { exact: true })).toBeVisible(); // the card's caption; the banner says it in lower case
+  await expect(page.getByText('214 Elm Street · Table for 7')).toBeVisible(); // the card's address line; the banner says it in lower case
   await expect(page.getByText('7 coming')).toBeVisible();
   await expect(page.getByRole('status')).toContainText('table for 7');
 
@@ -284,4 +320,36 @@ test('a banner swipes up to dismiss', async ({ page }) => {
     fire('touchend', y0 - 80);
   });
   await expect(banner).toHaveCount(0);
+});
+
+test("I'll pick keeps the v1 host flow: no vote anywhere", async ({ page }) => {
+  await page.goto('/org');
+  await page.evaluate(() => sessionStorage.setItem('gather-prototype', JSON.stringify({ decide: 'host', everyoneIn: true, hostName: 'Jordan Reyes', partyName: "Jordan's Dinner", nudgeDismissed: true })));
+  await page.goto('/org/hub');
+  await expect(page.getByRole('button', { name: "How we'll decide" })).toHaveCount(0); // v2: it lives in Edit details
+  await page.getByRole('button', { name: 'Edit details' }).click();
+  await expect(page.getByRole('dialog', { name: 'Edit details' }).getByRole('tab', { name: "I'll pick" })).toHaveAttribute('aria-selected', 'true');
+  await page.getByRole('button', { name: 'Close', exact: true }).click({ position: { x: 10, y: 10 } }); // the places card's text starts "Close to…"
+
+  await expect(page.getByRole('button', { name: /3 places that work/ })).toBeVisible();
+  await expect(page.getByText('vote')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Browse places' }).click();
+  await expect(page.getByRole('heading', { name: '3 places that work' })).toBeVisible();
+  await expect(page.getByText('Best spot')).toBeVisible();
+  await expect(page.getByText('Most votes')).toHaveCount(0);
+  await page.waitForTimeout(3000); // longer than a vote tick: no banner, no tally
+  await expect(page.getByRole('status')).toHaveCount(0);
+});
+
+test('booking a place that is not leading says so (the host has the last say)', async ({ page }) => {
+  await page.goto('/org');
+  await page.evaluate(() => sessionStorage.setItem('gather-prototype', JSON.stringify({ everyoneIn: true, hostVotesIn: 4, votesInSeen: true, hostName: 'Jordan Reyes', partyName: "Jordan's Dinner", nudgeDismissed: true })));
+  await page.goto('/org/options');
+  await expect(page.getByRole('heading', { name: 'Votes are in' })).toBeVisible();
+  await page.getByRole('button', { name: 'Corner Table', exact: true }).click();
+  const corner = page.getByRole('dialog', { name: 'Corner Table' });
+  await expect(corner).toContainText('1 of 4 voted for this.');
+  await corner.getByRole('button', { name: '7:00 PM', exact: true }).click();
+  await corner.getByRole('button', { name: 'Book 7:00 PM with OpenTable' }).click();
+  await expect(page.getByRole('dialog', { name: 'Confirm your booking' })).toContainText('Most votes went to Tavola Verde. Everyone gets a text with your pick.');
 });

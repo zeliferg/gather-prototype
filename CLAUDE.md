@@ -141,9 +141,10 @@ button leads there, Party code (5 chars, uppercased) and Your phone
 P 3 lobby, then Verify (subtitle names the typed phone), then `PJoinInfo`.
 Landing (ORG 0) is registered in the participant build too, so "Start a
 party" hits NotFound there. P 8 (guest morning-after SMS) has no in-app link
-since 23 Sep 2026: reach it by `/p/sms-after`. ORG 2 (management-link SMS) is not a
-route any more: it shows as a `Notification` banner on the hub after Verify,
-and "Reservation changed" does the same on ORG 10 after ORG 11. ORG 8
+since 23 Sep 2026: reach it by `/p/sms-after`. ORG 2 (management-link SMS) is gone
+since 2 Oct 2026 (v2): nothing shows after Verify; instead ORG 10 drops a Gather
+banner once after booking ("<party> is on: <place>… Everyone got a text with the
+details.", `bookedTold`), and "Reservation changed" shows there after ORG 11. ORG 8
 (Reservation) and ORG 8b (Walk-in notice) are not routes either since 22 Sep
 2026: they are the confirm step of ORG 6c's sheet (same photo, Back returns to
 the detail step); on Booked the sheet slides away, then ORG 9. Likewise
@@ -183,7 +184,7 @@ same anatomy as `Input`); ORG 6c stacks tag / address / hours · booking by type
 weight, no icons; time slots everywhere are outlined `chip--time` (36px, the
 stepper matches); ORG 10 ends with a small "Start over" link that resets the tab; the
 host picks preferences on ORG 1 from an "Add preferences (optional)" link
-(`hostPrefs`, separate from the guest's) and sees them as a "Your preferences" row under the Guests card on ORG 4 (always shown, "Tap to add (optional)" when empty; tap opens the sheet); banner and SMS copy that names the party
+(`hostPrefs`, separate from the guest's) and changes them from a "Your preferences" `PickerField` inside Edit details (since 2 Oct 2026; no card on ORG 4), which swaps the drawer for the chips sheet and back; banner and SMS copy that names the party
 takes the typed name (`sms.manageLink(name)` etc.); the host row in
 `deriveGuests` carries the typed host name with an initial, no photo; tapping
 a slot on an ORG 6 card opens ORG 6c with it selected; walk-in places have no
@@ -202,7 +203,7 @@ ORG 10 is one `.card` with its title inside as a `.card__head` row (heading
 left, one optional action right) and every right-side affordance (+, share,
 chevron, remove) is a 32px `.card__action` so they share one edge; `.card--menu`
 holds menu rows under a head, `.split` is the two equal buttons on the Booked
-card. ORG 10 has a Guests card (faces, "N coming", chevron → the Guests
+card; the Guests card on both is `card--compact`. Since 2 Oct 2026 the booked card on ORG 10 is the place's photo with the Booked chip on it, name + "address · Table for N", an (i) `card__action` → the Reservation details drawer (When, Table, Where, Hours, See full menu), then Directions / Add to calendar. ORG 10 has a Guests card (faces, "N coming", chevron → the Guests
 drawer) and a Reservation card (Change time or place / Change party size /
 Cancel reservation); `/org/edit` is gone.
 Sheets swipe to dismiss since 23 Sep 2026 (`useSwipeToDismiss`: a downward
@@ -218,3 +219,14 @@ and other state persist per tab across host → participant walk-throughs; use
 (fine for prototype traffic, not for production); "Around me" always centres
 on downtown Denver rather than reading real geolocation, so the mocked
 permission dialog stays the only prompt testers see.
+
+## v2 (main since 1 Oct 2026): the group vote
+
+Spec: `docs/superpowers/specs/2026-10-01-group-vote-design.md` (with the 2 Oct revision).
+`decide` is chosen on ORG 1 ("Everyone votes" / "I'll pick") and switched in Edit details on
+the hub only (`EditDetails decide` prop). `VoteWatcher` (host routes) lands one fixture vote per
+`VOTE_TICK_MS` once everyone's in; the hub's Places card is the tally; the last vote brings the
+"Votes are in!" Gather banner. `RestaurantCard` has no chevron; in vote mode `VoteLine` (faces +
+"N of M votes", no bar) sits at the right of the name. Guests vote on P 3b after the "Time to vote"
+text; the host "books" the winner `BOOKING_DELAY_MS` later. Button cards need
+`button.card { align-items: stretch }` or their columns shrink-wrap.

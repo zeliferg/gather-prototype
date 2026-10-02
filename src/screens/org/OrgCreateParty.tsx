@@ -9,11 +9,12 @@ import { PermissionDialog } from '../../components/PermissionDialog';
 import { LocationPicker } from '../../components/LocationPicker';
 import { PreferencesSheet } from '../../components/Preferences';
 import { PickerField } from '../../components/PickerField';
+import { Segmented } from '../../components/Segmented';
 import { WhenSheet } from '../../components/WhenSheet';
 import { whenLabel } from '../../components/when';
 import { Plus } from '../../components/icons';
 import { formatPhone, isCompletePhone } from '../../components/phone';
-import { permissionBody, radiusOptions } from '../../fixtures';
+import { decideOptions, permissionBody, radiusOptions } from '../../fixtures';
 import { usePrototypeState } from '../../state';
 
 export function OrgCreateParty() {
@@ -45,6 +46,12 @@ export function OrgCreateParty() {
         <PickerField label="When" value={whenLabel(state.when) || 'Tap to set'} set={state.when !== ''} onClick={() => setWhenOpen(true)} />
         <Input label="Your phone" value={state.hostPhone} onChange={(v) => update({ hostPhone: formatPhone(v) })} inputMode="tel" type="tel" placeholder="(111) 111-1111" />
         <PickerField label="Your location" value={summary} set={touched} onClick={tapLocation} />
+        {/* v2: who picks the spot. The group votes by default; the host keeps the last say either way. */}
+        <div className="input">
+          <span className="t-caption c-secondary">Who picks the spot</span>
+          <Segmented options={decideOptions} value={state.decide} onChange={(decide) => update({ decide })} />
+          <p className="t-caption c-secondary decide-note" key={state.decide}>{state.decide === 'vote' ? "Once everyone's in, guests pick their favourite from places that work for all. You have the last say." : 'You choose from places that work for everyone.'}</p>
+        </div>
       </div>
       {/* Optional, so it stays a quiet link rather than another field */}
       <button className="hstack link t-label" style={{ alignSelf: 'flex-start' }} onClick={() => setPrefsOpen(true)}>
