@@ -35,9 +35,9 @@ describe('deriveGuests', () => {
 
 describe('tableFits', () => {
   it('keeps the booked time while the party stays under the big-table threshold', () => {
-    const tavola = restaurants.find((r) => r.id === 'tavola')!;
-    expect(tableFits(tavola, 6, '7:30 PM')).toBe(true);
-    expect(tableFits(tavola, 7, '7:30 PM')).toBe(false); // 7 or more only get 6:30 and 8:00 there
-    expect(tableFits(tavola, 7, '8:00 PM')).toBe(true);
+    const alma = restaurants.find((r) => r.id === 'alma')!;
+    expect(tableFits(alma, 6, '7:30 PM')).toBe(true);
+    expect(tableFits(alma, 7, '7:30 PM')).toBe(false); // 7 or more only get 6:30 and 8:00 there
+    expect(tableFits(alma, 7, '8:00 PM')).toBe(true);
   });
 });

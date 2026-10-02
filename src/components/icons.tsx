@@ -9,6 +9,8 @@ export const Plus = ({ size }: P) => <svg {...base(size)}><path d="M12 5v14M5 12
 export const Pin = ({ size }: P) => <svg width={size ?? 24} height={size ?? 24} viewBox="0 0 24 24" aria-hidden><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7z" fill="currentColor" /><circle cx="12" cy="9" r="2.5" style={{ fill: 'var(--bg-surface)' }} /></svg>;
 export const More = ({ size }: P) => <svg width={size ?? 24} height={size ?? 24} viewBox="0 0 24 24" aria-hidden><circle cx="5" cy="12" r="1.8" fill="currentColor" /><circle cx="12" cy="12" r="1.8" fill="currentColor" /><circle cx="19" cy="12" r="1.8" fill="currentColor" /></svg>;
 export const Info = ({ size }: P) => <svg {...base(size)}><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 8h.01" /></svg>;
+export const Star = ({ size }: P) => <svg width={size ?? 24} height={size ?? 24} viewBox="0 0 24 24" aria-hidden><path d="m12 3 2.7 5.6 6.1.8-4.5 4.3 1.1 6.1L12 17l-5.4 2.8 1.1-6.1L3.2 9.4l6.1-.8z" fill="currentColor" /></svg>;
+export const ExternalLink = ({ size }: P) => <svg {...base(size)}><path d="M14 4h6v6M20 4l-9 9" /><path d="M18 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h6" /></svg>;
 export const Share = ({ size }: P) => <svg {...base(size)}><path d="M12 3v12M8 7l4-4 4 4" /><path d="M6 11v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-8" /></svg>;
 export const Message = ({ size }: P) => <svg {...base(size)}><path d="M4 5h16v11H9l-5 4z" /></svg>;
 export const Phone = ({ size }: P) => <svg {...base(size)}><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" /></svg>;

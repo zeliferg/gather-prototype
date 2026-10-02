@@ -9,7 +9,9 @@ import { Sheet } from '../../components/Sheet';
 import { MapView } from '../../components/MapView';
 import { RestaurantCard } from '../../components/RestaurantCard';
 import { ProgressButton } from '../../components/ProgressButton';
-import { partner, restaurants, slotsFor, spotTag, type RestaurantId } from '../../fixtures';
+import { moreRestaurants, restaurants, shortlist, slotsFor, spotTag, type RestaurantId } from '../../fixtures';
+import { ExternalLink, Star } from '../../components/icons';
+import { MenuList } from '../../components/MenuList';
 import { usePrototypeState } from '../../state';
 import { useParty } from '../../party';
 import { useHostVote } from '../../useVote';
@@ -20,25 +22,27 @@ const sheetMs = () => parseFloat(getComputedStyle(document.documentElement).getP
 export function OrgOptions() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [, update] = usePrototypeState();
+  const [state, update] = usePrototypeState();
   const { targetTime, dateLong, size } = useParty();
   const vote = useHostVote();
   const [view, setView] = useState<'list' | 'map'>('list');
+  // Three places fit best; two more that still work come in on request and stay for the visit.
+  const [showMore, setShowMore] = useState(false);
   // The hub's Places card lands here with that place already open.
   const [openId, setOpenId] = useState<RestaurantId | null>(location.state?.open ?? null);
   // Closing only hides the sheet, so its content stays put while it slides away.
   const [sheetOpen, setSheetOpen] = useState<boolean>(openId !== null);
-  // ORG 6c is the detail step; ORG 8 / 8b is the confirm step in the same sheet.
-  const [step, setStep] = useState<'detail' | 'confirm'>('detail');
+  // ORG 6c is the detail step; ORG 8 / 8b is the confirm step in the same sheet; the menu is a step of its own.
+  const [step, setStep] = useState<'detail' | 'confirm' | 'menu'>('detail');
   // A slot tapped on a card carries into the sheet; opening a card with nothing tapped shows no slot selected.
   const [picked, setPicked] = useState<Partial<Record<RestaurantId, string | null>>>({});
   const [time, setTime] = useState<string | null>(null);
   const open = restaurants.find((r) => r.id === openId);
-  const tag = vote.on && open ? (vote.leader === open.id ? { label: 'Most votes', best: true } : { label: 'Great spot', best: false }) : spotTag(restaurants.findIndex((r) => r.id === openId));
+  const tag = vote.on && open ? (vote.leader === open.id ? { label: 'Most votes', best: true } : { label: 'Great spot', best: false }) : spotTag(shortlist.findIndex((r) => r.id === openId));
   const lead = restaurants.find((r) => r.id === vote.leader);
   // v2: the host has the last say; confirming a place that isn't leading says so.
   const overriding = vote.on && open && lead && lead.id !== open.id;
-  const list = vote.on ? vote.ranked : restaurants;
+  const list = [...(vote.on ? vote.ranked : shortlist), ...(showMore ? moreRestaurants : [])];
 
   const openRestaurant = (id: RestaurantId, slot?: string) => { setTime(slot ?? picked[id] ?? null); setOpenId(id); setStep('detail'); setSheetOpen(true); };
   // A slot tapped on a card opens the sheet with it selected.
@@ -58,28 +62,41 @@ export function OrgOptions() {
   // Booked: the sheet slides away first, then ORG 9 comes in.
   const finish = () => { close(); setTimeout(() => navigate('/org/confirmed'), sheetMs()); };
   const commit = () => { if (open && time) update({ selectedRestaurant: open.id, selectedTime: time, booked: true }); };
-  const cta = open ? (open.reservations ? (time ? `Book ${time} with ${partner}` : `Book with ${partner}`) : 'Choose this spot') : '';
+  const cta = open ? (open.reservations ? (time ? `Book ${time} with ${open.partner}` : `Book with ${open.partner}`) : 'Choose this spot') : '';
 
   const title = !open ? undefined : step === 'confirm' && open.reservations ? 'Confirm your booking' : open.name;
-  const subtitle = !open ? undefined : step === 'detail' ? open.cuisine : open.reservations ? open.name : 'Walk-in only';
+  const subtitle = !open ? undefined : step === 'detail' ? open.cuisine : step === 'menu' ? 'Menu' : open.reservations ? open.name : 'Walk-in only';
 
   return (
     <Screen back title={vote.on ? (vote.allIn ? 'Votes are in' : 'The vote so far') : '3 places that work'}
       subtitle={vote.on ? `${vote.arrived} of ${vote.voters} picked a favourite. Each place is close to the middle of where everyone's coming from, and you have the last say.` : "Each one is close to the middle of where everyone's coming from."}>
       <Segmented options={[{ value: 'list', label: 'List' }, { value: 'map', label: 'Map' }]} value={view} onChange={setView} />
       {view === 'list'
-        ? list.map((r, i) => <RestaurantCard key={r.id} restaurant={r} index={i} picked={picked[r.id] ?? null} onPick={(t) => pickSlot(r.id, t)} onOpen={() => openRestaurant(r.id)}
-            vote={vote.on ? { voters: vote.votersOf(r.id), total: vote.voters, leading: vote.leader === r.id } : undefined} />)
-        : <MapView mode="options" height={620} onSelectPin={openRestaurant} />}
+        ? list.map((r, i) => <div key={r.id} className={i >= 3 ? 'rcard-in' : undefined}><RestaurantCard restaurant={r} index={i} picked={picked[r.id] ?? null} onPick={(t) => pickSlot(r.id, t)} onOpen={() => openRestaurant(r.id)}
+            vote={vote.on ? { voters: vote.votersOf(r.id), total: vote.voters, leading: vote.leader === r.id, mine: state.hostVote === r.id, onVote: () => update({ hostVote: r.id }) } : undefined} /></div>)
+        : <MapView mode="options" height={620} onSelectPin={openRestaurant} places={list} />}
+      {/* Three is enough to start; the door to a couple more stays open, worded as choice rather than doubt */}
+      {view === 'list' && !showMore && (
+        <div className="stack" style={{ gap: 10, alignItems: 'center', padding: '4px 0 8px' }}>
+          <p className="t-secondary c-secondary" style={{ textAlign: 'center' }}>These 3 fit the group best. Want a couple more to choose from?</p>
+          <Button variant="secondary" onClick={() => setShowMore(true)}>Show {moreRestaurants.length} more places</Button>
+        </div>
+      )}
       <Sheet open={sheetOpen} onClose={close} title={title} subtitle={subtitle}>
         {/* The photo stays across both steps; everything after it is keyed by step so it fades in fresh. */}
-        {open && <div key="photo" className="rcard__photo rcard__photo--tall"><img src={open.photo} alt="" /></div>}
+        {open && step !== 'menu' && <div key="photo" className="rcard__photo rcard__photo--tall"><img src={open.photo} alt="" /></div>}
+        {open && step === 'menu' && [<MenuList key="m-list" menu={open.menu} />, <Button key="m-back" variant="ghost" onClick={() => setStep('detail')}>Back</Button>]}
         {open && step === 'detail' && [
           <div key="d-info" className="stack" style={{ gap: 6 }}>
             <Chip variant={tag.best ? 'success' : 'neutral'} className="rcard__fair chip--sm">{tag.label}</Chip>
-            <p className="t-body">{open.address}</p>
-            <p className="t-secondary c-secondary">{open.hours} · {open.reservations ? `Reserve on ${partner}` : 'Walk-in only'}</p>
+            <p className="t-body">{open.address} · {open.neighborhood}</p>
+            <p className="t-secondary c-secondary">{open.hours}{open.reservations ? '' : ' · Walk-in only'}</p>
             {vote.on && <p className="t-secondary c-secondary">{vote.tally[open.id].length} of {vote.voters} voted for this.</p>}
+          </div>,
+          /* What most people check first: the rating, and a way out to the place's own site */
+          <div key="d-reviews" className="row rating">
+            <span className="hstack" style={{ gap: 6 }}><span className="rating__star"><Star size={16} /></span><span className="t-body-med">{open.rating.toFixed(1)}</span><span className="t-secondary c-secondary">{open.reviews.toLocaleString('en-US')} reviews</span></span>
+            <a className="link t-label hstack" style={{ gap: 4 }} href={open.website} target="_blank" rel="noreferrer">Website <ExternalLink size={16} /></a>
           </div>,
           ...(open.reservations ? [
             <p key="d-label" className="t-caption c-secondary">{time ? 'Time' : 'Pick a time'}</p>,
@@ -88,7 +105,7 @@ export function OrgOptions() {
             <p key="d-walkin" className="t-secondary c-secondary">No reservations here. The group heads over at {targetTime}, the time you set for the party.</p>,
           ]),
           <Button key="d-cta" onClick={toConfirm} disabled={open.reservations && !time}>{cta}</Button>,
-          <Button key="d-menu" variant="ghost">See full menu</Button>,
+          <Button key="d-full" variant="ghost" onClick={() => setStep('menu')}>See full menu</Button>,
         ]}
         {open && step === 'confirm' && open.reservations && [
           <div key="c-info" className="stack" style={{ gap: 4 }}>

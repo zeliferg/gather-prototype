@@ -13,8 +13,9 @@ import { Sheet } from '../../components/Sheet';
 import { EditDetails } from '../../components/EditDetails';
 import { ChangeReservationSheet } from '../../components/ChangeReservationSheet';
 import { PartySizeSheet } from '../../components/PartySizeSheet';
-import { Chevron, Info } from '../../components/icons';
-import { partner, restaurants, sms } from '../../fixtures';
+import { Chevron, ExternalLink, Info } from '../../components/icons';
+import { MenuList } from '../../components/MenuList';
+import { restaurants, sms } from '../../fixtures';
 import { usePrototypeState, type CoverChoice } from '../../state';
 import { useParty } from '../../party';
 
@@ -26,7 +27,7 @@ export function OrgParty() {
   const r = restaurants.find((x) => x.id === state.selectedRestaurant)!;
   const [banner, setBanner] = useState<boolean>(location.state?.banner === 'reservationChanged');
   const [directions, setDirections] = useState(false);
-  const [details, setDetails] = useState(false); // the booked card's (i): table, time, address, menu
+  const [details, setDetails] = useState<'closed' | 'info' | 'menu'>('closed'); // the booked card's (i): a few lines, then the menu
   // v2: the first time the party page opens after booking, Gather says everyone got the text. Once.
   const [told, setTold] = useState(false);
   useEffect(() => { if (state.bookedTold) return; const t = setTimeout(() => setTold(true), 600); return () => clearTimeout(t); }, [state.bookedTold]);
@@ -55,7 +56,7 @@ export function OrgParty() {
             <p className="t-heading">{r.name}</p>
             <p className="t-secondary c-secondary">{r.address} · Table for {size}</p>
           </div>
-          <button className="card__action card__action--filled" aria-label="Reservation details" onClick={() => setDetails(true)}><Info size={18} /></button>
+          <button className="card__action card__action--filled" aria-label="Reservation details" onClick={() => setDetails('info')}><Info size={18} /></button>
         </div>
         <div className="split">
           <Button variant="secondary" onClick={() => setDirections(true)}>Directions</Button>
@@ -83,15 +84,20 @@ export function OrgParty() {
       <Notification open={told && !banner} onClose={closeTold} app="Gather" closeButton closeLabel="Dismiss"
         text={r.reservations ? `${name} is on: ${r.name}, ${dateShort} at ${state.selectedTime}, table for ${size}. Everyone got a text with the details.` : `${name} is on: ${r.name}, ${dateShort} at ${state.selectedTime}. Everyone got a text to head over then.`} />
       <Notification open={banner} onClose={closeBanner} text={`${sms.reservationChanged(name).text} ${r.name}, ${dateShort} at ${state.selectedTime}, table for ${size}. Details: ${sms.reservationChanged(name).link}`} />
-      {/* The (i): everything about the booking that isn't the name */}
-      <Sheet open={details} onClose={() => setDetails(false)} title={r.name} subtitle={r.reservations ? `Booked on ${partner}` : 'Walk-in only'}>
-        <div className="card card--menu">
-          <div className="row menu-row t-body"><span className="c-secondary">When</span><span className="t-body-med">{dateLong} at {state.selectedTime}</span></div>
-          <div className="row menu-row t-body"><span className="c-secondary">Table</span><span className="t-body-med">Table for {size}</span></div>
-          <div className="row menu-row t-body"><span className="c-secondary">Where</span><span className="t-body-med" style={{ textAlign: 'right' }}>{r.address}</span></div>
-          <div className="row menu-row t-body"><span className="c-secondary">Hours</span><span className="t-body-med">{r.hours}</span></div>
+      {/* The (i): the booking in a few plain lines, the way a confirmation reads, then the menu as its own step */}
+      <Sheet open={details === 'info'} onClose={() => setDetails('closed')} title={r.name} subtitle={r.cuisine}>
+        <div className="stack" style={{ gap: 4 }}>
+          <p className="t-body-med">{dateLong} at {state.selectedTime}</p>
+          <p className="t-secondary c-secondary">Table for {size}{r.reservations ? ` · Booked on ${r.partner}` : ' · Walk-in'}</p>
+          <p className="t-secondary c-secondary">{r.address} · {r.neighborhood}</p>
+          <p className="t-secondary c-secondary">{r.hours}</p>
         </div>
-        <Button variant="secondary">See full menu</Button>
+        <a className="link t-label hstack" style={{ gap: 4, alignSelf: 'flex-start' }} href={r.website} target="_blank" rel="noreferrer">Website <ExternalLink size={16} /></a>
+        <Button variant="secondary" onClick={() => setDetails('menu')}>See full menu</Button>
+      </Sheet>
+      <Sheet open={details === 'menu'} onClose={() => setDetails('closed')} title={r.name} subtitle="Menu">
+        <MenuList menu={r.menu} />
+        <Button variant="ghost" onClick={() => setDetails('info')}>Back</Button>
       </Sheet>
       <EditDetails open={editing} onClose={() => setEditing(false)} subtitle="Everyone gets a text if the date changes."
         onSave={(patch) => { const moved = patch.when !== state.when; update(patch); if (moved) setBanner(true); }} />

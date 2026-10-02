@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
-import { denver, fairCoords, pinDrop, restaurantCoords, restaurants, type RadiusMi, type RestaurantId } from '../fixtures';
+import { denver, fairCoords, pinDrop, restaurantCoords, shortlist, type RadiusMi, type Restaurant, type RestaurantId } from '../fixtures';
 import { Pin } from './icons';
 
 type LatLng = { lat: number; lng: number };
@@ -9,6 +9,8 @@ type Props = {
   radiusMi?: RadiusMi;
   height?: number;
   onSelectPin?: (id: RestaurantId) => void;
+  /** options mode: which places get a pin (the shortlist unless the host asked for more) */
+  places?: Restaurant[];
 };
 
 const MILE_M = 1609.34;
@@ -19,7 +21,7 @@ const ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">Op
 
 // A real, draggable map (Leaflet + OpenStreetMap tiles, desaturated in CSS). The ring and pins are React elements
 // laid over the map and re-projected on every move, so they stay tappable and role-queryable.
-export function MapView({ mode, radiusMi = 2, height = 220, onSelectPin }: Props) {
+export function MapView({ mode, radiusMi = 2, height = 220, onSelectPin, places = shortlist }: Props) {
   const el = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
   const circle = useRef<L.Circle | null>(null);
@@ -50,7 +52,7 @@ export function MapView({ mode, radiusMi = 2, height = 220, onSelectPin }: Props
   useEffect(() => {
     const m = map.current;
     if (!m) return;
-    if (mode === 'options') { m.fitBounds(L.latLngBounds(Object.values(restaurantCoords)).pad(0.35), { animate: true }); return; }
+    if (mode === 'options') { m.fitBounds(L.latLngBounds(places.map((r) => restaurantCoords[r.id])).pad(0.35), { animate: true }); return; }
     m.flyTo(focus, ZOOM[radiusMi], { duration: 0.45 });
   }, [mode, radiusMi, focus.lat, focus.lng]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -81,7 +83,7 @@ export function MapView({ mode, radiusMi = 2, height = 220, onSelectPin }: Props
         {mode === 'options' && (
           <>
             <span className="map__fair" style={project(fairCoords)} role="img" aria-label="Middle of the group"><span className="map__fair-dot" /></span>
-            {restaurants.map((r) => (
+            {places.map((r) => (
               <button key={r.id} className="map__option t-label" style={project(restaurantCoords[r.id])} onClick={() => onSelectPin?.(r.id)}>
                 <span className="map__dot" />{r.name}
               </button>

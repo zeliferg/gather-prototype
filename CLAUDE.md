@@ -23,8 +23,10 @@ Vite 6 + React 19 + TypeScript (strict), react-router-dom 6, plain CSS.
   like touch-target sizes are fine). Reduced motion zeroes every `--dur-*`,
   `--delay-*`, `--stagger` token.
 - `src/fixtures.ts` — Jordan's Dinner, six guests (the participant tester is
-  Priya; Leo replied "can't make it" and is `status: 'out'`), three Denver
-  restaurants, the `partner` (OpenTable), all SMS copy. `guestsComing` is
+  Priya; Leo replied "can't make it" and is `status: 'out'`), five real Denver
+  restaurants since 2 Oct 2026 (`shortlist` = the first three, `moreRestaurants`
+  = two behind "Show 2 more places"; each has its own `partner`, rating, reviews,
+  website, menu and coordinates), all SMS copy. `guestsComing` is
   the guest-side list; the host side goes through `useParty().coming/out`.
   Avatars are 240px photo crops in `public/avatars/<id>.jpg`
   (`Avatar` falls back to the initial when there is no photo).
@@ -151,8 +153,9 @@ the detail step); on Booked the sheet slides away, then ORG 9. Likewise
 P 6 (spot-confirmed SMS) is a banner over `PBooked` (`/p/booked`, the
 guest-side success screen), and P 3b is the guest's hub in both states:
 waiting, then booked. P 9 is no longer a route: its content is the "See the
-details" drawer on P 3b's booked card, and P 9b Who's coming lives on P 3b
-too. "Join the party" on `PJoinInfo` plays spinner → check like Verify. The guest order is invite → P 3 lobby ("Verify and join") → P 2 →
+details" drawer on P 3b's booked card (since 2 Oct 2026 the card is the host's anatomy: photo
+with the tags on it, name, address · Table for N, an (i) → a few plain lines + Website + the
+`MenuList` step), and P 9b Who's coming lives on P 3b too. "Join the party" on `PJoinInfo` plays spinner → check like Verify. The guest order is invite → P 3 lobby ("Verify and join") → P 2 →
 `PJoinInfo` (`/p/join`, not in Figma: My location row + Preferences sheet,
 Count me in disabled until a location is saved) → P 3 map (`/p/location`,
 Save returns) → P 3b. P 3b's Edit opens a Your info drawer (location row →
@@ -230,3 +233,13 @@ the hub only (`EditDetails decide` prop). `VoteWatcher` (host routes) lands one 
 "N of M votes", no bar) sits at the right of the name. Guests vote on P 3b after the "Time to vote"
 text; the host "books" the winner `BOOKING_DELAY_MS` later. Button cards need
 `button.card { align-items: stretch }` or their columns shrink-wrap.
+ORG 6 lists the `shortlist`, then "Show 2 more places" adds `moreRestaurants` (and their map
+pins); ORG 6c shows address · neighbourhood, hours, rating + review count and a Website link, and
+See full menu swaps the sheet to a `MenuList` step (sections of items, delivery-app style); ORG 10's
+details drawer is a few plain lines + Website + the same menu (2 Oct 2026, rounds 3–4). The host
+votes too: ORG 5 → See the places → ORG 6, a "Vote for this spot" chip per card (`hostVote`, the
+host's face joins the tally, `voters` = everyone coming), after a "the group is picking" Gather
+banner (`voteOpenTold`) from `VoteWatcher`.
+Before everyone's in the hub leads with a `card--tint` status card ("Waiting on N people" + one
+mode-aware line on what happens next); the Guests card has only the row's chevron, and "+ Add
+someone" (→ ORG 4b) is the foot of the Guests sheet (2 Oct 2026, round 2).

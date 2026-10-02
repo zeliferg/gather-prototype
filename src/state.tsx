@@ -36,6 +36,8 @@ export type PrototypeState = {
   hostVotesIn: number; // host side: how many fixture votes have arrived since everyone got in
   votesInSeen: boolean; // the host closed the "Votes are in!" banner
   bookedTold: boolean; // the host saw the "everyone got a text" banner on the party page after booking
+  hostVote: RestaurantId | null; // v2: the host's own favourite, cast on ORG 6 while the guests vote
+  voteOpenTold: boolean; // the host saw the "the group is voting now" banner
 };
 
 export type CoverChoice = 'photo' | 'none' | 'blue' | 'sage' | 'matcha' | 'oat' | 'kale' | 'ink';
@@ -50,7 +52,7 @@ export const defaultState: PrototypeState = {
   droppedOut: false,
   remindedIds: [],
   everyoneIn: false,
-  selectedRestaurant: 'tavola',
+  selectedRestaurant: 'alma',
   selectedTime: '7:00 PM',
   booked: false,
   guestBooked: false,
@@ -76,6 +78,8 @@ export const defaultState: PrototypeState = {
   hostVotesIn: 0,
   votesInSeen: false,
   bookedTold: false,
+  hostVote: null,
+  voteOpenTold: false,
 };
 
 export const STORAGE_KEY = 'gather-prototype';

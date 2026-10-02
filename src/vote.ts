@@ -1,9 +1,9 @@
 // The group vote, as pure helpers: the host sees fixture votes arrive; the guest casts a real one.
-import { restaurants, votes as fixtureVotes, type Guest, type RestaurantId, type Vote } from './fixtures';
+import { restaurants, shortlist, votes as fixtureVotes, type Guest, type Restaurant, type RestaurantId, type Vote } from './fixtures';
 
 export type Tally = Record<RestaurantId, string[]>;
 
-const empty = (): Tally => ({ tavola: [], corner: [], noodle: [] });
+const empty = (): Tally => Object.fromEntries(restaurants.map((r) => [r.id, [] as string[]])) as unknown as Tally;
 
 /** Voter ids per place. `only` limits the fixture votes to guests who are still coming (and, for the
  *  host, to the first `arrived` of them); `exclude` drops "you" so your own `mine` can take its place. */
@@ -28,8 +28,8 @@ export function leader(t: Tally): RestaurantId | null {
 }
 
 /** Most votes first; the fixture order (the fairness ranking) breaks ties, so an empty tally keeps it. */
-export function rankByVotes(t: Tally) {
-  return [...restaurants].sort((a, b) => t[b.id].length - t[a.id].length);
+export function rankByVotes(t: Tally, list: Restaurant[] = shortlist) {
+  return [...list].sort((a, b) => t[b.id].length - t[a.id].length);
 }
 
 /** What the host books once the vote is in: the leader, or the best spot when the top is tied. */

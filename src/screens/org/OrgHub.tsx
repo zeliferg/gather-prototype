@@ -15,7 +15,7 @@ import { Notification } from '../../components/Notification';
 import { GuestRow } from '../../components/GuestRow';
 import { Chevron, Mail, Message, Phone, Plus, Share } from '../../components/icons';
 import { formatPhone, isCompletePhone } from '../../components/phone';
-import { party, restaurants, type Guest } from '../../fixtures';
+import { party, shortlist, type Guest } from '../../fixtures';
 import { usePrototypeState, type CoverChoice } from '../../state';
 import { useParty } from '../../party';
 import { useHostVote } from '../../useVote';
@@ -96,13 +96,22 @@ export function OrgHub() {
           <button className="link t-label" onClick={() => setEditing(true)}>Edit details</button>
         </div>
       </div>
+      {/* Before everyone's in: where things stand and what happens next, in two lines (mode-aware) */}
+      {!state.everyoneIn && (
+        <div className="card card--tint" style={{ gap: 4 }}>
+          <p className="t-body-med">{waiting === 0 ? 'Everyone has responded' : `Waiting on ${waiting} ${waiting === 1 ? 'person' : 'people'}`}</p>
+          <p className="t-secondary c-secondary">{vote.on
+            ? "Once everyone's added where they're coming from, we'll show 3 places that work for the whole group and everyone votes. You have the last say."
+            : "Once everyone's added where they're coming from, we'll show 3 places that work for the whole group and you pick one."}</p>
+        </div>
+      )}
       {state.everyoneIn ? (
-        /* Everyone's in: the places lead, as one card and one tap. Inviting is over, so the link card and + go. */
+        /* Everyone's in: the places lead, as one card and one tap. Inviting is over, so the link card goes. */
         <button className="card places" onClick={() => navigate('/org/options')}>
           <span className="card__head"><span className="t-heading">{vote.on ? (vote.allIn ? 'Votes are in' : 'The vote so far') : '3 places that work'}</span><span className="card__action"><Chevron size={20} /></span></span>
           <span className="t-secondary c-secondary">{vote.on ? `${vote.arrived} of ${vote.voters} picked a favourite. You have the last say.` : "Close to the middle of where everyone's coming from."}</span>
           <span className="stack" style={{ gap: 0, marginTop: 4 }}>
-            {(vote.on ? vote.ranked : restaurants).map((r) => (
+            {(vote.on ? vote.ranked : shortlist).map((r) => (
               <span key={r.id} className="place-row">
                 <span className="place-row__thumb"><img src={r.photo} alt="" /></span>
                 <span className="stack" style={{ gap: 0, minWidth: 0, flex: 1 }}>
@@ -124,10 +133,7 @@ export function OrgHub() {
       )}
       {/* Every section is one card with its title inside: a header row (title left, one 32px action right), then the content */}
       <div className="card card--compact">
-        <div className="card__head">
-          <h2 className="t-heading">Guests</h2>
-          {!state.everyoneIn && <button className="card__action card__action--filled" aria-label="Add a guest" onClick={() => setAdding(true)}><Plus size={18} /></button>}
-        </div>
+        <div className="card__head"><h2 className="t-heading">Guests</h2></div>
         {/* One row, one tap: three faces, the count, a chevron into See everyone */}
         <button className="guests-row" aria-label="See everyone" onClick={() => setEveryone(true)}>
           <AvatarStack guests={coming} max={3} size={32} />
@@ -138,7 +144,7 @@ export function OrgHub() {
       {/* The host's own preferences and who picks the spot (v2) live in Edit details, with their location: no cards for them */}
       <Notification open={invited !== null} onClose={closeInvited} app="Gather" autoHideMs={0} closeButton text={`Invite sent to ${invited ?? ''}. They'll get a text with the link.`} />
 
-      {/* ORG 4c: tap a guest for their actions; anyone who can't make it sits in their own group */}
+      {/* ORG 4c: tap a guest for their actions; anyone who can't make it sits in their own group. Adding someone by hand lives here (ORG 4b). */}
       <Sheet open={everyone} onClose={() => { setEveryone(false); update({ remindedIds: [] }); }} title="Guests" subtitle={sheetLine}>
         <div className="list">
           {coming.map((g) => (
@@ -153,6 +159,7 @@ export function OrgHub() {
             </div>
           </>
         )}
+        {!state.everyoneIn && <Button variant="secondary" onClick={() => { setEveryone(false); setAdding(true); }}><span className="hstack" style={{ gap: 6 }}><Plus size={18} /> Add someone</span></Button>}
       </Sheet>
       <ActionSheet open={acting !== null} onClose={() => setActing(null)} title={acting?.name ?? ''}
         options={[

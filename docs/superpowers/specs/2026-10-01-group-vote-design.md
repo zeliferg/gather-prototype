@@ -80,3 +80,65 @@ a call … guests will get the notif of jordan picked a spot".
   (When, Table, Where, Hours, "Booked on OpenTable", See full menu), then Directions / Add to calendar.
 - Figma: Flow1 v6 host lane refreshed in place (ids 599–605) plus four new row-2 frames
   (607 Edit details → Your preferences, 606 I'll pick hub, 608 ORG 10 with banner, 609 the drawer).
+- **ORG 4 hub, round 2 (same day)**: "doesn't seem very intuitive… the host needs some info on
+  what's happening or what the next steps are but in a short way", and the + and the chevron on the
+  Guests card "clash". A tinted status card (`card--tint`) leads before everyone's in: "Waiting on N
+  people" and one mode-aware line ("Once everyone's added where they're coming from, we'll show 3
+  places that work for the whole group and everyone votes. You have the last say." / "…and you pick
+  one."). The Guests card keeps only the row's chevron; "+ Add someone" is the foot of the Guests
+  sheet and opens ORG 4b. Figma: 613 replaces the hub, 614 "ORG 4c — Guests (Add someone)" at 1580/1404.
+
+## Round 3, 2 Oct 2026: real Denver places, show more, richer detail sheet
+
+The user replaced the three made-up restaurants with real Denver places (names + photos in her Figma
+frames 616:673 and 617:836; addresses checked on the web) and asked for more on the detail sheet
+("most users care about the reviews"), a website link, and a positive "show more" that adds two places.
+
+- **Fixtures**: `restaurants` is five places. `shortlist` (first three: Alma Fonda Fina, LoHi · Heretík,
+  RiNo · MAKfam, Baker, walk-in) is what every list, tally and vote starts with; `moreRestaurants`
+  (Cart-Driver, RiNo · Ash'Kara, LoHi, Resy) appear on ORG 6 after **Show 2 more places**. Each place
+  carries `partner` (OpenTable / Resy), `neighborhood`, `rating`, `reviews`, `website`, `menu` (three
+  dishes with prices) and real coordinates; `fairCoords` sits between LoHi, RiNo and Baker. Photos in
+  `public/photos/{alma,heretik,makfam,cartdriver,ashkara}.jpg` (the old three are gone).
+- **ORG 6**: under the three cards, "These 3 fit the group best. Want a couple more to choose from?"
+  and a secondary **Show 2 more places**; the two fade in with a stagger, the button goes, the map
+  gets their pins (`MapView places`). In vote mode they show "0 of 4 votes" and *Great spot*.
+- **ORG 6c**: address · neighbourhood, hours · Reserve on <partner>, then a rating row (★ 4.7, 1,180
+  reviews, **Website ↗** link), **Menu highlights** (three rows), the slots, Book with <partner>, and
+  See full menu (also the website). ORG 10's details drawer gained a Website row; See full menu there
+  opens the site too.
+- Spellings: the real names are "Alma Fonda Fina" (not "Fine") and "Ash'Kara" (not "Ask'Kara"); Heretík
+  keeps its accent. Figma v6: 13 frames swapped in place (620–636), new row-2 frames 630 (Show more)
+  and 631 (Alma detail).
+
+## Round 4, 2 Oct 2026: menu in the app, minimal details, the host votes too
+
+- **Menu**: `menu` is now sections of items (`MenuSection`: section, items with name, optional
+  description, price), three sections per place. `MenuList` lists them the way a delivery app does.
+  ORG 6c's *See full menu* swaps the sheet to a `menu` step (no photo, Back returns); ORG 10's details
+  drawer has a *See full menu* button that opens the same list. No "Menu highlights" block, and the
+  hours line no longer says "Reserve on …" (the button says it).
+- **ORG 10 Reservation details**: a few plain lines, like a confirmation reads: date at time; "Table for
+  N · Booked on <partner>"; address · neighbourhood; hours; a Website link; See full menu.
+- **The host votes too** (the user: "they would see the restaurant list first after everybody is in
+  and participants would vote… in the meantime they can also vote"): ORG 5's CTA is *See the places*
+  and its copy says "Everyone's picking a favourite now, and you can too." A Gather banner ("Everyone's
+  in! The group is picking a favourite now. See the places and vote for yours too.", `voteOpenTold`)
+  drops the moment the vote opens, tap → ORG 6. Each ORG 6 card carries a chip under the cuisine,
+  *Vote for this spot* → *✓ My favourite*; tapping another card moves it (`hostVote`). The host's pick
+  joins the tally with their face; `voters` counts everyone coming, host included ("4 of 6 picked a
+  favourite" in the spine, where Lena never votes). *Votes are in* still fires when the guests' votes
+  are all in; the host's own vote is optional.
+- Figma v6: 639 Alma sheet, 640 Full menu (new, 4580/1404), 641 Heretík sheet, 642 ORG 10 drawer,
+  643 ORG 5 with the banner, 644/645 hub tallies, 646 ORG 6, 647 ORG 6 with the host's vote (new,
+  4580/320). Lane 5100 wide; the user's reference frames moved 500 right.
+
+## Round 5, 2 Oct 2026: the guest side gets the same booked card and details
+
+"If it applies to guest make those changes too": P 3b's booked card is now the host's anatomy (the
+place's photo with *Booked* + *Won the vote* / *Jordan's pick* on it, name, "address · Table for N", an
+(i) labelled *See the details*, Directions / Add to calendar), the P 9 drawer is a few plain lines
+(date at time; "Table for N · Booked under Jordan's name" or "Walk-in, so arrive together"; address ·
+neighbourhood; hours; Website; See full menu → the same `MenuList` step). The guest's vote rows are
+unchanged (name, cuisine · Reserve / Walk-in, radio). Figma v6 guest lane: P 3b booked swapped, new
+"P 9 — See the details (drawer)" on a second row under it.

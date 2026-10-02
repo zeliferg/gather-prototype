@@ -12,7 +12,8 @@ import { Sheet } from '../../components/Sheet';
 import { ActionSheet } from '../../components/ActionSheet';
 import { GuestRow } from '../../components/GuestRow';
 import { PermissionDialog } from '../../components/PermissionDialog';
-import { Chevron } from '../../components/icons';
+import { Chevron, ExternalLink, Info } from '../../components/icons';
+import { MenuList } from '../../components/MenuList';
 import { PickerField } from '../../components/PickerField';
 import { party, permissionBody, radiusOptions, restaurants, type RestaurantId } from '../../fixtures';
 import { useGuestList } from '../../guest';
@@ -26,7 +27,7 @@ export function PWaiting() {
   const [state, update, reset] = usePrototypeState();
   const { guests, meId } = useGuestList();
   const [leaving, setLeaving] = useState(false);
-  const [details, setDetails] = useState(false);
+  const [details, setDetails] = useState<'closed' | 'info' | 'menu'>('closed'); // the booked card's (i): a few lines, then the menu
   const [who, setWho] = useState(false);
   const [directions, setDirections] = useState(false);
   const [calendar, setCalendar] = useState(false);
@@ -44,7 +45,7 @@ export function PWaiting() {
   // The success screen's "View the details" lands here with the restaurant drawer up; the map screen's Save
   // lands here with the Your info drawer reopened.
   useEffect(() => {
-    if (location.state?.details && booked) setDetails(true);
+    if (location.state?.details && booked) setDetails('info');
     if (location.state?.info) { setPrefDraft(state.prefs); setInfo(true); }
   }, [location.state, booked]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -64,16 +65,19 @@ export function PWaiting() {
       <div className="cover"><img src="/photos/cover.jpg" alt="" /></div>
       <div className="screen__title"><h1 className="t-title">{party.name}</h1><p className="t-secondary c-secondary">{booked ? `${party.dateLong} at ${state.selectedTime}` : party.roughTime}</p></div>
       {booked ? (
+        /* Same anatomy as the host's booked card: the place's photo with the tags on it, name + (i), two buttons */
         <div className="card">
-          <div className="row">
-            <span className="hstack"><Chip variant="success">Booked</Chip><Chip variant="info">{vote.leader === r.id ? 'Won the vote' : `${party.hostFirst}'s pick`}</Chip></span>
-            <button className="hstack link t-label" onClick={() => setDetails(true)}>See the details <Chevron size={18} /></button>
+          <div className="rcard__photo booked__photo"><img src={r.photo} alt="" /><span className="rcard__tags"><Chip variant="success">Booked</Chip><Chip variant="info">{vote.leader === r.id ? 'Won the vote' : `${party.hostFirst}'s pick`}</Chip></span></div>
+          <div className="card__head">
+            <div className="stack" style={{ gap: 2, minWidth: 0 }}>
+              <p className="t-heading">{r.name}</p>
+              <p className="t-secondary c-secondary">{r.address} · Table for {party.size}</p>
+            </div>
+            <button className="card__action card__action--filled" aria-label="See the details" onClick={() => setDetails('info')}><Info size={18} /></button>
           </div>
-          <p className="t-heading">{r.name}</p>
-          <p className="t-secondary c-secondary">{r.address}. {r.hours}.</p>
-          <div className="hstack">
-            <Button variant="secondary" inline onClick={() => setDirections(true)}>Directions</Button>
-            <Button variant="secondary" inline onClick={() => setCalendar(true)}>Add to calendar</Button>
+          <div className="split">
+            <Button variant="secondary" onClick={() => setDirections(true)}>Directions</Button>
+            <Button variant="secondary" onClick={() => setCalendar(true)}>Add to calendar</Button>
           </div>
         </div>
       ) : vote.open ? (
@@ -97,7 +101,7 @@ export function PWaiting() {
           {state.vote && <p className="t-caption c-secondary">Changed your mind? Tap another place.</p>}
         </div>
       ) : (
-        <div className="card" style={{ background: 'var(--bg-accent-tint)', borderColor: 'transparent' }}>
+        <div className="card card--tint">
           <p className="t-body-med">You're in</p>
           <p className="t-secondary c-secondary">Waiting for everyone to add where they're coming from. Then we all vote on a spot, and {party.hostFirst} books it.</p>
         </div>
@@ -123,20 +127,20 @@ export function PWaiting() {
       </Sheet>
       <PermissionDialog open={asking} body={permissionBody.guest} onAllow={() => answered('granted')} onDeny={() => answered('denied')} />
 
-      {/* P 9 — the restaurant, as a drawer */}
-      <Sheet open={details} onClose={() => setDetails(false)} title={r.name}>
-        <div className="rcard__photo rcard__photo--tall"><img src={r.photo} alt="" /></div>
+      {/* P 9 — the booking in a few plain lines (as the host's details drawer), then the menu as its own step */}
+      <Sheet open={details === 'info'} onClose={() => setDetails('closed')} title={r.name} subtitle={r.cuisine}>
         <div className="stack" style={{ gap: 4 }}>
-          <Chip variant="success" className="rcard__fair">Booked</Chip>
-          <p className="t-body">{party.dateLong} at {state.selectedTime}. Table for {party.size}.</p>
-          <p className="t-secondary c-secondary">{r.cuisine}. {r.address}. {r.hours}.</p>
+          <p className="t-body-med">{party.dateLong} at {state.selectedTime}</p>
+          <p className="t-secondary c-secondary">Table for {party.size} · {r.reservations ? `Booked under ${party.hostFirst}'s name` : 'Walk-in, so arrive together'}</p>
+          <p className="t-secondary c-secondary">{r.address} · {r.neighborhood}</p>
+          <p className="t-secondary c-secondary">{r.hours}</p>
         </div>
-        <p className="t-secondary c-secondary">{r.reservations ? `Booked under ${party.hostFirst}'s name.` : 'Walk-in, so arrive together.'}</p>
-        <div className="hstack">
-          <Button variant="secondary" onClick={() => { setDetails(false); setDirections(true); }}>Directions</Button>
-          <Button variant="secondary" onClick={() => { setDetails(false); setCalendar(true); }}>Add to calendar</Button>
-        </div>
-        <Button variant="ghost">See full menu</Button>
+        <a className="link t-label hstack" style={{ gap: 4, alignSelf: 'flex-start' }} href={r.website} target="_blank" rel="noreferrer">Website <ExternalLink size={16} /></a>
+        <Button variant="secondary" onClick={() => setDetails('menu')}>See full menu</Button>
+      </Sheet>
+      <Sheet open={details === 'menu'} onClose={() => setDetails('closed')} title={r.name} subtitle="Menu">
+        <MenuList menu={r.menu} />
+        <Button variant="ghost" onClick={() => setDetails('info')}>Back</Button>
       </Sheet>
 
       {/* P 9b */}
