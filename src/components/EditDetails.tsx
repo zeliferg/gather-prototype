@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { Sheet } from './Sheet';
 import { Button } from './Button';
 import { Input } from './Input';
+import { requiredError, useTouched } from './form';
 import { PickerField } from './PickerField';
 import { Segmented } from './Segmented';
 import { WhenSheet } from './WhenSheet';
@@ -28,12 +29,14 @@ export function EditDetails({ open, onClose, subtitle, onSave, decide = false }:
   useEffect(() => { if (open) { setDraft(saved()); setStep('details'); } }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
   const radius = radiusOptions.find((o) => o.value === state.radiusMi)!.label;
   const where = `${state.locationMode === 'pin' ? 'RiNo' : 'Downtown'} · within ${radius}`;
+  const t = useTouched();
+  const nameError = requiredError(draft.name, 'Give the party a name');
   const changed = draft.name.trim() !== state.partyName || draft.when !== state.when || draft.decide !== state.decide || !same(draft.prefs, state.hostPrefs);
   return (
     <>
       <Sheet open={open && step === 'details'} onClose={onClose} title="Edit details" subtitle={subtitle}>
         <div className="form">
-          <Input label="Party name" value={draft.name} onChange={(v) => setDraft({ ...draft, name: v })} placeholder="Party name" />
+          <Input label="Party name" value={draft.name} onChange={(v) => setDraft({ ...draft, name: v })} placeholder="Party name" error={t.shown('name', nameError)} onBlur={() => t.touch('name')} />
           <PickerField label="When" value={whenLabel(draft.when) || 'Tap to set'} set={draft.when !== ''} onClick={() => setStep('when')} />
           <PickerField label="Your location" value={where} set onClick={() => setStep('location')} />
           {/* The host is one of the guests: their own picks live with their location, not as a card on the page */}

@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { Screen } from '../../components/Screen';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
-import { formatPhone, isCompletePhone } from '../../components/phone';
+import { formatPhone } from '../../components/phone';
+import { codeError, continueHint, phoneError, useTouched } from '../../components/form';
 import { party } from '../../fixtures';
 import { usePrototypeState } from '../../state';
 
@@ -19,13 +20,21 @@ export function PJoinCode() {
   const navigate = useNavigate();
   const [state, update] = usePrototypeState();
   const [code, setCode] = useState('');
-  const complete = code.length === CODE_LENGTH && isCompletePhone(state.guestPhone);
+  const t = useTouched();
+  const fields = [
+    { key: 'code', error: codeError(code, CODE_LENGTH) },
+    { key: 'phone', error: phoneError(state.guestPhone) },
+  ];
+  const complete = fields.every((f) => !f.error);
   return (
     <Screen back title="Join with a code" subtitle="Your host has it, or it's in the text they sent you."
-      footer={<Button onClick={() => navigate('/p/lobby')} disabled={!complete}>Continue</Button>}>
+      footer={<>
+        {!complete && <p className="form-hint t-caption c-secondary">{continueHint(fields)}</p>}
+        <Button onClick={() => navigate('/p/lobby')} disabled={!complete}>Continue</Button>
+      </>}>
       <div className="form">
-        <Input label="Party code" value={code} onChange={(v) => setCode(formatCode(v))} placeholder={party.code} autoFocus />
-        <Input label="Your phone" value={state.guestPhone} onChange={(v) => update({ guestPhone: formatPhone(v) })} inputMode="tel" type="tel" placeholder={party.guestPhone} />
+        <Input label="Party code" value={code} onChange={(v) => setCode(formatCode(v))} placeholder={party.code} autoFocus error={t.shown('code', fields[0].error)} onBlur={() => t.touch('code')} />
+        <Input label="Your phone" value={state.guestPhone} onChange={(v) => update({ guestPhone: formatPhone(v) })} inputMode="tel" type="tel" placeholder={party.guestPhone} error={t.shown('phone', fields[1].error)} onBlur={() => t.touch('phone')} />
       </div>
       <p className="t-secondary c-secondary">We'll text you a code to confirm it's you. You're not on the list yet, so you'll add your name on the next step and the host is told.</p>
     </Screen>

@@ -2,6 +2,9 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 html, body, #root { height: 100%; margin: 0; }
+/* The document itself never scrolls: the shell below is a fixed layer, and locking the root
+   stops any stray overflow from chaining a nested scroll into a page scroll. */
+html, body { overflow: hidden; overscroll-behavior: none; }
 body {
   background: var(--bg-canvas);
   color: var(--text-primary);
@@ -13,13 +16,16 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 h1, h2, h3, p { margin: 0; }
 img { display: block; max-width: 100%; }
 
-/* Phone column: fills the viewport on phones, centred 430px column on desktop */
+/* Phone column: fills the viewport on phones, centred 430px column on desktop.
+   A fixed layer rather than a 100dvh box: fixed elements follow the browser's own viewport as
+   its toolbars come and go and never add to the document's scroll range. Chrome on iOS sizes
+   dvh to the large viewport while its toolbars are still showing, so a 100dvh shell overflowed
+   the page by the toolbar height and the whole screen could be scrolled off the top. */
 .phone {
-  position: relative;
+  position: fixed;
+  inset: 0;
   width: 100%;
   max-width: var(--phone-max);
-  min-height: 100dvh;
-  height: 100dvh;
   margin: 0 auto;
   background: var(--bg-canvas);
   overflow: hidden;
@@ -32,6 +38,10 @@ img { display: block; max-width: 100%; }
 /* Screen layout */
 .screen { display: grid; grid-template-rows: auto 1fr auto; height: 100%; }
 .screen__header { padding: calc(var(--space-6) + env(safe-area-inset-top, 0px)) var(--gutter) 0; display: flex; align-items: center; justify-content: space-between; min-height: 56px; }
+/* No header row: the body is the first grid row and carries the header's top inset itself, so it
+   scrolls away with the content and nothing invisible sits between the browser bar and the page. */
+.screen--bare { grid-template-rows: minmax(0, 1fr) auto; }
+.screen--bare .screen__body { padding-top: calc(var(--space-6) + var(--space-4) + env(safe-area-inset-top, 0px)); }
 .screen__body { padding: var(--space-4) var(--gutter) var(--space-6); display: flex; flex-direction: column; gap: var(--space-4); overflow-y: auto; min-height: 0; }
 .screen__footer { position: sticky; bottom: 0; padding: var(--space-3) var(--gutter) calc(var(--space-6) + env(safe-area-inset-bottom, 0px)); background: linear-gradient(to top, var(--bg-canvas) 70%, transparent); display: flex; flex-direction: column; gap: var(--space-2); }
 .screen__title { display: flex; flex-direction: column; gap: var(--space-1); }
@@ -89,6 +99,11 @@ button.chip:active { transform: scale(0.95); }
 .input__field { width: 100%; min-height: 52px; padding: 0 var(--space-4); border: 1px solid var(--border-hairline); border-radius: var(--radius-input); background: var(--bg-surface); color: var(--text-primary); outline: none; transition: border-color var(--dur-fast), box-shadow var(--dur-fast); }
 .input__field::placeholder { color: var(--text-secondary); }
 .input__field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--bg-accent-tint); }
+/* Validation: a field flags itself once the tester has left it unfinished, and clears as soon as it's met */
+.input__field--error, .input__field--error:focus { border-color: var(--error); box-shadow: 0 0 0 3px var(--bg-error-tint); }
+.input__error { color: var(--error); animation: fade-in var(--dur-base) var(--ease-out) both; }
+/* The reason a footer button is still disabled: the first unmet field, named */
+.form-hint { text-align: center; animation: fade-in var(--dur-base) var(--ease-out) both; }
 
 /* Avatar */
 .avatar { display: inline-grid; place-items: center; border-radius: var(--radius-pill); background: var(--bg-info-tint); color: var(--text-primary); border: 2px solid var(--bg-surface); flex: none; overflow: hidden; }
@@ -133,7 +148,7 @@ button.chip:active { transform: scale(0.95); }
 .overlay--center { justify-content: center; align-items: center; }
 .overlay__scrim { position: absolute; inset: 0; background: var(--scrim); opacity: 0; transition: opacity var(--dur-base) var(--ease-out); }
 .overlay--in .overlay__scrim { opacity: 1; }
-.sheet { position: relative; background: var(--bg-surface); border-radius: var(--radius-sheet) var(--radius-sheet) 0 0; padding: var(--space-3) var(--gutter) calc(var(--space-8) + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: var(--space-4); transform: translateY(100%); transition: transform var(--dur-sheet) var(--ease-sheet); max-height: 88dvh; overflow-y: auto; box-shadow: 0 -8px 32px rgba(0,0,0,0.12); }
+.sheet { position: relative; background: var(--bg-surface); border-radius: var(--radius-sheet) var(--radius-sheet) 0 0; padding: var(--space-3) var(--gutter) calc(var(--space-8) + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: var(--space-4); transform: translateY(100%); transition: transform var(--dur-sheet) var(--ease-sheet); max-height: 88%; overflow-y: auto; box-shadow: 0 -8px 32px rgba(0,0,0,0.12); }
 .overlay--in .sheet { transform: translateY(0); }
 .sheet__handle { align-self: center; width: 36px; height: 5px; border-radius: 3px; background: var(--border-hairline); }
 .action-sheet { position: relative; margin: 0 var(--space-2) calc(var(--space-8) + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: var(--space-2); transform: translateY(110%); transition: transform var(--dur-sheet) var(--ease-sheet); }
@@ -153,7 +168,7 @@ button.chip:active { transform: scale(0.95); }
 .permission__btn:last-child { grid-column: 3; }
 
 /* SMS mockup */
-.sms { min-height: 100dvh; height: 100%; overflow-y: auto; padding: calc(var(--space-8) + env(safe-area-inset-top, 0px)) var(--space-4) var(--space-8); background: var(--bg-surface); display: flex; flex-direction: column; align-items: center; gap: var(--space-3); }
+.sms { min-height: 100%; height: 100%; overflow-y: auto; padding: calc(var(--space-8) + env(safe-area-inset-top, 0px)) var(--space-4) var(--space-8); background: var(--bg-surface); display: flex; flex-direction: column; align-items: center; gap: var(--space-3); }
 .sms__contact { display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .sms__avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--accent); color: var(--bg-surface); display: grid; place-items: center; }
 .sms .divider { width: 100%; }

@@ -11,6 +11,7 @@ import { PreferencesSheet } from '../../components/Preferences';
 import { PickerField } from '../../components/PickerField';
 import { party, permissionBody, radiusOptions } from '../../fixtures';
 import { usePrototypeState } from '../../state';
+import { continueHint, requiredError, useTouched } from '../../components/form';
 
 export function PJoinInfo() {
   const navigate = useNavigate();
@@ -23,7 +24,12 @@ export function PJoinInfo() {
   const prefsSummary = state.prefs.length ? state.prefs.join(', ') : 'Tap to add';
   // Joined with a code: the host never added this person, so they say who they are here.
   const byCode = state.guestPhone !== '';
-  const ready = state.locationSet && (!byCode || state.guestName.trim() !== '');
+  const t = useTouched();
+  const fields = [
+    ...(byCode ? [{ key: 'name', error: requiredError(state.guestName, 'Add your name') }] : []),
+    { key: 'where', error: state.locationSet ? null : "Set where you're coming from" },
+  ];
+  const ready = fields.every((f) => !f.error);
 
   // Like the host's Create Party: the browser's permission prompt comes first, then the map screen.
   const tapLocation = () => { if (state.permission === 'unknown') setAsking(true); else navigate('/p/location', { state: { from: '/p/join' } }); };
@@ -39,12 +45,13 @@ export function PJoinInfo() {
     <Screen back title={`Join ${party.name}`}
       subtitle="Add where you're coming from so we can find a spot that works for everyone. Nobody sees your exact location."
       footer={<>
+          {!ready && <p className="form-hint t-caption c-secondary">{continueHint(fields)}</p>}
           {/* Join the party: spinner while "joining", a check, then the party page (same beat as Verify). */}
           <ProgressButton idle="Join the party" busy="Joining…" done="You're in" busyMs={900} disabled={!ready}
             onStart={() => setJoining(true)} onBusyEnd={() => join(false)} onDone={() => navigate('/p/waiting')} />
           <Button variant="ghost" onClick={() => go(true)} disabled={joining}>I'm flexible, skip this</Button>
         </>}>
-      {byCode && <Input label="Your name" value={state.guestName} onChange={(v) => update({ guestName: v })} placeholder="Your name" />}
+      {byCode && <Input label="Your name" value={state.guestName} onChange={(v) => update({ guestName: v })} placeholder="Your name" error={t.shown('name', fields[0].error)} onBlur={() => t.touch('name')} />}
       <PickerField label="My location" value={locationSummary} set={state.locationSet} onClick={tapLocation} />
       <PickerField label="Preferences (optional)" value={prefsSummary} set={state.prefs.length > 0} onClick={() => setPrefsOpen(true)} />
       <p className="t-caption c-secondary">Preferences help {party.hostFirst} pick, they don't limit the options.</p>

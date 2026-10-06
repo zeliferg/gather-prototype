@@ -7,7 +7,8 @@ import { Input } from './Input';
 import { ProgressButton } from './ProgressButton';
 import { GuestRow } from './GuestRow';
 import { Minus, Plus } from './icons';
-import { formatPhone, isCompletePhone } from './phone';
+import { formatPhone } from './phone';
+import { continueHint, phoneError, requiredError, useTouched } from './form';
 import { restaurants, tableFits } from '../fixtures';
 import { usePrototypeState, type AddedGuest } from '../state';
 import { useParty } from '../party';
@@ -28,7 +29,12 @@ export function PartySizeSheet({ open, onClose, onConfirmed }: Props) {
 
   const size = coming.length - removed.length + added.length;
   const changed = removed.length > 0 || added.length > 0;
-  const guestReady = newGuest.name.trim() !== '' && isCompletePhone(newGuest.phone);
+  const t = useTouched();
+  const guestFields = [
+    { key: 'name', error: requiredError(newGuest.name, 'Add their name') },
+    { key: 'phone', error: phoneError(newGuest.phone) },
+  ];
+  const guestReady = guestFields.every((f) => !f.error);
   const addOne = () => {
     const n = newGuest.name.trim();
     setAdded([...added, { id: `added-${Date.now()}`, name: n, initial: n[0].toUpperCase() }]);
@@ -65,9 +71,10 @@ export function PartySizeSheet({ open, onClose, onConfirmed }: Props) {
 
       <Sheet open={open && step === 'add'} onClose={() => setStep('list')} title="Add someone" subtitle="They'll get the details once the table's set.">
         <div className="form">
-          <Input label="Name" value={newGuest.name} onChange={(v) => setNewGuest({ ...newGuest, name: v })} placeholder="Name" />
-          <Input label="Phone" value={newGuest.phone} onChange={(v) => setNewGuest({ ...newGuest, phone: formatPhone(v) })} type="tel" inputMode="tel" placeholder="(111) 111-1111" />
+          <Input label="Name" value={newGuest.name} onChange={(v) => setNewGuest({ ...newGuest, name: v })} placeholder="Name" error={t.shown('name', guestFields[0].error)} onBlur={() => t.touch('name')} />
+          <Input label="Phone" value={newGuest.phone} onChange={(v) => setNewGuest({ ...newGuest, phone: formatPhone(v) })} type="tel" inputMode="tel" placeholder="(111) 111-1111" error={t.shown('phone', guestFields[1].error)} onBlur={() => t.touch('phone')} />
         </div>
+        {!guestReady && <p className="form-hint t-caption c-secondary">{continueHint(guestFields)}</p>}
         <Button onClick={addOne} disabled={!guestReady}>Add to the list</Button>
       </Sheet>
 
