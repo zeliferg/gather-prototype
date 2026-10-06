@@ -62,7 +62,8 @@ export function OrgOptions() {
   // Booked: the sheet slides away first, then ORG 9 comes in.
   const finish = () => { close(); setTimeout(() => navigate('/org/confirmed'), sheetMs()); };
   const commit = () => { if (open && time) update({ selectedRestaurant: open.id, selectedTime: time, booked: true }); };
-  const cta = open ? (open.reservations ? (time ? `Book ${time} with ${open.partner}` : `Book with ${open.partner}`) : 'Choose this spot') : '';
+  // The chosen slot already shows in the chips, so the button doesn't repeat it (6 Oct 2026)
+  const cta = open ? (open.reservations ? `Book with ${open.partner}` : 'Choose this spot') : '';
 
   const title = !open ? undefined : step === 'confirm' && open.reservations ? 'Confirm your booking' : open.name;
   const subtitle = !open ? undefined : step === 'detail' ? open.cuisine : step === 'menu' ? 'Menu' : open.reservations ? open.name : 'Walk-in only';

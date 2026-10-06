@@ -211,7 +211,7 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await page.getByRole('tab', { name: 'List' }).click();
   await page.getByRole('group', { name: 'Alma Fonda Fina times' }).getByRole('button', { name: '7:00 PM', exact: true }).click();
   await expect(page.getByRole('dialog', { name: 'Alma Fonda Fina' }).getByRole('button', { name: '7:00 PM', pressed: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Book 7:00 PM with OpenTable' }).click();
+  await page.getByRole('button', { name: 'Book with OpenTable' }).click();
 
   // ORG 8 is the same sheet's confirm step: photo, date and time, table and address, one Confirm; "Pick another time" goes back to the slots.
   const confirm = page.getByRole('dialog', { name: 'Confirm your booking' });
@@ -223,7 +223,7 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await expect(confirm.locator('.rcard__photo img')).toBeVisible();
   await confirm.getByRole('button', { name: 'Pick another time' }).click();
   await expect(page.getByRole('dialog', { name: 'Alma Fonda Fina' }).getByRole('button', { name: '7:00 PM', pressed: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Book 7:00 PM with OpenTable' }).click();
+  await page.getByRole('button', { name: 'Book with OpenTable' }).click();
   await confirm.getByRole('button', { name: 'Confirm', exact: true }).click();
   await expect(confirm.getByRole('button', { name: /Booking your table|Booked/ })).toBeVisible();
   await expect(page.getByRole('heading', { name: "You're all set" })).toBeVisible({ timeout: 5000 });
@@ -384,6 +384,6 @@ test('booking a place that is not leading says so (the host has the last say)', 
   const corner = page.getByRole('dialog', { name: 'Heretík' });
   await expect(corner).toContainText('1 of 4 voted for this.'); // 4 guests; the host doesn't vote
   await corner.getByRole('button', { name: '7:00 PM', exact: true }).click();
-  await corner.getByRole('button', { name: 'Book 7:00 PM with OpenTable' }).click();
+  await corner.getByRole('button', { name: 'Book with OpenTable' }).click();
   await expect(page.getByRole('dialog', { name: 'Confirm your booking' })).toContainText('Most votes went to Alma Fonda Fina. Everyone gets a text with your pick.');
 });
