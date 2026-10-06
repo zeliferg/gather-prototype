@@ -12,6 +12,7 @@ import { Sheet } from '../../components/Sheet';
 import { ActionSheet } from '../../components/ActionSheet';
 import { GuestRow } from '../../components/GuestRow';
 import { PermissionDialog } from '../../components/PermissionDialog';
+import { LocationPicker } from '../../components/LocationPicker';
 import { Chevron, ExternalLink, Info } from '../../components/icons';
 import { MenuList } from '../../components/MenuList';
 import { PickerField } from '../../components/PickerField';
@@ -34,6 +35,7 @@ export function PWaiting() {
   const [note, setNote] = useState('Sorry, a work thing came up');
   const [info, setInfo] = useState(false);
   const [asking, setAsking] = useState(false);
+  const [locOpen, setLocOpen] = useState(false); // the map drawer, swapped in for Your info and back
   const [prefDraft, setPrefDraft] = useState<string[]>(state.prefs);
   const radius = radiusOptions.find((o) => o.value === state.radiusMi)!.label;
   const r = restaurants.find((x) => x.id === state.selectedRestaurant)!;
@@ -51,13 +53,15 @@ export function PWaiting() {
   }, [location.state, booked]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const openInfo = () => { setPrefDraft(state.prefs); setInfo(true); };
-  // Leaving for the map keeps any preference changes made so far, since the drawer reopens fresh on return.
-  const tapLocation = () => { update({ prefs: prefDraft }); if (state.permission === 'unknown') setAsking(true); else navigate('/p/location', { state: { from: '/p/waiting' } }); };
+  // The map is a drawer of its own: Your info steps aside for it and comes back with the new location.
+  const openMap = () => { setInfo(false); setLocOpen(true); };
+  const tapLocation = () => { if (state.permission === 'unknown') setAsking(true); else openMap(); };
   const answered = (permission: 'granted' | 'denied') => {
     update({ permission, locationMode: permission === 'granted' ? 'around' : 'pin' });
     setAsking(false);
-    navigate('/p/location', { state: { from: '/p/waiting' } });
+    openMap();
   };
+  const useLocation_ = () => { update({ locationSet: true, flexible: false }); setLocOpen(false); setInfo(true); };
   const togglePref = (o: string) => setPrefDraft((d) => (d.includes(o) ? d.filter((x) => x !== o) : [...d, o]));
   const locationSummary = state.locationSet ? `${state.locationMode === 'pin' ? 'RiNo' : 'Downtown'} · within ${radius}` : state.flexible ? "You're flexible" : 'Tap to set';
 
@@ -82,20 +86,24 @@ export function PWaiting() {
           </div>
         </div>
       ) : vote.open && myPick ? (
-        /* Your vote is in: the card collapses to your pick; changing it goes back through the places */
-        <div className="card vote-card">
-          <div className="card__head"><h2 className="t-heading">Your vote is in</h2><Chip variant="success" className="chip--sm chip--swap">Your vote</Chip></div>
-          <p className="t-secondary c-secondary">{vote.arrived} of {vote.voters} have voted. {party.hostFirst} books once everyone has, and has the last say.</p>
-          <div className="vote-pick" key={myPick.id}>
-            <span className="place-row__thumb"><img src={myPick.photo} alt="" /></span>
-            <span className="stack" style={{ gap: 2, minWidth: 0, flex: 1 }}>
-              <span className="t-body-med ellipsis">{myPick.name}</span>
-              <span className="t-caption c-secondary">{myPick.cuisine}</span>
-              <VoteLine count={vote.tally[myPick.id].length} total={vote.voters} mine />
-            </span>
+        /* Your vote is in: a status card (as the host's waiting card), then your pick in a card of its own */
+        <>
+          <div className="card card--tint">
+            <p className="t-body-med">Your vote is in</p>
+            <p className="t-secondary c-secondary">{vote.arrived} of {vote.voters} have voted. Now it's {party.hostFirst}'s turn to pick a spot; everyone gets a text once it's booked.</p>
           </div>
-          <button className="link t-label" style={{ alignSelf: 'flex-start' }} onClick={() => navigate('/p/places')}>Changed your mind?</button>
-        </div>
+          <div className="card">
+            <div className="card__head"><h2 className="t-heading">Your pick</h2><button className="link t-label" onClick={() => navigate('/p/places')}>Changed your mind?</button></div>
+            <div className="vote-pick" key={myPick.id}>
+              <span className="place-row__thumb"><img src={myPick.photo} alt="" /></span>
+              <span className="stack" style={{ gap: 2, minWidth: 0, flex: 1 }}>
+                <span className="t-body-med ellipsis">{myPick.name}</span>
+                <span className="t-caption c-secondary">{myPick.cuisine}</span>
+                <VoteLine count={vote.tally[myPick.id].length} total={vote.voters} />
+              </span>
+            </div>
+          </div>
+        </>
       ) : vote.open ? (
         /* Time to vote: one door to the places, where the guest reads about each before voting */
         <div className="card vote-card">
@@ -129,6 +137,10 @@ export function PWaiting() {
         <Button onClick={() => { update({ prefs: prefDraft }); setInfo(false); }}>Save</Button>
       </Sheet>
       <PermissionDialog open={asking} body={permissionBody.guest} onAllow={() => answered('granted')} onDeny={() => answered('denied')} />
+      <Sheet open={locOpen} onClose={() => { setLocOpen(false); setInfo(true); }} title="Where are you coming from?" subtitle="We use this to find a spot that works for everyone. Nobody sees your exact location.">
+        <LocationPicker context="guest" askPermission={false} />
+        <Button onClick={useLocation_}>Use this location</Button>
+      </Sheet>
 
       {/* P 9 — the booking in a few plain lines (as the host's details drawer), then the menu as its own step */}
       <Sheet open={details === 'info'} onClose={() => setDetails('closed')} title={r.name} subtitle={r.cuisine}>

@@ -13,7 +13,6 @@ import { PSmsInvite } from './screens/p/PSmsInvite';
 import { PJoinCode } from './screens/p/PJoinCode';
 import { PVerify } from './screens/p/PVerify';
 import { PLobby } from './screens/p/PLobby';
-import { PJoin } from './screens/p/PJoin';
 import { PJoinInfo } from './screens/p/PJoinInfo';
 import { BookingWatcher } from './screens/p/BookingWatcher';
 import { NudgeWatcher } from './screens/org/NudgeWatcher';
@@ -64,7 +63,6 @@ export const pRoutes: RouteObject[] = [
   { path: '/p/verify', element: <PVerify /> },
   { path: '/p/lobby', element: <PLobby /> },
   { path: '/p/join', element: <PJoinInfo /> },
-  { path: '/p/location', element: <PJoin /> },
   { path: '/p/waiting', element: <PWaiting /> },
   { path: '/p/places', element: <PPlaces /> },
   { path: '/p/voted', element: <PVoted /> },

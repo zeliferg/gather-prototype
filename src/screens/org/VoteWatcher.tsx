@@ -24,9 +24,9 @@ export function VoteWatcher() {
   const text = `Votes are in! ${arrived} of ${voters} picked a favourite${lead ? `, and ${lead.name} leads` : ', and it’s a tie'}. You have the last say.`;
   return (
     <>
-      {/* The moment the vote opens: everyone's in, the group is picking, and the host can pick too */}
+      {/* The moment the vote opens: everyone's in and the group is picking; the host watches, then picks */}
       <Notification open={live && !allIn && !state.voteOpenTold} onClose={() => update({ voteOpenTold: true })} app="Gather" closeButton closeLabel="Dismiss vote open"
-        onTap={() => navigate('/org/options')} text="Everyone's in! The group is picking a favourite now. See the places and vote for yours too." />
+        onTap={() => navigate('/org/options')} text="Everyone's in! The group is picking a favourite now. See the places and how it's going." />
       <Notification open={live && allIn && expected > 0 && !state.votesInSeen} onClose={() => update({ votesInSeen: true })} app="Gather" autoHideMs={0} closeButton closeLabel="Dismiss votes"
         onTap={() => navigate('/org/options')} text={text} />
     </>

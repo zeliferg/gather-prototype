@@ -15,17 +15,19 @@ test('participant spine: invite to the morning after, including dropping out and
   await page.getByRole('button', { name: 'Continue' }).click();
   await expect(page.getByRole('button', { name: /Verifying|Verified/ })).toBeVisible(); // spinner → check, like the host's Verify
 
-  // The join screen: location first (permission dialog, then the map screen with Save), preferences optional.
+  // The join screen: when the dinner is, then location first (permission dialog, then the map as a drawer), preferences optional.
   await expect(page.getByRole('heading', { name: "Join Jordan's Dinner" })).toBeVisible();
+  await expect(page.getByText('Friday, Sep 12 · around 7:00 PM')).toBeVisible(); // 6 Oct 2026: the guest needs the when to say the where
   await expect(page.getByRole('button', { name: 'Join the party' })).toBeDisabled();
   await page.getByRole('button', { name: 'My location' }).click();
   await expect(page.getByRole('alertdialog', { name: 'Location permission' })).toBeVisible();
   await page.getByRole('button', { name: 'Allow', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Where are you coming from?' })).toBeVisible();
-  await page.getByRole('tab', { name: 'Drop a pin' }).click();
-  await page.getByRole('button', { name: '1 mi', exact: true }).click();
-  await page.getByRole('button', { name: 'Save', exact: true }).click();
-  await expect(page.getByRole('heading', { name: "Join Jordan's Dinner" })).toBeVisible();
+  const where = page.getByRole('dialog', { name: 'Where are you coming from?' });
+  await expect(where).toBeVisible();
+  await where.getByRole('tab', { name: 'Drop a pin' }).click();
+  await where.getByRole('button', { name: '1 mi', exact: true }).click();
+  await where.getByRole('button', { name: 'Use this location' }).click();
+  await expect(page.getByRole('dialog', { name: 'Where are you coming from?' })).toHaveCount(0);
   await expect(page.getByText('RiNo · within 1 mi')).toBeVisible();
   await page.getByRole('button', { name: 'Preferences (optional)' }).click();
   await page.getByRole('button', { name: 'Vegetarian' }).click();
@@ -38,16 +40,17 @@ test('participant spine: invite to the morning after, including dropping out and
   await expect(page.getByText('RiNo, within 1 mi. Vegetarian.')).toBeVisible();
   await expect(page.getByRole('heading', { name: "Who's coming" })).toBeVisible();
 
-  // P 3b's Edit opens Your info as a drawer; preferences change inline, location via the map screen and back.
+  // P 3b's Edit opens Your info as a drawer; preferences change inline, location via the map drawer and back.
   await page.getByRole('button', { name: 'Edit', exact: true }).click();
   const info = page.getByRole('dialog', { name: 'Your info' });
   await expect(info).toBeVisible();
   await info.getByRole('button', { name: 'Vegan' }).click();
   await info.getByRole('button', { name: 'My location' }).click();
-  await expect(page.getByRole('heading', { name: 'Where are you coming from?' })).toBeVisible();
-  await page.getByRole('button', { name: '2 mi', exact: true }).click();
-  await page.getByRole('button', { name: 'Save', exact: true }).click();
-  await expect(info).toBeVisible(); // back on P 3b with the drawer reopened
+  const where2 = page.getByRole('dialog', { name: 'Where are you coming from?' });
+  await expect(where2).toBeVisible();
+  await where2.getByRole('button', { name: '2 mi', exact: true }).click();
+  await where2.getByRole('button', { name: 'Use this location' }).click();
+  await expect(info).toBeVisible(); // Your info comes back with the new location
   await expect(info.getByText('RiNo · within 2 mi')).toBeVisible();
   await info.getByRole('button', { name: 'Save', exact: true }).click();
   await expect(page.getByRole('dialog', { name: 'Your info' })).toHaveCount(0);
@@ -64,23 +67,25 @@ test('participant spine: invite to the morning after, including dropping out and
   await expect(page.getByText('Reserve on')).toHaveCount(0); // booking is the host's business
   await page.getByRole('button', { name: 'Heretík', exact: true }).click();
   const heretik = page.getByRole('dialog', { name: 'Heretík' });
-  await expect(heretik.getByText('1 of 4 voted for this.')).toBeVisible();
+  await expect(heretik.getByText('1441 26th St · RiNo')).toBeVisible(); // Heretík's page is the one in view
+  await expect(heretik.locator('.pager__page')).toHaveCount(3); // swipe sideways for the other two places
   await heretik.getByRole('button', { name: 'Vote for this spot' }).click();
   await expect(page.getByRole('heading', { name: 'You voted for Heretík' })).toBeVisible(); // the first vote's success screen
   await page.getByRole('button', { name: 'Back to the party' }).click();
-  await expect(page.getByRole('heading', { name: 'Your vote is in' })).toBeVisible();
-  await expect(page.getByText('2 of 4 votes · yours')).toBeVisible(); // the others split 1/1/1
+  await expect(page.getByText('Your vote is in')).toBeVisible(); // the status card, then your pick in its own card
+  await expect(page.getByRole('heading', { name: 'Your pick' })).toBeVisible();
+  await expect(page.getByText('2 of 4 votes')).toBeVisible(); // the others split 1/1/1
   await expect(page.getByText('4 of 4 have voted')).toBeVisible();
   // Changing your mind goes back through the places and straight home, no success screen the second time
   await page.getByRole('button', { name: 'Changed your mind?' }).click();
   await page.getByRole('button', { name: 'MAKfam', exact: true }).click();
   await page.getByRole('dialog', { name: 'MAKfam' }).getByRole('button', { name: 'Vote for this spot' }).click();
-  await expect(page.getByRole('heading', { name: 'Your vote is in' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Your pick' })).toBeVisible();
   await expect(page.getByText('MAKfam')).toBeVisible();
   await page.getByRole('button', { name: 'Changed your mind?' }).click();
   await page.getByRole('button', { name: 'Heretík', exact: true }).click();
   await page.getByRole('dialog', { name: 'Heretík' }).getByRole('button', { name: 'Vote for this spot' }).click();
-  await expect(page.getByText('2 of 4 votes · yours')).toBeVisible();
+  await expect(page.getByText('2 of 4 votes')).toBeVisible();
 
   // The host books on its own ~15s after the vote: the winner, with a banner on whatever screen; the page flips to Booked.
   await expect(page.getByRole('status')).toContainText('Jordan picked a spot', { timeout: 25_000 });
@@ -153,7 +158,7 @@ test('participant spine: invite to the morning after, including dropping out and
   await expect(page.getByRole('button', { name: 'Join the party' })).toBeDisabled(); // still no location
   await page.getByRole('button', { name: 'My location' }).click();
   await page.getByRole('button', { name: 'Allow', exact: true }).click();
-  await page.getByRole('button', { name: 'Save', exact: true }).click();
+  await page.getByRole('dialog', { name: 'Where are you coming from?' }).getByRole('button', { name: 'Use this location' }).click();
   await expect(page.getByRole('heading', { name: "Join Jordan's Dinner" })).toBeVisible();
   await page.getByRole('button', { name: 'Join the party' }).click();
   await expect(page.getByRole('heading', { name: "Jordan's Dinner" })).toBeVisible({ timeout: 5000 });

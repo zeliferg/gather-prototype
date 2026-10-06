@@ -22,7 +22,7 @@ const sheetMs = () => parseFloat(getComputedStyle(document.documentElement).getP
 export function OrgOptions() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [state, update] = usePrototypeState();
+  const [, update] = usePrototypeState();
   const { targetTime, dateLong, size } = useParty();
   const vote = useHostVote();
   const [view, setView] = useState<'list' | 'map'>('list');
@@ -73,7 +73,7 @@ export function OrgOptions() {
       <Segmented options={[{ value: 'list', label: 'List' }, { value: 'map', label: 'Map' }]} value={view} onChange={setView} />
       {view === 'list'
         ? list.map((r, i) => <div key={r.id} className={i >= 3 ? 'rcard-in' : undefined}><RestaurantCard restaurant={r} index={i} picked={picked[r.id] ?? null} onPick={(t) => pickSlot(r.id, t)} onOpen={() => openRestaurant(r.id)}
-            vote={vote.on ? { voters: vote.votersOf(r.id), total: vote.voters, leading: vote.leader === r.id, mine: state.hostVote === r.id, onVote: () => update({ hostVote: r.id }) } : undefined} /></div>)
+            vote={vote.on ? { voters: vote.votersOf(r.id), total: vote.voters, leading: vote.leader === r.id } : undefined} /></div>)
         : <MapView mode="options" height={620} onSelectPin={openRestaurant} places={list} />}
       {/* Three is enough to start; the door to a couple more stays open, worded as choice rather than doubt */}
       {view === 'list' && !showMore && (

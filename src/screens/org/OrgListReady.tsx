@@ -16,7 +16,7 @@ export function OrgListReady() {
       footer={<Button onClick={() => navigate('/org/options')}>{on ? 'See the places' : 'Browse places'}</Button>}>
       <GatheringCircle seats={coming} centerCheck />
       <h1 className="t-display" style={{ textAlign: 'center' }}>Everyone's in</h1>
-      <p className="t-secondary c-secondary" style={{ textAlign: 'center' }}>All {coming.length} responded. We found 3 places that work for the whole group.{on ? " Everyone's picking a favourite now, and you can too." : ''}</p>
+      <p className="t-secondary c-secondary" style={{ textAlign: 'center' }}>All {coming.length} responded. We found 3 places that work for the whole group.{on ? " Everyone's picking a favourite now; you pick from what they say." : ''}</p>
     </Screen>
   );
 }

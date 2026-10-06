@@ -36,7 +36,6 @@ export type PrototypeState = {
   hostVotesIn: number; // host side: how many fixture votes have arrived since everyone got in
   votesInSeen: boolean; // the host closed the "Votes are in!" banner
   bookedTold: boolean; // the host saw the "everyone got a text" banner on the party page after booking
-  hostVote: RestaurantId | null; // v2: the host's own favourite, cast on ORG 6 while the guests vote
   voteOpenTold: boolean; // the host saw the "the group is voting now" banner
 };
 
@@ -78,7 +77,6 @@ export const defaultState: PrototypeState = {
   hostVotesIn: 0,
   votesInSeen: false,
   bookedTold: false,
-  hostVote: null,
   voteOpenTold: false,
 };
 

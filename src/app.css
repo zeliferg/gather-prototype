@@ -364,8 +364,15 @@ button.card__action:active { background: var(--border-hairline); transform: scal
 .vote-row:active { transform: scale(0.99); }
 .vote-row .radio--on { animation: chip-pop var(--dur-base) var(--ease-spring); }
 /* P 3b once voted: the card's one row is your pick (no radio, it isn't a choice here any more) */
-.vote-pick { display: flex; align-items: center; gap: 12px; padding-top: 10px; border-top: 1px solid var(--border-hairline); animation: fade-in var(--dur-base) var(--ease-out) both; }
+.vote-pick { display: flex; align-items: center; gap: 12px; animation: fade-in var(--dur-base) var(--ease-out) both; }
 .btn--sm { min-height: 44px; font-size: 15px; padding: 0 18px; }
+/* P 7c: the detail sheet pages through the shortlist; one page per place, snapped, dots below */
+.pager { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter); scroll-padding: 0 var(--gutter); gap: var(--gutter); }
+.pager::-webkit-scrollbar { display: none; }
+.pager__page { flex: none; width: 100%; scroll-snap-align: start; scroll-snap-stop: always; display: flex; flex-direction: column; gap: var(--space-4); }
+.dots { display: flex; justify-content: center; gap: 6px; }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border-hairline); transition: background var(--dur-fast), transform var(--dur-fast); }
+.dot--on { background: var(--accent); transform: scale(1.25); }
 /* P 7b — You voted!: the check badge pops, then the tick draws, like Verify's success */
 .voted { display: flex; flex-direction: column; align-items: center; gap: var(--space-4); text-align: center; }
 .voted__badge { width: 72px; height: 72px; border-radius: 50%; background: var(--accent); color: var(--text-on-accent); display: grid; place-items: center; animation: badge-in var(--dur-slow) var(--ease-spring) both; }

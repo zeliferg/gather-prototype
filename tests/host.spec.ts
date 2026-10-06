@@ -161,9 +161,9 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await page.getByRole('button', { name: "Remind the 3 who haven't" }).click();
   await expect(page.getByRole('heading', { name: "Everyone's in" })).toBeVisible({ timeout: 5000 });
 
-  // ORG 5 → X → hub. v2: everyone's in opens the vote: a Gather banner says the group is picking (and the host can too),
+  // ORG 5 → X → hub. v2: everyone's in opens the vote: a Gather banner says the group is picking,
   // the CTA leads to the places; the hub's places card is the tally, with See the votes as the CTA.
-  await expect(page.getByText("Everyone's picking a favourite now, and you can too.")).toBeVisible();
+  await expect(page.getByText("Everyone's picking a favourite now; you pick from what they say.")).toBeVisible();
   const voteOpen = page.getByRole('status').filter({ hasText: 'The group is picking a favourite now' });
   await expect(voteOpen).toBeVisible();
   await expect(page.getByRole('button', { name: 'See the places' })).toBeVisible();
@@ -179,19 +179,14 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   // The four fixture votes arrive one per tick (Lena, added by hand, never votes); the last one brings a Gather banner.
   const votesIn = page.getByRole('status').filter({ hasText: 'Votes are in!' });
   await expect(votesIn).toBeVisible({ timeout: 20_000 });
-  await expect(votesIn).toContainText('4 of 6 picked a favourite, and Alma Fonda Fina leads'); // 6 coming, host included; Lena never votes
+  await expect(votesIn).toContainText('4 of 5 picked a favourite, and Alma Fonda Fina leads'); // 5 guests (the host doesn't vote); Lena never votes
   await expect(page.getByRole('button', { name: /^Votes are in/ })).toContainText('2 votes');
   await votesIn.click(); // tapping it opens the vote
   await expect(page.getByRole('heading', { name: 'Votes are in' })).toBeVisible();
   await expect(page.getByText('Most votes')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Alma Fonda Fina', exact: true })).toContainText('2 of 6 votes');
-  // The host votes too: one chip per card; the pick joins the tally with the host's face, and can move.
-  await page.getByRole('button', { name: 'Vote for this spot' }).nth(1).click(); // Heretík, second card
-  await expect(page.getByRole('button', { name: 'Heretík', exact: true })).toContainText('2 of 6 votes');
-  await page.getByRole('button', { name: 'Vote for this spot' }).first().click(); // moved to Alma Fonda Fina
-  await expect(page.getByRole('button', { name: 'Alma Fonda Fina', exact: true })).toContainText('3 of 6 votes');
-  await expect(page.getByRole('button', { name: 'Heretík', exact: true })).toContainText('1 of 6 votes');
-  await expect(page.getByRole('button', { name: '✓ My favourite' })).toHaveCount(1);
+  await expect(page.getByRole('button', { name: 'Alma Fonda Fina', exact: true })).toContainText('2 of 5 votes');
+  // The host doesn't vote (6 Oct 2026): no vote chips on the cards, they read the tally and pick
+  await expect(page.getByRole('button', { name: 'Vote for this spot' })).toHaveCount(0);
 
   // ORG 6c from a pin, with no slot tapped first: nothing is selected and the CTA waits for a time.
   await page.getByRole('tab', { name: 'Map' }).click();
@@ -387,7 +382,7 @@ test('booking a place that is not leading says so (the host has the last say)', 
   await expect(page.getByRole('heading', { name: 'Votes are in' })).toBeVisible();
   await page.getByRole('button', { name: 'Heretík', exact: true }).click();
   const corner = page.getByRole('dialog', { name: 'Heretík' });
-  await expect(corner).toContainText('1 of 5 voted for this.'); // 5 coming, host included;
+  await expect(corner).toContainText('1 of 4 voted for this.'); // 4 guests; the host doesn't vote
   await corner.getByRole('button', { name: '7:00 PM', exact: true }).click();
   await corner.getByRole('button', { name: 'Book 7:00 PM with OpenTable' }).click();
   await expect(page.getByRole('dialog', { name: 'Confirm your booking' })).toContainText('Most votes went to Alma Fonda Fina. Everyone gets a text with your pick.');

@@ -9,17 +9,16 @@ import { tallyVotes, voteCount, leader, rankByVotes, winner } from './vote';
 export function useHostVote() {
   const [state] = usePrototypeState();
   const { coming } = useParty();
-  const host = coming.find((g) => g.status === 'host');
-  // The host votes like anyone else: their own pick joins the fixture votes as they arrive.
-  const tally = tallyVotes({ only: coming, arrived: state.hostVotesIn, mine: state.hostVote && host ? { id: host.id, restaurant: state.hostVote } : null });
+  // The host doesn't vote: they pick from what the group said (6 Oct 2026). Only the guests' votes count.
+  const tally = tallyVotes({ only: coming, arrived: state.hostVotesIn });
   const expected = votes.filter((v) => coming.some((g) => g.id === v.guestId)).length;
   const arrived = voteCount(tally);
   return {
     /** the host chose "Everyone votes" */
     on: state.decide === 'vote',
     tally, arrived, expected,
-    /** everyone coming, host included; manually added guests never vote, so this can stay above `expected` */
-    voters: coming.length,
+    /** the guests coming (not the host); manually added guests never vote, so this can stay above `expected` */
+    voters: coming.length - 1,
     /** the guests' votes are all in (the host's own is optional) */
     allIn: Math.min(state.hostVotesIn, expected) >= expected,
     leader: leader(tally),

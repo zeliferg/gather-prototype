@@ -156,11 +156,10 @@ waiting, then booked. P 9 is no longer a route: its content is the "See the
 details" drawer on P 3b's booked card (since 2 Oct 2026 the card is the host's anatomy: photo
 with the tags on it, name, address · Table for N, an (i) → a few plain lines + Website + the
 `MenuList` step), and P 9b Who's coming lives on P 3b too. "Join the party" on `PJoinInfo` plays spinner → check like Verify. The guest order is invite → P 3 lobby ("Verify and join") → P 2 →
-`PJoinInfo` (`/p/join`, not in Figma: My location row + Preferences sheet,
-Count me in disabled until a location is saved) → P 3 map (`/p/location`,
-Save returns) → P 3b. P 3b's Edit opens a Your info drawer (location row →
-the map screen, which returns with the drawer reopened; preference chips
-inline). The host
+`PJoinInfo` (`/p/join`, not in Figma: a tinted card with the party's date and rough time, My location row +
+Preferences sheet, Join disabled until a location is saved) → the map as a drawer (P 3 / P 3c, `LocationPicker`
++ "Use this location", like the host's; `/p/location` is gone since 6 Oct 2026) → P 3b. P 3b's Edit opens a
+Your info drawer (location row → the map drawer, Your info comes back with it; preference chips inline). The host
 "books" `BOOKING_DELAY_MS` (15 s) after the guest joins: `BookingWatcher`,
 mounted by `RouteShell` on guest routes, flips `guestBooked` and drops the
 banner on whatever screen is open; tapping it opens `PBooked`.
@@ -236,7 +235,9 @@ vote" text P 3b's card is "Time to vote" with one small "Browse locations" butto
 List/Map) → tapping a card opens the detail sheet (`PlaceDetails`, shared with ORG 6c) with a
 `ProgressButton` "Vote for this spot" → first vote lands on `PVoted` (`/p/voted`, check badge, "You
 voted for X", Back to the party / Changed your mind?), a changed vote goes straight back to P 3b, whose
-card has collapsed to the guest's pick (photo, name, cuisine, vote line) with a "Changed your mind?" link.
+page shows a tinted status card ("Your vote is in", N of M have voted, now Jordan picks) and a "Your pick" card
+(photo, name, cuisine, "N of M votes", no "yours") whose head action is "Changed your mind?". The detail
+sheet pages through the shortlist (`.pager`, scroll-snap, dots; `active` drives the title and buttons).
 The guest side never says Reserve / Walk-in. The host "books" the winner `BOOKING_DELAY_MS` after the
 guest's first vote and never before (the no-vote grace period is gone). Button cards need
 `button.card { align-items: stretch }` or their columns shrink-wrap.
@@ -244,9 +245,9 @@ ORG 6 lists the `shortlist`, then "Show 2 more places" adds `moreRestaurants` (a
 pins); ORG 6c shows address · neighbourhood, hours, rating + review count and a Website link, and
 See full menu swaps the sheet to a `MenuList` step (sections of items, delivery-app style); ORG 10's
 details drawer is a few plain lines + Website + the same menu (2 Oct 2026, rounds 3–4). The host
-votes too: ORG 5 → See the places → ORG 6, a "Vote for this spot" chip per card (`hostVote`, the
-host's face joins the tally, `voters` = everyone coming), after a "the group is picking" Gather
-banner (`voteOpenTold`) from `VoteWatcher`.
+doesn't vote (6 Oct 2026, the user: "they don't vote, they pick"): ORG 5 → See the places → ORG 6 shows the
+tally (faces + "N of M votes", M = guests coming) and "Most votes", no vote chips; the host opens a card and
+books. A "the group is picking" Gather banner (`voteOpenTold`) comes from `VoteWatcher`.
 Before everyone's in the hub leads with a `card--tint` status card ("Waiting on N people" + one
 mode-aware line on what happens next); the Guests card has only the row's chevron, and "+ Add
 someone" (→ ORG 4b) is the foot of the Guests sheet (2 Oct 2026, round 2).
