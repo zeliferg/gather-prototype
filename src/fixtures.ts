@@ -180,7 +180,6 @@ export const fairCoords = { lat: 39.7438, lng: -104.9942 };
 
 export const VOTE_OPEN_DELAY_MS = 8_000; // joining → "Everyone's in! Time to vote" text
 export const BOOKING_DELAY_MS = 15_000; // how long after the guest votes the host "books a spot"
-export const NO_VOTE_GRACE_MS = 20_000; // a guest who never votes: the host books this long after the vote opened
 export const VOTE_TICK_MS = 2_500; // host side: one fixture vote arrives per tick once everyone's in
 export const NUDGE_DELAY_MS = 9_000; // hub landing → waiting nudge: the 6 s Messages banner, then a 3 s beat
 

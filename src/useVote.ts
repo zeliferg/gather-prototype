@@ -40,5 +40,6 @@ export function useGuestVote() {
     leader: leader(tally),
     winner: winner(tally),
     ranked: rankByVotes(tally),
+    votersOf: (id: RestaurantId): Guest[] => guests.filter((g) => tally[id].includes(g.id)),
   };
 }

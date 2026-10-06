@@ -230,8 +230,15 @@ Spec: `docs/superpowers/specs/2026-10-01-group-vote-design.md` (with the 2 Oct r
 the hub only (`EditDetails decide` prop). `VoteWatcher` (host routes) lands one fixture vote per
 `VOTE_TICK_MS` once everyone's in; the hub's Places card is the tally; the last vote brings the
 "Votes are in!" Gather banner. `RestaurantCard` has no chevron; in vote mode `VoteLine` (faces +
-"N of M votes", no bar) sits at the right of the name. Guests vote on P 3b after the "Time to vote"
-text; the host "books" the winner `BOOKING_DELAY_MS` later. Button cards need
+"N of M votes", no bar) sits at the right of the name. **Guest vote (6 Oct 2026):** after the "Time to
+vote" text P 3b's card is "Time to vote" with one small "Browse locations" button → `PPlaces`
+(`/p/places`: the host's cards in `guest` mode, no slots, no booking words, fixed shortlist order,
+List/Map) → tapping a card opens the detail sheet (`PlaceDetails`, shared with ORG 6c) with a
+`ProgressButton` "Vote for this spot" → first vote lands on `PVoted` (`/p/voted`, check badge, "You
+voted for X", Back to the party / Changed your mind?), a changed vote goes straight back to P 3b, whose
+card has collapsed to the guest's pick (photo, name, cuisine, vote line) with a "Changed your mind?" link.
+The guest side never says Reserve / Walk-in. The host "books" the winner `BOOKING_DELAY_MS` after the
+guest's first vote and never before (the no-vote grace period is gone). Button cards need
 `button.card { align-items: stretch }` or their columns shrink-wrap.
 ORG 6 lists the `shortlist`, then "Show 2 more places" adds `moreRestaurants` (and their map
 pins); ORG 6c shows address · neighbourhood, hours, rating + review count and a Website link, and

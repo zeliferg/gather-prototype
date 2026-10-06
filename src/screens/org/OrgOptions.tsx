@@ -10,7 +10,7 @@ import { MapView } from '../../components/MapView';
 import { RestaurantCard } from '../../components/RestaurantCard';
 import { ProgressButton } from '../../components/ProgressButton';
 import { moreRestaurants, restaurants, shortlist, slotsFor, spotTag, type RestaurantId } from '../../fixtures';
-import { ExternalLink, Star } from '../../components/icons';
+import { PlaceDetails } from '../../components/PlaceDetails';
 import { MenuList } from '../../components/MenuList';
 import { usePrototypeState } from '../../state';
 import { useParty } from '../../party';
@@ -87,17 +87,7 @@ export function OrgOptions() {
         {open && step !== 'menu' && <div key="photo" className="rcard__photo rcard__photo--tall"><img src={open.photo} alt="" /></div>}
         {open && step === 'menu' && [<MenuList key="m-list" menu={open.menu} />, <Button key="m-back" variant="ghost" onClick={() => setStep('detail')}>Back</Button>]}
         {open && step === 'detail' && [
-          <div key="d-info" className="stack" style={{ gap: 6 }}>
-            <Chip variant={tag.best ? 'success' : 'neutral'} className="rcard__fair chip--sm">{tag.label}</Chip>
-            <p className="t-body">{open.address} · {open.neighborhood}</p>
-            <p className="t-secondary c-secondary">{open.hours}{open.reservations ? '' : ' · Walk-in only'}</p>
-            {vote.on && <p className="t-secondary c-secondary">{vote.tally[open.id].length} of {vote.voters} voted for this.</p>}
-          </div>,
-          /* What most people check first: the rating, and a way out to the place's own site */
-          <div key="d-reviews" className="row rating">
-            <span className="hstack" style={{ gap: 6 }}><span className="rating__star"><Star size={16} /></span><span className="t-body-med">{open.rating.toFixed(1)}</span><span className="t-secondary c-secondary">{open.reviews.toLocaleString('en-US')} reviews</span></span>
-            <a className="link t-label hstack" style={{ gap: 4 }} href={open.website} target="_blank" rel="noreferrer">Website <ExternalLink size={16} /></a>
-          </div>,
+          <PlaceDetails key="d-details" restaurant={open} tag={tag} bookingWords voteLine={vote.on ? `${vote.tally[open.id].length} of ${vote.voters} voted for this.` : null} />,
           ...(open.reservations ? [
             <p key="d-label" className="t-caption c-secondary">{time ? 'Time' : 'Pick a time'}</p>,
             <div key="d-times" className="chip-row">{open.times.map((t) => <Chip key={t} className="chip--time" variant={t === time ? 'selected' : 'neutral'} onClick={() => setTime(t)}>{t}</Chip>)}</div>,

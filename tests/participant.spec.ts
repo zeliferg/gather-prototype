@@ -56,16 +56,31 @@ test('participant spine: invite to the morning after, including dropping out and
   // v2: ~8s after joining everyone's in and a text opens the vote; the card becomes the three places.
   await expect(page.getByRole('status')).toContainText('Time to vote', { timeout: 15_000 });
   await page.getByRole('status').click();
-  await expect(page.getByRole('heading', { name: 'Pick your favourite' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Heretík' })).toHaveAttribute('aria-pressed', 'false');
-  await page.getByRole('button', { name: 'Heretík' }).click();
+  // 6 Oct 2026: the card is a door to the places; the guest reads about a place and votes from its detail.
+  await expect(page.getByRole('heading', { name: 'Time to vote' })).toBeVisible();
+  await expect(page.getByText('Booked')).toHaveCount(0); // nothing is booked until this guest has voted
+  await page.getByRole('button', { name: 'Browse locations' }).click();
+  await expect(page.getByRole('heading', { name: '3 places that work' })).toBeVisible();
+  await expect(page.getByText('Reserve on')).toHaveCount(0); // booking is the host's business
+  await page.getByRole('button', { name: 'Heretík', exact: true }).click();
+  const heretik = page.getByRole('dialog', { name: 'Heretík' });
+  await expect(heretik.getByText('1 of 4 voted for this.')).toBeVisible();
+  await heretik.getByRole('button', { name: 'Vote for this spot' }).click();
+  await expect(page.getByRole('heading', { name: 'You voted for Heretík' })).toBeVisible(); // the first vote's success screen
+  await page.getByRole('button', { name: 'Back to the party' }).click();
   await expect(page.getByRole('heading', { name: 'Your vote is in' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Heretík' })).toHaveAttribute('aria-pressed', 'true');
-  await expect(page.getByRole('button', { name: 'Heretík' })).toContainText('2 of 4 votes · yours'); // the others split 1/1/1
+  await expect(page.getByText('2 of 4 votes · yours')).toBeVisible(); // the others split 1/1/1
   await expect(page.getByText('4 of 4 have voted')).toBeVisible();
-  await page.getByRole('button', { name: 'MAKfam' }).click(); // changing your mind moves the vote
-  await expect(page.getByRole('button', { name: 'MAKfam' })).toContainText('2 of 4 votes · yours');
-  await page.getByRole('button', { name: 'Heretík' }).click();
+  // Changing your mind goes back through the places and straight home, no success screen the second time
+  await page.getByRole('button', { name: 'Changed your mind?' }).click();
+  await page.getByRole('button', { name: 'MAKfam', exact: true }).click();
+  await page.getByRole('dialog', { name: 'MAKfam' }).getByRole('button', { name: 'Vote for this spot' }).click();
+  await expect(page.getByRole('heading', { name: 'Your vote is in' })).toBeVisible();
+  await expect(page.getByText('MAKfam')).toBeVisible();
+  await page.getByRole('button', { name: 'Changed your mind?' }).click();
+  await page.getByRole('button', { name: 'Heretík', exact: true }).click();
+  await page.getByRole('dialog', { name: 'Heretík' }).getByRole('button', { name: 'Vote for this spot' }).click();
+  await expect(page.getByText('2 of 4 votes · yours')).toBeVisible();
 
   // The host books on its own ~15s after the vote: the winner, with a banner on whatever screen; the page flips to Booked.
   await expect(page.getByRole('status')).toContainText('Jordan picked a spot', { timeout: 25_000 });

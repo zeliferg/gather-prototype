@@ -15,7 +15,7 @@ import { PermissionDialog } from '../../components/PermissionDialog';
 import { Chevron, ExternalLink, Info } from '../../components/icons';
 import { MenuList } from '../../components/MenuList';
 import { PickerField } from '../../components/PickerField';
-import { party, permissionBody, radiusOptions, restaurants, type RestaurantId } from '../../fixtures';
+import { party, permissionBody, radiusOptions, restaurants } from '../../fixtures';
 import { useGuestList } from '../../guest';
 import { usePrototypeState } from '../../state';
 import { useGuestVote } from '../../useVote';
@@ -39,8 +39,9 @@ export function PWaiting() {
   const r = restaurants.find((x) => x.id === state.selectedRestaurant)!;
   const booked = state.guestBooked;
   const vote = useGuestVote();
-  // v2: tapping a row casts (or changes) the vote at once; the host books BOOKING_DELAY_MS after the first one.
-  const cast = (id: RestaurantId) => update({ vote: id, votedAt: state.votedAt ?? Date.now() });
+  // v2 (6 Oct 2026): the vote is cast from the places (P 7 → P 7c); here the card only opens that door, then
+  // collapses to the guest's pick. The host books BOOKING_DELAY_MS after the first vote, never before.
+  const myPick = restaurants.find((x) => x.id === state.vote);
 
   // The success screen's "View the details" lands here with the restaurant drawer up; the map screen's Save
   // lands here with the Your info drawer reopened.
@@ -80,25 +81,27 @@ export function PWaiting() {
             <Button variant="secondary" onClick={() => setCalendar(true)}>Add to calendar</Button>
           </div>
         </div>
-      ) : vote.open ? (
-        /* v2: the vote. One tap per row casts it; the rows then show how the group is leaning. */
+      ) : vote.open && myPick ? (
+        /* Your vote is in: the card collapses to your pick; changing it goes back through the places */
         <div className="card vote-card">
-          <div className="card__head"><h2 className="t-heading">{state.vote ? 'Your vote is in' : 'Pick your favourite'}</h2>{state.vote && <Chip variant="success" className="chip--sm chip--swap">Your vote</Chip>}</div>
-          <p className="t-secondary c-secondary">{state.vote ? `${vote.arrived} of ${vote.voters} have voted. ${party.hostFirst} books once everyone has, and has the last say.` : `Everyone's in, so here are 3 places that work for the whole group. ${party.hostFirst} has the last say.`}</p>
-          <div className="stack" style={{ gap: 0 }}>
-            {vote.ranked.map((p) => (
-              <button key={p.id} className="vote-row" onClick={() => cast(p.id)} aria-pressed={state.vote === p.id} aria-label={p.name}>
-                <span className="place-row__thumb"><img src={p.photo} alt="" /></span>
-                <span className="stack" style={{ gap: 2, minWidth: 0, flex: 1 }}>
-                  <span className="t-body-med ellipsis">{p.name}</span>
-                  <span className="t-caption c-secondary">{p.cuisine} · {p.reservations ? 'Reserve' : 'Walk-in'}</span>
-                  {state.vote && <VoteLine count={vote.tally[p.id].length} total={vote.voters} mine={state.vote === p.id} />}
-                </span>
-                <span className={`radio ${state.vote === p.id ? 'radio--on' : ''}`} aria-hidden />
-              </button>
-            ))}
+          <div className="card__head"><h2 className="t-heading">Your vote is in</h2><Chip variant="success" className="chip--sm chip--swap">Your vote</Chip></div>
+          <p className="t-secondary c-secondary">{vote.arrived} of {vote.voters} have voted. {party.hostFirst} books once everyone has, and has the last say.</p>
+          <div className="vote-pick" key={myPick.id}>
+            <span className="place-row__thumb"><img src={myPick.photo} alt="" /></span>
+            <span className="stack" style={{ gap: 2, minWidth: 0, flex: 1 }}>
+              <span className="t-body-med ellipsis">{myPick.name}</span>
+              <span className="t-caption c-secondary">{myPick.cuisine}</span>
+              <VoteLine count={vote.tally[myPick.id].length} total={vote.voters} mine />
+            </span>
           </div>
-          {state.vote && <p className="t-caption c-secondary">Changed your mind? Tap another place.</p>}
+          <button className="link t-label" style={{ alignSelf: 'flex-start' }} onClick={() => navigate('/p/places')}>Changed your mind?</button>
+        </div>
+      ) : vote.open ? (
+        /* Time to vote: one door to the places, where the guest reads about each before voting */
+        <div className="card vote-card">
+          <div className="card__head"><h2 className="t-heading">Time to vote</h2></div>
+          <p className="t-secondary c-secondary">Everyone's in, so here are 3 places that work for the whole group. Have a look and vote for your favourite. {party.hostFirst} has the last say.</p>
+          <Button variant="secondary" inline className="btn--sm" style={{ alignSelf: 'flex-start' }} onClick={() => navigate('/p/places')}>Browse locations</Button>
         </div>
       ) : (
         <div className="card card--tint">

@@ -11,16 +11,18 @@ type Props = {
   onPick: (time: string) => void;
   onOpen: () => void;
   /** v2, vote mode: who voted for this place, out of how many voters; `leading` swaps the tag for "Most votes";
-   *  `mine` marks the host's own favourite and `onVote` casts or moves it */
-  vote?: { voters: Guest[]; total: number; leading: boolean; mine: boolean; onVote: () => void };
+   *  `mine` marks the host's own favourite and `onVote` casts or moves it (no `onVote`: no chip, the vote is cast elsewhere) */
+  vote?: { voters: Guest[]; total: number; leading: boolean; mine?: boolean; onVote?: () => void };
+  /** the guest's card (P 7, 6 Oct 2026): no time slots and nothing about booking, which is the host's business */
+  guest?: boolean;
 };
 
-export function RestaurantCard({ restaurant: r, index, picked, onPick, onOpen, vote }: Props) {
+export function RestaurantCard({ restaurant: r, index, picked, onPick, onOpen, vote, guest }: Props) {
   const tag = vote ? (vote.leading ? { label: 'Most votes', best: true } : { label: 'Great spot', best: false }) : spotTag(index);
   return (
     <div className="rcard">
       <button className="rcard__main" onClick={onOpen} aria-label={r.name}>
-        <div className="rcard__photo"><img src={r.photo} alt="" /><Chip className="rcard__tag">{r.reservations ? `Reserve on ${r.partner}` : 'Walk-in only'}</Chip></div>
+        <div className="rcard__photo"><img src={r.photo} alt="" />{!guest && <Chip className="rcard__tag">{r.reservations ? `Reserve on ${r.partner}` : 'Walk-in only'}</Chip>}</div>
         <div className="stack" style={{ padding: '0 4px' }}>
           <Chip variant={tag.best ? 'success' : 'neutral'} className="rcard__fair chip--sm">{tag.label}</Chip>
           {/* The whole card opens the place, so no chevron; in vote mode the share of the vote sits where it was */}
@@ -29,12 +31,12 @@ export function RestaurantCard({ restaurant: r, index, picked, onPick, onOpen, v
         </div>
       </button>
       {/* The host votes like everyone else: one chip per card, outside the opening tap */}
-      {vote && (
+      {vote?.onVote && (
         <div style={{ padding: '0 4px' }}>
           <Chip variant={vote.mine ? 'selected' : 'neutral'} className={vote.mine ? 'chip--swap' : ''} onClick={vote.onVote}>{vote.mine ? '✓ My favourite' : 'Vote for this spot'}</Chip>
         </div>
       )}
-      {r.reservations && (
+      {!guest && r.reservations && (
         <div className="chip-row" style={{ padding: '0 4px 4px' }} role="group" aria-label={`${r.name} times`}>
           {r.times.map((t) => <Chip key={t} className="chip--time" variant={t === picked ? 'selected' : 'neutral'} onClick={() => onPick(t)}>{t}</Chip>)}
         </div>

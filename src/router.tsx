@@ -19,6 +19,8 @@ import { BookingWatcher } from './screens/p/BookingWatcher';
 import { NudgeWatcher } from './screens/org/NudgeWatcher';
 import { VoteWatcher } from './screens/org/VoteWatcher';
 import { PWaiting } from './screens/p/PWaiting';
+import { PPlaces } from './screens/p/PPlaces';
+import { PVoted } from './screens/p/PVoted';
 import { PDropped } from './screens/p/PDropped';
 import { PBooked } from './screens/p/PBooked';
 import { PSmsAfter } from './screens/p/PSmsAfter';
@@ -64,6 +66,8 @@ export const pRoutes: RouteObject[] = [
   { path: '/p/join', element: <PJoinInfo /> },
   { path: '/p/location', element: <PJoin /> },
   { path: '/p/waiting', element: <PWaiting /> },
+  { path: '/p/places', element: <PPlaces /> },
+  { path: '/p/voted', element: <PVoted /> },
   { path: '/p/booked', element: <PBooked /> },
   { path: '/p/dropped', element: <PDropped /> },
   { path: '/p/sms-after', element: <PSmsAfter /> },
