@@ -3,7 +3,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Screen } from '../../components/Screen';
 import { Button } from '../../components/Button';
-import { Check } from '../../components/icons';
+import { Check, Close } from '../../components/icons';
 import { party, restaurants, shortlist } from '../../fixtures';
 import { usePrototypeState } from '../../state';
 
@@ -12,7 +12,7 @@ export function PVoted() {
   const [state] = usePrototypeState();
   const r = restaurants.find((x) => x.id === state.vote) ?? shortlist[0];
   return (
-    <Screen className="landing" footer={<>
+    <Screen className="landing" right={<button className="icon-btn icon-btn--right" aria-label="Close" onClick={() => navigate('/p/waiting')}><Close /></button>} footer={<>
       <Button onClick={() => navigate('/p/waiting')}>Back to the party</Button>
       <Button variant="ghost" onClick={() => navigate('/p/places')}>Changed your mind?</Button>
     </>}>

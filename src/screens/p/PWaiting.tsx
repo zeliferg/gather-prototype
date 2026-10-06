@@ -13,8 +13,9 @@ import { ActionSheet } from '../../components/ActionSheet';
 import { GuestRow } from '../../components/GuestRow';
 import { PermissionDialog } from '../../components/PermissionDialog';
 import { LocationPicker } from '../../components/LocationPicker';
-import { Chevron, ExternalLink, Info } from '../../components/icons';
+import { Chevron, Info } from '../../components/icons';
 import { MenuList } from '../../components/MenuList';
+import { PlaceDetails } from '../../components/PlaceDetails';
 import { PickerField } from '../../components/PickerField';
 import { party, permissionBody, radiusOptions, restaurants } from '../../fixtures';
 import { useGuestList } from '../../guest';
@@ -142,16 +143,16 @@ export function PWaiting() {
         <Button onClick={useLocation_}>Use this location</Button>
       </Sheet>
 
-      {/* P 9 — the booking in a few plain lines (as the host's details drawer), then the menu as its own step */}
-      <Sheet open={details === 'info'} onClose={() => setDetails('closed')} title={r.name} subtitle={r.cuisine}>
-        <div className="stack" style={{ gap: 4 }}>
-          <p className="t-body-med">{party.dateLong} at {state.selectedTime}</p>
-          <p className="t-secondary c-secondary">Table for {party.size} · {r.reservations ? `Booked under ${party.hostFirst}'s name` : 'Walk-in, so arrive together'}</p>
-          <p className="t-secondary c-secondary">{r.address} · {r.neighborhood}</p>
-          <p className="t-secondary c-secondary">{r.hours}</p>
+      {/* P 9 — the place as the vote page shows it (photo, tag, address, hours, rating, Website), with the booking as
+          its extra line; the actions at the foot are Directions and the menu (6 Oct 2026) */}
+      <Sheet open={details === 'info'} onClose={() => setDetails('closed')} title={r.name} subtitle={r.cuisine} tall>
+        <div className="rcard__photo rcard__photo--tall"><img src={r.photo} alt="" /></div>
+        <PlaceDetails restaurant={r} tag={{ label: vote.leader === r.id ? 'Won the vote' : `${party.hostFirst}'s pick`, best: true }}
+          line={`${party.dateLong} at ${state.selectedTime} · Table for ${party.size} · ${r.reservations ? `Booked under ${party.hostFirst}'s name` : 'Walk-in, so arrive together'}`} />
+        <div className="sheet__actions">
+          <Button onClick={() => { setDetails('closed'); setDirections(true); }}>Directions</Button>
+          <Button variant="ghost" onClick={() => setDetails('menu')}>See full menu</Button>
         </div>
-        <a className="link t-label hstack" style={{ gap: 4, alignSelf: 'flex-start' }} href={r.website} target="_blank" rel="noreferrer">Website <ExternalLink size={16} /></a>
-        <Button variant="secondary" onClick={() => setDetails('menu')}>See full menu</Button>
       </Sheet>
       <Sheet open={details === 'menu'} onClose={() => setDetails('closed')} title={r.name} subtitle="Menu">
         <MenuList menu={r.menu} />

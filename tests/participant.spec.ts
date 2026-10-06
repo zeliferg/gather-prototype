@@ -94,7 +94,7 @@ test('participant spine: invite to the morning after, including dropping out and
   await expect(page.getByText('It won the vote.')).toBeVisible();
   await page.getByRole('button', { name: 'View the details' }).click();
   await expect(page.getByText('Booked', { exact: true })).toBeVisible(); // the party page's Booked chip (the drawer also says "Booked under…")
-  await expect(page.getByText('Won the vote')).toBeVisible();
+  await expect(page.locator('.screen__body').getByText('Won the vote')).toBeVisible(); // the card's tag (the drawer repeats it)
 
   // P 3b with the restaurant drawer open (P 9's content lives in this drawer now).
   const details = page.getByRole('dialog', { name: 'Heretík' });

@@ -1,7 +1,7 @@
 // v2: once everyone's in and the host chose "Everyone votes", the guests' votes arrive one per
 // VOTE_TICK_MS on whatever host screen is open. When the last one lands, a Gather banner says so;
 // it stays until closed and tapping it opens the vote (ORG 6).
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Notification } from '../../components/Notification';
 import { restaurants, VOTE_TICK_MS } from '../../fixtures';
@@ -13,6 +13,14 @@ export function VoteWatcher() {
   const [state, update] = usePrototypeState();
   const { on, allIn, arrived, voters, expected, leader } = useHostVote();
   const live = on && state.everyoneIn && !state.booked;
+  // Everyone's in and ORG 5 is arriving in the same instant; the banner waits a beat so it lands on ORG 5
+  // rather than being swept away by that navigation (banners close on route change).
+  const [openBeat, setOpenBeat] = useState(false);
+  useEffect(() => {
+    if (!live || allIn || state.voteOpenTold) { setOpenBeat(false); return; }
+    const t = setTimeout(() => setOpenBeat(true), 800);
+    return () => clearTimeout(t);
+  }, [live, allIn, state.voteOpenTold]);
 
   useEffect(() => {
     if (!live || allIn) return;
@@ -25,9 +33,9 @@ export function VoteWatcher() {
   return (
     <>
       {/* The moment the vote opens: everyone's in and the group is picking; the host watches, then picks */}
-      <Notification open={live && !allIn && !state.voteOpenTold} onClose={() => update({ voteOpenTold: true })} app="Gather" closeButton closeLabel="Dismiss vote open"
+      <Notification open={openBeat && live && !allIn && !state.voteOpenTold} onClose={() => update({ voteOpenTold: true })} app="Gather" closeButton closeLabel="Dismiss vote open"
         onTap={() => navigate('/org/options')} text="Everyone's in! The group is picking a favourite now. See the places and how it's going." />
-      <Notification open={live && allIn && expected > 0 && !state.votesInSeen} onClose={() => update({ votesInSeen: true })} app="Gather" autoHideMs={0} closeButton closeLabel="Dismiss votes"
+      <Notification open={live && allIn && expected > 0 && !state.votesInSeen} onClose={() => update({ votesInSeen: true })} app="Gather" closeButton closeLabel="Dismiss votes"
         onTap={() => navigate('/org/options')} text={text} />
     </>
   );

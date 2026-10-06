@@ -25,7 +25,7 @@ export function NudgeWatcher() {
 
   const dismiss = () => update({ nudgeDismissed: true });
   return (
-    <Notification open={armed && due} onClose={dismiss} onTap={() => navigate('/org/hub', { state: { everyone: true } })} app="Gather" autoHideMs={0} closeButton closeLabel="Dismiss reminder"
+    <Notification open={armed && due} onClose={dismiss} onTap={() => navigate('/org/hub', { state: { everyone: true } })} app="Gather" closeButton closeLabel="Dismiss reminder"
       text={`Waiting on ${waiting} ${waiting === 1 ? 'person' : 'people'} to add where they're coming from. Once they're in, you'll see places that work for everyone.`} />
   );
 }

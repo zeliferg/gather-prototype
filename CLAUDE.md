@@ -37,7 +37,7 @@ Vite 6 + React 19 + TypeScript (strict), react-router-dom 6, plain CSS.
   booked, which lands on ORG 0 Landing (P 1 lost its link on 23 Sep 2026).
 - `src/components/` — primitives (`Screen`, `Button`, `Chip`, `Input`,
   `Avatar`, `Segmented`, `CodeInput`), overlays (`Sheet`, `ActionSheet`,
-  `PermissionDialog`, `Notification` — all portal to `document.body`,
+  `PermissionDialog`, `Notification` (every banner leaves after 5 s or as soon as the route changes, since 6 Oct 2026) — all portal to `document.body`,
   animated via `usePresence` (two rAFs so the off-screen start state is
   painted before the slide), marked `inert` + `aria-hidden` while exiting),
   `SmsScreen`, `MapView` (Leaflet + OpenStreetMap raster tiles, desaturated

@@ -148,7 +148,7 @@ export function OrgHub() {
         </button>
       </div>
       {/* The host's own preferences and who picks the spot (v2) live in Edit details, with their location: no cards for them */}
-      <Notification open={invited !== null} onClose={closeInvited} app="Gather" autoHideMs={0} closeButton text={`Invite sent to ${invited ?? ''}. They'll get a text with the link.`} />
+      <Notification open={invited !== null} onClose={closeInvited} app="Gather" closeButton text={`Invite sent to ${invited ?? ''}. They'll get a text with the link.`} />
 
       {/* ORG 4c: tap a guest for their actions; anyone who can't make it sits in their own group. Adding someone by hand lives here (ORG 4b). */}
       <Sheet open={everyone} onClose={() => { setEveryone(false); update({ remindedIds: [] }); }} title="Guests" subtitle={sheetLine}>

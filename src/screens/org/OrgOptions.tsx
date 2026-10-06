@@ -88,7 +88,7 @@ export function OrgOptions() {
         {open && step !== 'menu' && <div key="photo" className="rcard__photo rcard__photo--tall"><img src={open.photo} alt="" /></div>}
         {open && step === 'menu' && [<MenuList key="m-list" menu={open.menu} />, <Button key="m-back" variant="ghost" onClick={() => setStep('detail')}>Back</Button>]}
         {open && step === 'detail' && [
-          <PlaceDetails key="d-details" restaurant={open} tag={tag} bookingWords voteLine={vote.on ? `${vote.tally[open.id].length} of ${vote.voters} voted for this.` : null} />,
+          <PlaceDetails key="d-details" restaurant={open} tag={tag} bookingWords line={vote.on ? `${vote.tally[open.id].length} of ${vote.voters} voted for this.` : null} />,
           ...(open.reservations ? [
             <p key="d-label" className="t-caption c-secondary">{time ? 'Time' : 'Pick a time'}</p>,
             <div key="d-times" className="chip-row">{open.times.map((t) => <Chip key={t} className="chip--time" variant={t === time ? 'selected' : 'neutral'} onClick={() => setTime(t)}>{t}</Chip>)}</div>,

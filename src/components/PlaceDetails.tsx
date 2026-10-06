@@ -8,20 +8,20 @@ import { ExternalLink, Star } from './icons';
 type Props = {
   restaurant: Restaurant;
   tag: { label: string; best: boolean };
-  /** e.g. "1 of 4 voted for this." (vote mode only) */
-  voteLine?: string | null;
+  /** one more secondary line: how the vote stands, or the booking ("Friday… · Table for 5 · Booked under…") */
+  line?: string | null;
   /** host side: a walk-in place says so next to its hours */
   bookingWords?: boolean;
 };
 
-export function PlaceDetails({ restaurant: r, tag, voteLine, bookingWords }: Props) {
+export function PlaceDetails({ restaurant: r, tag, line, bookingWords }: Props) {
   return (
     <>
       <div className="stack" style={{ gap: 6 }}>
         <Chip variant={tag.best ? 'success' : 'neutral'} className="rcard__fair chip--sm">{tag.label}</Chip>
         <p className="t-body">{r.address} · {r.neighborhood}</p>
         <p className="t-secondary c-secondary">{r.hours}{bookingWords && !r.reservations ? ' · Walk-in only' : ''}</p>
-        {voteLine && <p className="t-secondary c-secondary">{voteLine}</p>}
+        {line && <p className="t-secondary c-secondary">{line}</p>}
       </div>
       {/* What most people check first: the rating, and a way out to the place's own site */}
       <div className="row rating">

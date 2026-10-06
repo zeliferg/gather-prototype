@@ -51,23 +51,26 @@ export function PPlaces() {
         ? shortlist.map((r, i) => <RestaurantCard key={r.id} guest restaurant={r} index={i} picked={null} onPick={() => {}} onOpen={() => openPlace(r.id)}
             vote={{ voters: vote.votersOf(r.id), total: vote.voters, leading: vote.leader === r.id }} />)
         : <MapView mode="options" height={620} onSelectPin={openPlace} places={shortlist} />}
-      <Sheet open={sheetOpen} onClose={() => setSheetOpen(false)} title={open.name} subtitle={step === 'menu' ? 'Menu' : open.cuisine}>
+      <Sheet open={sheetOpen} onClose={() => setSheetOpen(false)} title={open.name} subtitle={step === 'menu' ? 'Menu' : open.cuisine} tall={step === 'detail'}>
         {step === 'detail' && [
           /* One page per place: swipe sideways to compare them without going back to the list */
           <div key="pager" ref={pagerRef} className="pager" onScroll={onPage}>
             {shortlist.map((r) => (
               <div key={r.id} className="pager__page">
                 <div className="rcard__photo rcard__photo--tall"><img src={r.photo} alt="" /></div>
-                <PlaceDetails restaurant={r} tag={tagFor(r.id)} voteLine={`${vote.tally[r.id].length} of ${vote.voters} voted for this.`} />
+                <PlaceDetails restaurant={r} tag={tagFor(r.id)} line={`${vote.tally[r.id].length} of ${vote.voters} voted for this.`} />
               </div>
             ))}
           </div>,
           <div key="dots" className="dots" aria-hidden>{shortlist.map((r, i) => <span key={r.id} className={`dot ${i === active ? 'dot--on' : ''}`} />)}</div>,
-          /* One button for every page, so swiping never remounts it: the label and disabled state follow the page in view */
-          <ProgressButton key="cta" idle={state.vote === open.id && !casting ? 'Your vote' : 'Vote for this spot'} disabled={state.vote === open.id && !casting}
-            busy="Casting your vote…" done="Voted" busyMs={900}
-            onStart={() => { firstVote.current = state.vote === null; setCasting(true); }} onBusyEnd={cast} onDone={finish} />,
-          <Button key="menu" variant="ghost" onClick={() => setStep('menu')}>See full menu</Button>,
+          /* The actions sit at the foot of the sheet, where every screen's footer puts its buttons. One Vote button for
+             every page, so swiping never remounts it: its label and disabled state follow the page in view. */
+          <div key="actions" className="sheet__actions">
+            <ProgressButton idle={state.vote === open.id && !casting ? 'Your vote' : 'Vote for this spot'} disabled={state.vote === open.id && !casting}
+              busy="Casting your vote…" done="Voted" busyMs={900}
+              onStart={() => { firstVote.current = state.vote === null; setCasting(true); }} onBusyEnd={cast} onDone={finish} />
+            <Button variant="ghost" onClick={() => setStep('menu')}>See full menu</Button>
+          </div>,
         ]}
         {step === 'menu' && [<MenuList key="m-list" menu={open.menu} />, <Button key="m-back" variant="ghost" onClick={() => setStep('detail')}>Back</Button>]}
       </Sheet>

@@ -36,5 +36,5 @@ export function BookingWatcher() {
   }, [bookDue, state.votedAt, winner, update, navigate]);
 
   const text = sms.voteOpen;
-  return <Notification open={banner !== null} onClose={close} onTap={() => navigate('/p/waiting')} autoHideMs={8000} text={`${text.text} ${text.link}`} />;
+  return <Notification open={banner !== null} onClose={close} onTap={() => navigate('/p/waiting')} text={`${text.text} ${text.link}`} />;
 }
