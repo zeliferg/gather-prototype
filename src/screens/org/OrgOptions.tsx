@@ -83,7 +83,7 @@ export function OrgOptions() {
           <Button variant="secondary" onClick={() => setShowMore(true)}>Show {moreRestaurants.length} more places</Button>
         </div>
       )}
-      <Sheet open={sheetOpen} onClose={close} title={title} subtitle={subtitle}>
+      <Sheet open={sheetOpen} onClose={close} title={title} subtitle={subtitle} actions={step !== 'menu'}>
         {/* The photo stays across both steps; everything after it is keyed by step so it fades in fresh. */}
         {open && step !== 'menu' && <div key="photo" className="rcard__photo rcard__photo--tall"><img src={open.photo} alt="" /></div>}
         {open && step === 'menu' && [<MenuList key="m-list" menu={open.menu} />, <Button key="m-back" variant="ghost" onClick={() => setStep('detail')}>Back</Button>]}
@@ -95,8 +95,10 @@ export function OrgOptions() {
           ] : [
             <p key="d-walkin" className="t-secondary c-secondary">No reservations here. The group heads over at {targetTime}, the time you set for the party.</p>,
           ]),
-          <Button key="d-cta" onClick={toConfirm} disabled={open.reservations && !time}>{cta}</Button>,
-          <Button key="d-full" variant="ghost" onClick={() => setStep('menu')}>See full menu</Button>,
+          <div key="d-actions" className="sheet__actions">
+            <Button onClick={toConfirm} disabled={open.reservations && !time}>{cta}</Button>
+            <Button variant="ghost" onClick={() => setStep('menu')}>See full menu</Button>
+          </div>,
         ]}
         {open && step === 'confirm' && open.reservations && [
           <div key="c-info" className="stack" style={{ gap: 4 }}>
@@ -104,8 +106,10 @@ export function OrgOptions() {
             <p className="t-secondary c-secondary">Table for {size} · {open.address}</p>
             {overriding && <p className="t-secondary c-secondary">Most votes went to {lead.name}. Everyone gets a text with your pick.</p>}
           </div>,
-          <ProgressButton key="c-cta" idle="Confirm" busy="Booking your table…" done="Booked" busyMs={1300} onBusyEnd={commit} onDone={finish} />,
-          <Button key="c-back" variant="ghost" onClick={() => setStep('detail')}>Pick another time</Button>,
+          <div key="c-actions" className="sheet__actions">
+            <ProgressButton idle="Confirm" busy="Booking your table…" done="Booked" busyMs={1300} onBusyEnd={commit} onDone={finish} />
+            <Button variant="ghost" onClick={() => setStep('detail')}>Pick another time</Button>
+          </div>,
         ]}
         {open && step === 'confirm' && !open.reservations && [
           <div key="w-info" className="stack" style={{ gap: 4 }}>
@@ -113,8 +117,10 @@ export function OrgOptions() {
             <p className="t-secondary c-secondary">We'll tell the {size} of you to head over then. Arrive together and you'll usually be seated within 15 minutes.</p>
             {overriding && <p className="t-secondary c-secondary">Most votes went to {lead.name}. Everyone gets a text with your pick.</p>}
           </div>,
-          <ProgressButton key="w-cta" idle="Notify everyone" busy="Texting everyone…" done="Everyone's told" busyMs={1300} onBusyEnd={commit} onDone={finish} />,
-          <Button key="w-back" variant="ghost" onClick={() => setStep('detail')}>Back</Button>,
+          <div key="w-actions" className="sheet__actions">
+            <ProgressButton idle="Notify everyone" busy="Texting everyone…" done="Everyone's told" busyMs={1300} onBusyEnd={commit} onDone={finish} />
+            <Button variant="ghost" onClick={() => setStep('detail')}>Back</Button>
+          </div>,
         ]}
       </Sheet>
     </Screen>

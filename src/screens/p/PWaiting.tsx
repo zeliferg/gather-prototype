@@ -46,12 +46,11 @@ export function PWaiting() {
   // collapses to the guest's pick. The host books BOOKING_DELAY_MS after the first vote, never before.
   const myPick = restaurants.find((x) => x.id === state.vote);
 
-  // The success screen's "View the details" lands here with the restaurant drawer up; the map screen's Save
-  // lands here with the Your info drawer reopened.
+  // A caller can land here with the Your info drawer open (location.state.info). The success screen's "View the
+  // details" lands on the page itself (6 Oct 2026): the drawer opens when the guest taps the place.
   useEffect(() => {
-    if (location.state?.details && booked) setDetails('info');
     if (location.state?.info) { setPrefDraft(state.prefs); setInfo(true); }
-  }, [location.state, booked]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [location.state]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const openInfo = () => { setPrefDraft(state.prefs); setInfo(true); };
   // The map is a drawer of its own: Your info steps aside for it and comes back with the new location.
@@ -73,7 +72,10 @@ export function PWaiting() {
       {booked ? (
         /* Same anatomy as the host's booked card: the place's photo with the tags on it, name + (i), two buttons */
         <div className="card">
-          <div className="rcard__photo booked__photo"><img src={r.photo} alt="" /><span className="rcard__tags"><Chip variant="success">Booked</Chip><Chip variant="info">{vote.leader === r.id ? 'Won the vote' : `${party.hostFirst}'s pick`}</Chip></span></div>
+          {/* The place itself opens the details drawer (photo and name), as does the (i) */}
+          <button className="rcard__main" aria-label={`${r.name}, see the details`} onClick={() => setDetails('info')}>
+            <div className="rcard__photo booked__photo"><img src={r.photo} alt="" /><span className="rcard__tags"><Chip variant="success">Booked</Chip><Chip variant="info">{vote.leader === r.id ? 'Won the vote' : `${party.hostFirst}'s pick`}</Chip></span></div>
+          </button>
           <div className="card__head">
             <div className="stack" style={{ gap: 2, minWidth: 0 }}>
               <p className="t-heading">{r.name}</p>

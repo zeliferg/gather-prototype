@@ -96,7 +96,8 @@ test('participant spine: invite to the morning after, including dropping out and
   await expect(page.getByText('Booked', { exact: true })).toBeVisible(); // the party page's Booked chip (the drawer also says "Booked under…")
   await expect(page.locator('.screen__body').getByText('Won the vote')).toBeVisible(); // the card's tag (the drawer repeats it)
 
-  // P 3b with the restaurant drawer open (P 9's content lives in this drawer now).
+  // P 3b; tapping the place (or its (i)) opens the details drawer (P 9's content lives there).
+  await page.getByRole('button', { name: 'See the details', exact: true }).click();
   const details = page.getByRole('dialog', { name: 'Heretík' });
   await expect(details).toBeVisible();
   await expect(details).toContainText("Table for 5 · Booked under Jordan's name");
@@ -111,7 +112,7 @@ test('participant spine: invite to the morning after, including dropping out and
   await page.getByRole('button', { name: 'Google Maps' }).click();
   await page.getByRole('button', { name: 'Add to calendar', exact: true }).click();
   await page.getByRole('button', { name: 'Cancel', exact: true }).click();
-  await page.getByRole('button', { name: 'See the details' }).click();
+  await page.getByRole('button', { name: 'See the details', exact: true }).click();
   await expect(details).toBeVisible();
   await page.getByRole('button', { name: 'Close', exact: true }).click({ position: { x: 10, y: 10 } });
   await page.getByRole('button', { name: 'See everyone', exact: true }).click();
