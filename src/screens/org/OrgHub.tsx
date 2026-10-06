@@ -8,7 +8,7 @@ import { AvatarStack } from '../../components/Avatar';
 import { Sheet } from '../../components/Sheet';
 import { ActionSheet } from '../../components/ActionSheet';
 import { Input } from '../../components/Input';
-import { continueHint, phoneError, requiredError, useTouched } from '../../components/form';
+import { footerHint, phoneError, requiredError, useTouched } from '../../components/form';
 import { EditDetails } from '../../components/EditDetails';
 import { Cover } from '../../components/Cover';
 import { CoverSheet } from '../../components/CoverSheet';
@@ -179,7 +179,7 @@ export function OrgHub() {
       <Sheet open={adding} onClose={() => setAdding(false)} title="Add a guest" subtitle="They'll get a text with the invite link.">
         <Input label="Name" value={newGuest.name} onChange={(v) => setNewGuest({ ...newGuest, name: v })} placeholder="Name" error={t.shown('name', guestFields[0].error)} onBlur={() => t.touch('name')} />
         <Input label="Phone" value={newGuest.phone} onChange={(v) => setNewGuest({ ...newGuest, phone: formatPhone(v) })} type="tel" inputMode="tel" placeholder="(111) 111-1111" error={t.shown('phone', guestFields[1].error)} onBlur={() => t.touch('phone')} />
-        {!guestReady && <p className="form-hint t-caption c-secondary">{continueHint(guestFields)}</p>}
+        {footerHint(guestFields, t.shown) && <p className="form-hint t-caption c-secondary">{footerHint(guestFields, t.shown)}</p>}
         <Button onClick={addGuest} disabled={!guestReady}>Send invite</Button>
         <Button variant="secondary">Choose from contacts</Button>
       </Sheet>

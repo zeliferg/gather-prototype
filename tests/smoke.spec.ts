@@ -55,8 +55,10 @@ test('Create party explains its disabled button and flags a field left unfinishe
   await phone.fill('303555');
   await phone.blur();
   await expect(page.getByRole('alert')).toHaveText('Enter all 10 digits');
+  await expect(page.getByText('to continue')).toHaveCount(0);
   await phone.fill('3035550142');
   await expect(page.getByRole('alert')).toHaveCount(0);
+  await expect(page.getByText('Add your name to continue')).toBeVisible();
 
   await page.getByLabel('Your name').fill('Jordan');
   await expect(page.getByText('Give the party a name to continue')).toBeVisible();

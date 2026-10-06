@@ -5,7 +5,7 @@ import { Screen } from '../../components/Screen';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 import { formatPhone } from '../../components/phone';
-import { codeError, continueHint, phoneError, useTouched } from '../../components/form';
+import { codeError, footerHint, phoneError, useTouched } from '../../components/form';
 import { party } from '../../fixtures';
 import { usePrototypeState } from '../../state';
 
@@ -29,7 +29,7 @@ export function PJoinCode() {
   return (
     <Screen back title="Join with a code" subtitle="Your host has it, or it's in the text they sent you."
       footer={<>
-        {!complete && <p className="form-hint t-caption c-secondary">{continueHint(fields)}</p>}
+        {footerHint(fields, t.shown) && <p className="form-hint t-caption c-secondary">{footerHint(fields, t.shown)}</p>}
         <Button onClick={() => navigate('/p/lobby')} disabled={!complete}>Continue</Button>
       </>}>
       <div className="form">

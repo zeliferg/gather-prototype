@@ -14,7 +14,7 @@ import { WhenSheet } from '../../components/WhenSheet';
 import { whenLabel } from '../../components/when';
 import { Plus } from '../../components/icons';
 import { formatPhone } from '../../components/phone';
-import { continueHint, phoneError, requiredError, useTouched } from '../../components/form';
+import { footerHint, phoneError, requiredError, useTouched } from '../../components/form';
 import { decideOptions, permissionBody, radiusOptions } from '../../fixtures';
 import { usePrototypeState } from '../../state';
 
@@ -52,7 +52,7 @@ export function OrgCreateParty() {
   return (
     <Screen back title="Start a party" subtitle="Everyone else just adds where they're coming from."
       footer={<>
-        {!complete && <p className="form-hint t-caption c-secondary">{continueHint(fields)}</p>}
+        {footerHint(fields, t.shown) && <p className="form-hint t-caption c-secondary">{footerHint(fields, t.shown)}</p>}
         <Button onClick={() => navigate('/org/verify')} disabled={!complete}>Create party</Button>
       </>}>
       <div className="form">

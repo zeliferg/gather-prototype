@@ -24,6 +24,14 @@ export function continueHint(fields: Field[]): string | null {
 }
 
 /**
+ * The hint for the footer: `continueHint`, except while any field is showing its own message, when a
+ * second line saying the same thing is noise. `shown` is `useTouched().shown`.
+ */
+export function footerHint(fields: Field[], shown: (key: string, error: string | null) => string | null): string | null {
+  return fields.some((f) => shown(f.key, f.error)) ? null : continueHint(fields);
+}
+
+/**
  * Which fields the tester has been in and left. A field's message shows only once it is touched,
  * so a form filled top to bottom never flashes red; it clears on its own as soon as the rule passes.
  */

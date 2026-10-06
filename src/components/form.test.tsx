@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { codeError, continueHint, phoneError, requiredError } from './form';
+import { codeError, continueHint, footerHint, phoneError, requiredError } from './form';
 
 describe('field rules', () => {
   it('a required field is fine once it has something other than spaces', () => {
@@ -26,5 +26,15 @@ describe('continueHint', () => {
     expect(continueHint([{ key: 'name', error: null }, { key: 'phone', error: 'Add your phone number' }, { key: 'where', error: 'Set where you are coming from' }]))
       .toBe('Add your phone number to continue');
     expect(continueHint([{ key: 'name', error: null }, { key: 'phone', error: null }])).toBeNull();
+  });
+});
+
+describe('footerHint', () => {
+  const fields = [{ key: 'name', error: 'Add your name' }, { key: 'phone', error: 'Enter all 10 digits' }];
+  it('is the continue hint while no field shows a message of its own', () => {
+    expect(footerHint(fields, () => null)).toBe('Add your name to continue');
+  });
+  it('steps aside while any field is showing its message', () => {
+    expect(footerHint(fields, (key, error) => (key === 'phone' ? error : null))).toBeNull();
   });
 });

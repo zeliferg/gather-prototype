@@ -8,7 +8,7 @@ import { ProgressButton } from './ProgressButton';
 import { GuestRow } from './GuestRow';
 import { Minus, Plus } from './icons';
 import { formatPhone } from './phone';
-import { continueHint, phoneError, requiredError, useTouched } from './form';
+import { footerHint, phoneError, requiredError, useTouched } from './form';
 import { restaurants, tableFits } from '../fixtures';
 import { usePrototypeState, type AddedGuest } from '../state';
 import { useParty } from '../party';
@@ -74,7 +74,7 @@ export function PartySizeSheet({ open, onClose, onConfirmed }: Props) {
           <Input label="Name" value={newGuest.name} onChange={(v) => setNewGuest({ ...newGuest, name: v })} placeholder="Name" error={t.shown('name', guestFields[0].error)} onBlur={() => t.touch('name')} />
           <Input label="Phone" value={newGuest.phone} onChange={(v) => setNewGuest({ ...newGuest, phone: formatPhone(v) })} type="tel" inputMode="tel" placeholder="(111) 111-1111" error={t.shown('phone', guestFields[1].error)} onBlur={() => t.touch('phone')} />
         </div>
-        {!guestReady && <p className="form-hint t-caption c-secondary">{continueHint(guestFields)}</p>}
+        {footerHint(guestFields, t.shown) && <p className="form-hint t-caption c-secondary">{footerHint(guestFields, t.shown)}</p>}
         <Button onClick={addOne} disabled={!guestReady}>Add to the list</Button>
       </Sheet>
 

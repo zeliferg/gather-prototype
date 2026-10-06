@@ -11,7 +11,7 @@ import { PreferencesSheet } from '../../components/Preferences';
 import { PickerField } from '../../components/PickerField';
 import { party, permissionBody, radiusOptions } from '../../fixtures';
 import { usePrototypeState } from '../../state';
-import { continueHint, requiredError, useTouched } from '../../components/form';
+import { footerHint, requiredError, useTouched } from '../../components/form';
 
 export function PJoinInfo() {
   const navigate = useNavigate();
@@ -45,7 +45,7 @@ export function PJoinInfo() {
     <Screen back title={`Join ${party.name}`}
       subtitle="Add where you're coming from so we can find a spot that works for everyone. Nobody sees your exact location."
       footer={<>
-          {!ready && <p className="form-hint t-caption c-secondary">{continueHint(fields)}</p>}
+          {footerHint(fields, t.shown) && <p className="form-hint t-caption c-secondary">{footerHint(fields, t.shown)}</p>}
           {/* Join the party: spinner while "joining", a check, then the party page (same beat as Verify). */}
           <ProgressButton idle="Join the party" busy="Joining…" done="You're in" busyMs={900} disabled={!ready}
             onStart={() => setJoining(true)} onBusyEnd={() => join(false)} onDone={() => navigate('/p/waiting')} />
