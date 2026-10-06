@@ -5,7 +5,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Notification } from '../../components/Notification';
-import { BOOKING_DELAY_MS, VOTE_OPEN_DELAY_MS, restaurants, sms } from '../../fixtures';
+import { BOOKING_DELAY_MS, VOTE_OPEN_DELAY_MS, sms } from '../../fixtures';
 import { usePrototypeState } from '../../state';
 import { useGuestVote } from '../../useVote';
 
@@ -13,7 +13,7 @@ export function BookingWatcher() {
   const navigate = useNavigate();
   const [state, update] = usePrototypeState();
   const { winner } = useGuestVote();
-  const [banner, setBanner] = useState<'vote' | 'booked' | null>(null);
+  const [banner, setBanner] = useState<'vote' | null>(null);
   const close = useCallback(() => setBanner(null), []);
   const joined = state.joined && state.joinedAt !== null;
   const voteDue = joined && state.voteOpenAt === null;
@@ -29,11 +29,12 @@ export function BookingWatcher() {
   useEffect(() => {
     if (!bookDue) return;
     const at = state.votedAt! + BOOKING_DELAY_MS;
-    const t = setTimeout(() => { update({ guestBooked: true, selectedRestaurant: winner, selectedTime: '7:00 PM' }); setBanner('booked'); }, Math.max(0, at - Date.now()));
+    // The booking is a moment of its own: land on P 6 (which drops the "Jordan picked a spot" text over
+    // itself) rather than flipping the party page underneath the guest (6 Oct 2026, the user never saw P 6).
+    const t = setTimeout(() => { update({ guestBooked: true, selectedRestaurant: winner, selectedTime: '7:00 PM' }); navigate('/p/booked'); }, Math.max(0, at - Date.now()));
     return () => clearTimeout(t);
-  }, [bookDue, state.votedAt, winner, update]);
+  }, [bookDue, state.votedAt, winner, update, navigate]);
 
-  const place = restaurants.find((r) => r.id === state.selectedRestaurant)!.name;
-  const text = banner === 'vote' ? sms.voteOpen : sms.spotConfirmed(place);
-  return <Notification open={banner !== null} onClose={close} onTap={() => navigate(banner === 'vote' ? '/p/waiting' : '/p/booked')} autoHideMs={8000} text={`${text.text} ${text.link}`} />;
+  const text = sms.voteOpen;
+  return <Notification open={banner !== null} onClose={close} onTap={() => navigate('/p/waiting')} autoHideMs={8000} text={`${text.text} ${text.link}`} />;
 }

@@ -63,10 +63,10 @@ export function PPlaces() {
             ))}
           </div>,
           <div key="dots" className="dots" aria-hidden>{shortlist.map((r, i) => <span key={r.id} className={`dot ${i === active ? 'dot--on' : ''}`} />)}</div>,
-          state.vote === open.id && !casting
-            ? <Button key={`mine-${open.id}`} disabled>Your vote</Button>
-            : <ProgressButton key={`cta-${open.id}`} idle="Vote for this spot" busy="Casting your vote…" done="Voted" busyMs={900}
-                onStart={() => { firstVote.current = state.vote === null; setCasting(true); }} onBusyEnd={cast} onDone={finish} />,
+          /* One button for every page, so swiping never remounts it: the label and disabled state follow the page in view */
+          <ProgressButton key="cta" idle={state.vote === open.id && !casting ? 'Your vote' : 'Vote for this spot'} disabled={state.vote === open.id && !casting}
+            busy="Casting your vote…" done="Voted" busyMs={900}
+            onStart={() => { firstVote.current = state.vote === null; setCasting(true); }} onBusyEnd={cast} onDone={finish} />,
           <Button key="menu" variant="ghost" onClick={() => setStep('menu')}>See full menu</Button>,
         ]}
         {step === 'menu' && [<MenuList key="m-list" menu={open.menu} />, <Button key="m-back" variant="ghost" onClick={() => setStep('detail')}>Back</Button>]}

@@ -161,8 +161,9 @@ Preferences sheet, Join disabled until a location is saved) → the map as a dra
 + "Use this location", like the host's; `/p/location` is gone since 6 Oct 2026) → P 3b. P 3b's Edit opens a
 Your info drawer (location row → the map drawer, Your info comes back with it; preference chips inline). The host
 "books" `BOOKING_DELAY_MS` (15 s) after the guest joins: `BookingWatcher`,
-mounted by `RouteShell` on guest routes, flips `guestBooked` and drops the
-banner on whatever screen is open; tapping it opens `PBooked`.
+mounted by `RouteShell` on guest routes, flips `guestBooked` and lands the guest on `PBooked` (P 6), which
+drops the "Jordan picked a spot" banner over itself; "View the details" leads on to P 3b (since 6 Oct 2026:
+flipping the party page underneath meant the guest never saw P 6).
 ORG 12 (host morning-after text) has no in-app link since 21 Sep 2026: reach
 it by `/org/sms-after`. Resend code is live: the link reports progress, a
 Messages banner brings a second code, the boxes refill. ORG 6 card time chips

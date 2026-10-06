@@ -87,15 +87,14 @@ test('participant spine: invite to the morning after, including dropping out and
   await page.getByRole('dialog', { name: 'Heretík' }).getByRole('button', { name: 'Vote for this spot' }).click();
   await expect(page.getByText('2 of 4 votes')).toBeVisible();
 
-  // The host books on its own ~15s after the vote: the winner, with a banner on whatever screen; the page flips to Booked.
-  await expect(page.getByRole('status')).toContainText('Jordan picked a spot', { timeout: 25_000 });
+  // The host books on its own ~15s after the vote: the guest lands on P 6 (the winner), with the text as a banner over it.
+  await expect(page.getByRole('heading', { name: 'Jordan booked a spot' })).toBeVisible({ timeout: 25_000 });
+  await expect(page.getByRole('status')).toContainText('Jordan picked a spot');
   await expect(page.getByRole('status')).toContainText('Heretík');
-  await expect(page.getByText('Booked')).toBeVisible();
-  await expect(page.getByText('Won the vote')).toBeVisible();
-  await page.getByRole('status').click();
-  await expect(page.getByRole('heading', { name: 'Jordan booked a spot' })).toBeVisible();
   await expect(page.getByText('It won the vote.')).toBeVisible();
   await page.getByRole('button', { name: 'View the details' }).click();
+  await expect(page.getByText('Booked', { exact: true })).toBeVisible(); // the party page's Booked chip (the drawer also says "Booked under…")
+  await expect(page.getByText('Won the vote')).toBeVisible();
 
   // P 3b with the restaurant drawer open (P 9's content lives in this drawer now).
   const details = page.getByRole('dialog', { name: 'Heretík' });
