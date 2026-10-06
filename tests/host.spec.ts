@@ -239,7 +239,7 @@ test('organizer spine: landing to the morning after', async ({ page }) => {
   await expect(told).toHaveCount(0);
   await expect(page.locator('.booked__photo img')).toBeVisible();
   await expect(page.locator('.booked__photo')).toContainText('Booked');
-  await page.getByRole('button', { name: 'Reservation details' }).click();
+  await page.getByRole('button', { name: 'Reservation details', exact: true }).click();
   const booking = page.getByRole('dialog', { name: 'Alma Fonda Fina' });
   await expect(booking).toContainText('Table for 6 · Booked on OpenTable');
   await expect(booking).toContainText('2556 15th St · LoHi');

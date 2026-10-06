@@ -13,8 +13,9 @@ import { Sheet } from '../../components/Sheet';
 import { EditDetails } from '../../components/EditDetails';
 import { ChangeReservationSheet } from '../../components/ChangeReservationSheet';
 import { PartySizeSheet } from '../../components/PartySizeSheet';
-import { Chevron, ExternalLink, Info } from '../../components/icons';
+import { Chevron, Info } from '../../components/icons';
 import { MenuList } from '../../components/MenuList';
+import { PlaceDetails } from '../../components/PlaceDetails';
 import { restaurants, sms } from '../../fixtures';
 import { usePrototypeState, type CoverChoice } from '../../state';
 import { useParty } from '../../party';
@@ -50,7 +51,10 @@ export function OrgParty() {
       </div>
       {/* The booked place looks like a place: its photo with the Booked tag on it, the name, and an (i) for the rest */}
       <div className="card">
-        <div className="rcard__photo booked__photo"><img src={r.photo} alt="" /><Chip variant="success" className="rcard__tag">{r.reservations ? 'Booked' : 'Walk-in'}</Chip></div>
+        {/* The place itself opens the details drawer (photo), as does the (i) */}
+        <button className="rcard__main" aria-label={`${r.name}, reservation details`} onClick={() => setDetails('info')}>
+          <div className="rcard__photo booked__photo"><img src={r.photo} alt="" /><Chip variant="success" className="rcard__tag">{r.reservations ? 'Booked' : 'Walk-in'}</Chip></div>
+        </button>
         <div className="card__head">
           <div className="stack" style={{ gap: 2, minWidth: 0 }}>
             <p className="t-heading">{r.name}</p>
@@ -84,16 +88,16 @@ export function OrgParty() {
       <Notification open={told && !banner} onClose={closeTold} app="Gather" closeButton closeLabel="Dismiss"
         text={r.reservations ? `${name} is on: ${r.name}, ${dateShort} at ${state.selectedTime}, table for ${size}. Everyone got a text with the details.` : `${name} is on: ${r.name}, ${dateShort} at ${state.selectedTime}. Everyone got a text to head over then.`} />
       <Notification open={banner} onClose={closeBanner} text={`${sms.reservationChanged(name).text} ${r.name}, ${dateShort} at ${state.selectedTime}, table for ${size}. Details: ${sms.reservationChanged(name).link}`} />
-      {/* The (i): the booking in a few plain lines, the way a confirmation reads, then the menu as its own step */}
-      <Sheet open={details === 'info'} onClose={() => setDetails('closed')} title={r.name} subtitle={r.cuisine}>
-        <div className="stack" style={{ gap: 4 }}>
-          <p className="t-body-med">{dateLong} at {state.selectedTime}</p>
-          <p className="t-secondary c-secondary">Table for {size}{r.reservations ? ` · Booked on ${r.partner}` : ' · Walk-in'}</p>
-          <p className="t-secondary c-secondary">{r.address} · {r.neighborhood}</p>
-          <p className="t-secondary c-secondary">{r.hours}</p>
+      {/* The (i): the place as ORG 6c shows it (photo, tag, address, hours, rating, Website), with the booking as its
+          extra line; Directions and the menu at the foot (6 Oct 2026, the same anatomy as the guest's P 9) */}
+      <Sheet open={details === 'info'} onClose={() => setDetails('closed')} title={r.name} subtitle={r.cuisine} actions>
+        <div className="rcard__photo rcard__photo--tall"><img src={r.photo} alt="" /></div>
+        <PlaceDetails restaurant={r} tag={{ label: r.reservations ? 'Booked' : 'Walk-in', best: true }}
+          line={`${dateLong} at ${state.selectedTime} · Table for ${size}${r.reservations ? ` · Booked on ${r.partner}` : ' · Walk-in'}`} />
+        <div className="sheet__actions">
+          <Button onClick={() => { setDetails('closed'); setDirections(true); }}>Directions</Button>
+          <Button variant="ghost" onClick={() => setDetails('menu')}>See full menu</Button>
         </div>
-        <a className="link t-label hstack" style={{ gap: 4, alignSelf: 'flex-start' }} href={r.website} target="_blank" rel="noreferrer">Website <ExternalLink size={16} /></a>
-        <Button variant="secondary" onClick={() => setDetails('menu')}>See full menu</Button>
       </Sheet>
       <Sheet open={details === 'menu'} onClose={() => setDetails('closed')} title={r.name} subtitle="Menu">
         <MenuList menu={r.menu} />
