@@ -51,7 +51,7 @@ export function PPlaces() {
         ? shortlist.map((r, i) => <RestaurantCard key={r.id} guest restaurant={r} index={i} picked={null} onPick={() => {}} onOpen={() => openPlace(r.id)}
             vote={{ voters: vote.votersOf(r.id), total: vote.voters, leading: vote.leader === r.id }} />)
         : <MapView mode="options" height={620} onSelectPin={openPlace} places={shortlist} />}
-      <Sheet open={sheetOpen} onClose={() => setSheetOpen(false)} title={open.name} subtitle={step === 'menu' ? 'Menu' : open.cuisine} tall={step === 'detail'}>
+      <Sheet open={sheetOpen} onClose={() => setSheetOpen(false)} title={open.name} subtitle={step === 'menu' ? 'Menu' : open.cuisine} actions={step === 'detail'}>
         {step === 'detail' && [
           /* One page per place: swipe sideways to compare them without going back to the list */
           <div key="pager" ref={pagerRef} className="pager" onScroll={onPage}>

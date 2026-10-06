@@ -145,7 +145,7 @@ export function PWaiting() {
 
       {/* P 9 — the place as the vote page shows it (photo, tag, address, hours, rating, Website), with the booking as
           its extra line; the actions at the foot are Directions and the menu (6 Oct 2026) */}
-      <Sheet open={details === 'info'} onClose={() => setDetails('closed')} title={r.name} subtitle={r.cuisine} tall>
+      <Sheet open={details === 'info'} onClose={() => setDetails('closed')} title={r.name} subtitle={r.cuisine} actions>
         <div className="rcard__photo rcard__photo--tall"><img src={r.photo} alt="" /></div>
         <PlaceDetails restaurant={r} tag={{ label: vote.leader === r.id ? 'Won the vote' : `${party.hostFirst}'s pick`, best: true }}
           line={`${party.dateLong} at ${state.selectedTime} · Table for ${party.size} · ${r.reservations ? `Booked under ${party.hostFirst}'s name` : 'Walk-in, so arrive together'}`} />

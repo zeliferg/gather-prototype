@@ -366,9 +366,10 @@ button.card__action:active { background: var(--border-hairline); transform: scal
 /* P 3b once voted: the card's one row is your pick (no radio, it isn't a choice here any more) */
 .vote-pick { display: flex; align-items: center; gap: 12px; animation: fade-in var(--dur-base) var(--ease-out) both; }
 .btn--sm { min-height: 44px; font-size: 15px; padding: 0 18px; }
-/* A sheet that stands as tall as it may, so its actions line up with screen footers' buttons (P 7c, 6 Oct 2026) */
-.sheet--tall { height: 88%; padding-bottom: max(var(--space-6), calc(var(--space-2) + env(safe-area-inset-bottom, 0px))); }
-.sheet__actions { display: flex; flex-direction: column; gap: var(--space-2); margin-top: auto; flex: none; }
+/* A sheet whose last block is a pair of buttons (P 7c, P 9): footer spacing below them, and the sheet hugs its
+   content, so it is only as tall as what is in it (6 Oct 2026: forcing it to full height left a hole on tall phones) */
+.sheet--actions { padding-bottom: max(var(--space-6), calc(var(--space-2) + env(safe-area-inset-bottom, 0px))); }
+.sheet__actions { display: flex; flex-direction: column; gap: var(--space-2); margin-top: var(--space-2); flex: none; }
 /* P 7c: the detail sheet pages through the shortlist; one page per place, snapped, dots below */
 .pager { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; margin: 0 calc(-1 * var(--gutter)); padding: 0 var(--gutter); scroll-padding: 0 var(--gutter); gap: var(--gutter); }
 .pager::-webkit-scrollbar { display: none; }
